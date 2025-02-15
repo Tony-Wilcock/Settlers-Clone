@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: d7153577eec68473997793e09f0498b9
+timeCreated: 1506671060
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo16_MatchingGame/Demo16.cs
+  uploadId: 729346

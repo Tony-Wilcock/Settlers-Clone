@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ee9da8f5599524cd0b73aaa17ac71770
+timeCreated: 1443905431
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Resources/Materials/Dot.mat
+  uploadId: 729346

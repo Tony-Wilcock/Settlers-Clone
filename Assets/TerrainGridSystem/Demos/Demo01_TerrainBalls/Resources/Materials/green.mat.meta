@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 498077e1b9c5e4e93b02d9c2815e0eac
+timeCreated: 1469352349
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo01_TerrainBalls/Resources/Materials/green.mat
+  uploadId: 729346

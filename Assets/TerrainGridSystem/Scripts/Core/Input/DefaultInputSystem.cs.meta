@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: b2fad16f5ecaa4adcbb583a03ab6e217
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Scripts/Core/Input/DefaultInputSystem.cs
+  uploadId: 729346

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 53d3c4a1666fc4f88a109775d4a6d72d
+timeCreated: 1448813998
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo04a_CellTexture/README.txt
+  uploadId: 729346

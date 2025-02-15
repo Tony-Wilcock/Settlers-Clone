@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 8cb59ab626a374ea6b5fd9d05c69d812
+timeCreated: 1506674661
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Resources/Shaders/UnlitHighlightGroundTexture.shader
+  uploadId: 729346

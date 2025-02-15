@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 64902538e5202417bbbe6e24c648e306
+timeCreated: 1455222309
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo06_CellsPositions/Resources/RedSphere.prefab
+  uploadId: 729346

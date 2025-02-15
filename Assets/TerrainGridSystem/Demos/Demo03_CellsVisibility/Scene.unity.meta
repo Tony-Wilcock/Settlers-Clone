@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5e31305f45bde498b9b83527b25b112e
+timeCreated: 1448475449
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo03_CellsVisibility/Scene.unity
+  uploadId: 729346

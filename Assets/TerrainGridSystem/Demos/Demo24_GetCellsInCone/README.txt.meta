@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 39232a356bd159140b8182408a6174cb
+timeCreated: 1472379252
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo24_GetCellsInCone/README.txt
+  uploadId: 729346

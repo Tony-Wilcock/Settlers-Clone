@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 112b084c5373a4873afd868a049a65f0
+timeCreated: 1534166435
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Resources/Shaders/UnlitLine.shader
+  uploadId: 729346

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2b119020ada174fc4b35ee8d9d9df5ad
+timeCreated: 1460919061
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo31_TerritoriesFromInitialCells/README.txt
+  uploadId: 729346

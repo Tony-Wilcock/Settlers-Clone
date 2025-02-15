@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9477579f2aa6c41ddb4ef4f1a9b6745a
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Scripts/Core/TerrainWrappers/URPHelper/TGSURPHelper.asmdef
+  uploadId: 729346

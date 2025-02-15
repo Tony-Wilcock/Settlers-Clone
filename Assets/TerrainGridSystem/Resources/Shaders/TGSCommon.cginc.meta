@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: f1289d0b94e044cd8920498299d77478
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Resources/Shaders/TGSCommon.cginc
+  uploadId: 729346

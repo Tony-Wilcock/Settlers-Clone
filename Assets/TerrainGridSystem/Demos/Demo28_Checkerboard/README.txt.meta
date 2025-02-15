@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bca89c60cd0194c2cb34a6f14fe770e0
+timeCreated: 1460919061
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo28_Checkerboard/README.txt
+  uploadId: 729346

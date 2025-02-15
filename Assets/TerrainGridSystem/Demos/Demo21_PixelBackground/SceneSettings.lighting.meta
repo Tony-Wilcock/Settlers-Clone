@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6bc53fa252a094ccfaecae6778ffe47d
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 4890085278179872738
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo21_PixelBackground/SceneSettings.lighting
+  uploadId: 729346

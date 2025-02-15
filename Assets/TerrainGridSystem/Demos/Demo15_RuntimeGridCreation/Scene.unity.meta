@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f42b37f3e1b924bd293c1fec4a7254dc
+timeCreated: 1505985466
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo15_RuntimeGridCreation/Scene.unity
+  uploadId: 729346

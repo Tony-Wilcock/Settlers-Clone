@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 24ab3ea462766434faf1e52848aee64c
+timeCreated: 1466278260
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo11_TerritoryConquer/Demo11.cs
+  uploadId: 729346

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 35a0e316b1ff14738a3225662bbf54e2
+timeCreated: 1488371808
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo14_TerrainPathFinding/Obstacles.cs
+  uploadId: 729346

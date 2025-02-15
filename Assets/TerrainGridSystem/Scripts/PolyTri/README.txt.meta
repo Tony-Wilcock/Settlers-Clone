@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a229bdb94a85b443d9db2bc9b1f996b4
+timeCreated: 1441223576
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Scripts/PolyTri/README.txt
+  uploadId: 729346

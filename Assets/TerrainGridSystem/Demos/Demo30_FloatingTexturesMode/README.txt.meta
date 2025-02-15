@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f84948cc76ba14381a55f1708d4b1429
+timeCreated: 1460919061
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo30_FloatingTexturesMode/README.txt
+  uploadId: 729346

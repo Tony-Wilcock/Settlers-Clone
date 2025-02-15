@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 865eeef9435dd4c338031c1b1c78b426
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 4890085278179872738
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo14_TerrainPathFinding/SceneSettings.lighting
+  uploadId: 729346

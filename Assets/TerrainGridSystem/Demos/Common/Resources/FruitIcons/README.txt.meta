@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 169f9ea7e560a446d93eec4eea671e26
+timeCreated: 1489572694
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Common/Resources/FruitIcons/README.txt
+  uploadId: 729346

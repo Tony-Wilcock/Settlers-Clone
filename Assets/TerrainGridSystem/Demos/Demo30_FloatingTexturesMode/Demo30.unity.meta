@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 1e6be88925f634a31a4abd4f51cde150
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo30_FloatingTexturesMode/Demo30.unity
+  uploadId: 729346

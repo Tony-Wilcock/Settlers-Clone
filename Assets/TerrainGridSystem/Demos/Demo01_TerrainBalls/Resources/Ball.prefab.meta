@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 774804bdc045d4325919c7c49961abdf
+timeCreated: 1443540510
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo01_TerrainBalls/Resources/Ball.prefab
+  uploadId: 729346

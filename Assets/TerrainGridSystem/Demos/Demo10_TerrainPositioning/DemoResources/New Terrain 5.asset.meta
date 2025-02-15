@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: e5ee72e015f9d47b6b8ef116e3081d71
+timeCreated: 1464509578
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo10_TerrainPositioning/DemoResources/New
+    Terrain 5.asset
+  uploadId: 729346

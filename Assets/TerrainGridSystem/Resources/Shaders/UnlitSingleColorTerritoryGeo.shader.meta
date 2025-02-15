@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 3af04de0346cb452a8e226141d55334a
+timeCreated: 1443031594
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Resources/Shaders/UnlitSingleColorTerritoryGeo.shader
+  uploadId: 729346

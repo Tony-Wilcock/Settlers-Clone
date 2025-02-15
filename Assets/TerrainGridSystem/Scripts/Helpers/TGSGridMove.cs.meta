@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 229a5c1b66b984a679154a0dffc91c35
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Scripts/Helpers/TGSGridMove.cs
+  uploadId: 729346

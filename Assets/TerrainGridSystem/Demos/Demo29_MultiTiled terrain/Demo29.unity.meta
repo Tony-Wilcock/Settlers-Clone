@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 04c0b03dff24d44899180b157b6ee56c
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo29_MultiTiled terrain/Demo29.unity
+  uploadId: 729346

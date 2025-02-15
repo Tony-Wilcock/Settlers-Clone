@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 23a8b47ec41684744aac176ee40d28e0
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 4890085278179872738
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo28_Checkerboard/Demo28Settings.lighting
+  uploadId: 729346

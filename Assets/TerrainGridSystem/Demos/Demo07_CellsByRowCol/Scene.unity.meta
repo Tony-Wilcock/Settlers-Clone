@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e11c1fe2169994c8293a252ab1045ecb
+timeCreated: 1455616360
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo07_CellsByRowCol/Scene.unity
+  uploadId: 729346

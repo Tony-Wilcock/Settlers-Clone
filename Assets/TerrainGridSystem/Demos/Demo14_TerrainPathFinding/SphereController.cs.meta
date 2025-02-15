@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 7d7793705ddb54e8da4d5b2112cab9a9
+timeCreated: 1488362918
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo14_TerrainPathFinding/SphereController.cs
+  uploadId: 729346

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 548fad4492338453aa930da91a1737d6
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 4890085278179872738
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo11_TerritoryConquer/SceneSettings.lighting
+  uploadId: 729346

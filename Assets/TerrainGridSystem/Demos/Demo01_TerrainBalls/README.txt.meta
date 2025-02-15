@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d80f13d24db3c478892ad81378083409
+timeCreated: 1444219682
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo01_TerrainBalls/README.txt
+  uploadId: 729346

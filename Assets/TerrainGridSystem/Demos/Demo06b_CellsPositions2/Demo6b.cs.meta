@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 7015552e8a9434376bd89054d248ac9c
+timeCreated: 1469052859
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo06b_CellsPositions2/Demo6b.cs
+  uploadId: 729346

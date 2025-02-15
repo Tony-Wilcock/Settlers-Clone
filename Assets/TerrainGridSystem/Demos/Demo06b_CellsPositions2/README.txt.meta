@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b981f6756376c40438614aca18eed414
+timeCreated: 1469057167
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo06b_CellsPositions2/README.txt
+  uploadId: 729346

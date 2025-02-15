@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d264f5058c8324f54a1967314875580c
+timeCreated: 1437611714
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Scripts/Snippets/README.txt
+  uploadId: 729346

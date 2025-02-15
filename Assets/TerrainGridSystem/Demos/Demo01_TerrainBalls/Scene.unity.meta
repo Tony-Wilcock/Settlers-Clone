@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5055871642c854c5da526a6fbdd67f07
+timeCreated: 1474567195
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo01_TerrainBalls/Scene.unity
+  uploadId: 729346

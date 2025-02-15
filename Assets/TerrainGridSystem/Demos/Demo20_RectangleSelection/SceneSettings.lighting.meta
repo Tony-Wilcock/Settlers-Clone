@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0581f886be4d84182bc1da787ef25d25
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 4890085278179872738
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo20_RectangleSelection/SceneSettings.lighting
+  uploadId: 729346

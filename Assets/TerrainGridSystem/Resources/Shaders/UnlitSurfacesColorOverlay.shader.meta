@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 40679d623772d4ebcbfb7697328abdc6
+timeCreated: 1490527729
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Resources/Shaders/UnlitSurfacesColorOverlay.shader
+  uploadId: 729346

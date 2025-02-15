@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 13b1be3295d6c420fa58c53c0caabf2e
+timeCreated: 1441223576
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Scripts/PolyTri/P2T_LICENSE.txt
+  uploadId: 729346

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 7125341756c614951b2b482eca901de4
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo31_TerritoriesFromInitialCells/Demo31.unity
+  uploadId: 729346

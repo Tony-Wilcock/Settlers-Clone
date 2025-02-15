@@ -1,0 +1,9 @@
+fileFormatVersion: 1
+guid: 886fb4d7a67d4ce4bb7f51bcc38e20c1
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Scripts/JSONObject/VectorTemplates.cs
+  uploadId: 729346

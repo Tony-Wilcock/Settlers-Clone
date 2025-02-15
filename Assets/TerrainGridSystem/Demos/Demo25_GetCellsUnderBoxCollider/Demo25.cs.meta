@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: cb9d68f4390e9e049b3cbec296375836
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo25_GetCellsUnderBoxCollider/Demo25.cs
+  uploadId: 729346

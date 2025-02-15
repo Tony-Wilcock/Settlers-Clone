@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e4c47779201b64c0683dbad493056ff6
+timeCreated: 1490527670
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Resources/Materials/TexturizedRegionGround.mat
+  uploadId: 729346

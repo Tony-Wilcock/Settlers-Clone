@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: c21d1b19a8b93439690b8c04eb4f700a
+labels:
+- Terrain
+- Grid
+- Map
+- Voronoi
+- Hex
+- Selectable
+timeCreated: 1439658257
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Resources/Prefabs/TerrainGridSystem.prefab
+  uploadId: 729346

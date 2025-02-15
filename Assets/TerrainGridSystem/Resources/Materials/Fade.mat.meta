@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 846c248f596ea410792d55a04987ad3d
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Resources/Materials/Fade.mat
+  uploadId: 729346

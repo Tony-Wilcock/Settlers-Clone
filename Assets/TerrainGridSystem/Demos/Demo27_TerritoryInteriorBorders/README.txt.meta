@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9dc4abcacd955466bbf48f6b16872340
+timeCreated: 1474047996
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo27_TerritoryInteriorBorders/README.txt
+  uploadId: 729346

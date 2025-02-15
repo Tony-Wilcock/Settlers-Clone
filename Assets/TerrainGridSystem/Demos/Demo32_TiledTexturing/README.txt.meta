@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4866700644b264ba9be1074e79e51328
+timeCreated: 1460919061
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo32_TiledTexturing/README.txt
+  uploadId: 729346

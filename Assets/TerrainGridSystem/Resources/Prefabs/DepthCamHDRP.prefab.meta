@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: c9a0f6025d2044412a35ec5a7d3d8afa
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Resources/Prefabs/DepthCamHDRP.prefab
+  uploadId: 729346

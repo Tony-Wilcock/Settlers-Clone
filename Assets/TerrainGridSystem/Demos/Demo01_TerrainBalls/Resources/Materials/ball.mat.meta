@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5c0f33ecdd0ed4f87b64f22ba5520058
+timeCreated: 1443527485
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo01_TerrainBalls/Resources/Materials/ball.mat
+  uploadId: 729346

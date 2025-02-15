@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 4d483a4eda2ec4ca58bea21d39920565
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Scripts/Core/TerrainWrappers/URPHelper/TGSURPCameraSetup.cs
+  uploadId: 729346

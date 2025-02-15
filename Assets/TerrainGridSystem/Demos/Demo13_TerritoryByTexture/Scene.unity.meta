@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c8bdf0c9ca0954816aadfea463cdbb79
+timeCreated: 1474047996
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo13_TerritoryByTexture/Scene.unity
+  uploadId: 729346

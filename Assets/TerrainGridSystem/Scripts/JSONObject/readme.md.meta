@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 673be42782aab4123b78a021da01e191
+timeCreated: 1455273507
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Scripts/JSONObject/readme.md
+  uploadId: 729346

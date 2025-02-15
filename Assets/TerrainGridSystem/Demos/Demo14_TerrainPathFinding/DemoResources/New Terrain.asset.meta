@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: fef8623c69763434b8850774cddf3cfd
+timeCreated: 1488361116
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo14_TerrainPathFinding/DemoResources/New
+    Terrain.asset
+  uploadId: 729346

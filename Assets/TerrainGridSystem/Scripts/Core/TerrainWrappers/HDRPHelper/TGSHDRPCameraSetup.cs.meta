@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: db0c2dc1555314906b860b1e671997dd
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Scripts/Core/TerrainWrappers/HDRPHelper/TGSHDRPCameraSetup.cs
+  uploadId: 729346

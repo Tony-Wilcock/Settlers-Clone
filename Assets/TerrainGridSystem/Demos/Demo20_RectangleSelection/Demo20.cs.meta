@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 75265cdc2374040ab80e36ffc53878f6
+timeCreated: 1553787861
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo20_RectangleSelection/Demo20.cs
+  uploadId: 729346

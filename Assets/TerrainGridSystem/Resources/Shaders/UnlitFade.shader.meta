@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: dcf43ef8d52294660b699b8466a5a3a5
+timeCreated: 1443031594
+licenseType: Store
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Resources/Shaders/UnlitFade.shader
+  uploadId: 729346

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6c818738e64794501b9265f8ed3c863a
+timeCreated: 1472379251
+licenseType: Store
+DefaultImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo12_PathFinding/Scene.unity
+  uploadId: 729346

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 306b58fa293a847f1bcfb27880d2529e
+timeCreated: 1455221615
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo06_CellsPositions/Resources/YellowSphere.prefab
+  uploadId: 729346

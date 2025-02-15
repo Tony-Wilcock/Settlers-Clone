@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9df729d6d5c2749de8de4049ec49136e
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Scripts/Core/TerrainWrappers/HDRPHelper/TGSHDRPHelper.asmdef
+  uploadId: 729346

@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 1d6725988c2ba45adaac4cf1c87f9fd4
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Resources/Shaders/UnlitSingleColorTerritoryGradient.shader
+  uploadId: 729346

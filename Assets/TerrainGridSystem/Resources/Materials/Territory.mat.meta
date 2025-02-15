@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a46ae506639e247a6a87d1115438a4bc
+timeCreated: 1439659546
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Resources/Materials/Territory.mat
+  uploadId: 729346

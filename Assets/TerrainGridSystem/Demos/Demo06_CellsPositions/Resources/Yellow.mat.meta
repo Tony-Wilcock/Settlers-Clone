@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1a338f9a7e9f841748ee2b3c862885bd
+timeCreated: 1455221622
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo06_CellsPositions/Resources/Yellow.mat
+  uploadId: 729346

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 312fcef55d7c047a2b4889662ebd198a
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo32_TiledTexturing/TiledTextures.cs
+  uploadId: 729346

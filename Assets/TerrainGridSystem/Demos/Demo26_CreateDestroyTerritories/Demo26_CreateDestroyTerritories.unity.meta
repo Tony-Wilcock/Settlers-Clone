@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 3952856a5c4af4347bed19cfbba1cafb
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo26_CreateDestroyTerritories/Demo26_CreateDestroyTerritories.unity
+  uploadId: 729346

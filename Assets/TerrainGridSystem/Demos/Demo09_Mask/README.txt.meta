@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bfe8254979df94b809bbab987878a6bb
+timeCreated: 1463858648
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo09_Mask/README.txt
+  uploadId: 729346

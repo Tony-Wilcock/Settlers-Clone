@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 84a91b7b212754207af64fc623ee8f20
+timeCreated: 1455616361
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo07_CellsByRowCol/Demo7.cs
+  uploadId: 729346

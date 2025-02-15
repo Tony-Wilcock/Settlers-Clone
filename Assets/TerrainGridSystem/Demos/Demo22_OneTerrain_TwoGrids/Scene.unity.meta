@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 6ab1b17d086d542739911b42b2113c30
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo22_OneTerrain_TwoGrids/Scene.unity
+  uploadId: 729346

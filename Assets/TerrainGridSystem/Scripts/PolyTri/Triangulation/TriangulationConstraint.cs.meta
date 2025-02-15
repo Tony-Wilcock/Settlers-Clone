@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 3051c93041f5b459f9b69923a678f362
+timeCreated: 1441223575
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Scripts/PolyTri/Triangulation/TriangulationConstraint.cs
+  uploadId: 729346

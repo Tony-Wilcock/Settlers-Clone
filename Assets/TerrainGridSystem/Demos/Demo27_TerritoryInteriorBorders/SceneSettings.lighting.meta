@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 56ec5a37a97fe4e008f6a9ae795e2e1b
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 4890085278179872738
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo27_TerritoryInteriorBorders/SceneSettings.lighting
+  uploadId: 729346

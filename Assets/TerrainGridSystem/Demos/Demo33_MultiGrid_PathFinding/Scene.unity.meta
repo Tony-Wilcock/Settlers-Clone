@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 42987f5b5b675470a87b5dc7fa082457
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo33_MultiGrid_PathFinding/Scene.unity
+  uploadId: 729346

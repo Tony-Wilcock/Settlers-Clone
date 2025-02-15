@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a4ee2def54f1147cc849c12c63cbdc3a
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 15600000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo29_MultiTiled terrain/Terrain/TerrainData_c0edb6ca-0634-44ea-9f94-fb9c818893c9.asset
+  uploadId: 729346

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 384cd0540ba4f480ba0d48aaf58c2eff
+timeCreated: 1439658186
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Resources/Materials/CanvasBackground.mat
+  uploadId: 729346

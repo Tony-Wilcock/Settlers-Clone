@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d2b9e6ec0b1604258b0a280be34d7c32
+timeCreated: 1439658186
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo18_ProgressiveZoom/Background.mat
+  uploadId: 729346

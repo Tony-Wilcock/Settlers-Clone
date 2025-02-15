@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 450c52499ba4843c598868ca3f802cde
+timeCreated: 1472373304
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Scripts/PathFinding/IPathFinder.cs
+  uploadId: 729346

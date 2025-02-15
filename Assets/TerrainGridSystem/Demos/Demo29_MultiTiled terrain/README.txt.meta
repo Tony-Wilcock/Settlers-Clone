@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d190a6d47a24b4bd6981e78a87876bbd
+timeCreated: 1460919061
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo29_MultiTiled terrain/README.txt
+  uploadId: 729346

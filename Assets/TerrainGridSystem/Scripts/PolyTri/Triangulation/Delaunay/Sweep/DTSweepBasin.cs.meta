@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: b498603ffc3164ad8be757d43cb63d43
+timeCreated: 1441223575
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Scripts/PolyTri/Triangulation/Delaunay/Sweep/DTSweepBasin.cs
+  uploadId: 729346

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 0c2524dbf6f14496297821070f6e0efc
+timeCreated: 1464162048
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo04b_TerritoryTexture/Demo4b.cs
+  uploadId: 729346

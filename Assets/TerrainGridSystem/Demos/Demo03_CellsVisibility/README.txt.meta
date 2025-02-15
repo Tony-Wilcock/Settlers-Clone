@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: fe4500c06f0754657a0cb72fc4980809
+timeCreated: 1448475449
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo03_CellsVisibility/README.txt
+  uploadId: 729346

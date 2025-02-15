@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 43db4462af9d44f4e9cd2b544323c48b
+timeCreated: 1454096653
+licenseType: Store
+TextScriptImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Demos/Demo05_CellsColoring/README.txt
+  uploadId: 729346

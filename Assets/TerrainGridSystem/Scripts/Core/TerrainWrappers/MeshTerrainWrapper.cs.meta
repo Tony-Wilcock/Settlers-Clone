@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 8f26565ae43034d7f94df245327c7736
+timeCreated: 1555926012
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 244921
+  packageName: Terrain Grid System 2
+  packageVersion: 19.1
+  assetPath: Assets/TerrainGridSystem/Scripts/Core/TerrainWrappers/MeshTerrainWrapper.cs
+  uploadId: 729346
