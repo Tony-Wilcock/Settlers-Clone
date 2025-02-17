@@ -7,7 +7,6 @@ public class Input_SO : ScriptableObject, PlayerInput.IPlayerActions
 {
     public event Action<Vector2> OnMoveAction;
     public event Action OnInteractAction;
-    public event Action OnAlternateInteractAction;
 
     public PlayerInput playerInput;
 

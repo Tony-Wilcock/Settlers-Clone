@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4740758515154798753}
   - component: {fileID: 6431127817348966083}
-  - component: {fileID: 4007870292540909145}
-  - component: {fileID: 4756360855230946178}
-  - component: {fileID: 7122753751745299138}
   - component: {fileID: 8188857330458174697}
+  - component: {fileID: 7448625677430454358}
+  - component: {fileID: 7122753751745299138}
+  - component: {fileID: 842763248962344101}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -50,52 +50,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   input: {fileID: 11400000, guid: c98cf2923ffb9814c9190b7b77bded73, type: 2}
   flagPrefab: {fileID: 8298529908306606255, guid: a36cbdf4c686c5a4e948bf89e615e184, type: 3}
---- !u!114 &4007870292540909145
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4396399063804043955}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96f86a4fbecc0f645901a82a23c1d3be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nodePrefab: {fileID: 8046427031281768760, guid: 229feeec5a57aa648b2caa3566677101, type: 3}
-  nodeHeightOffset: 0.1
-  raycastDistance: 1000
-  terrainLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
-  defaultColor: {r: 0, g: 0, b: 0, a: 0}
---- !u!114 &4756360855230946178
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4396399063804043955}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce6d5c5af15c311499c19e8597d1ade5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  highlightDistanceThreshold: 20
-  highlightColor: {r: 0.14368437, g: 1, b: 0.015686274, a: 1}
---- !u!114 &7122753751745299138
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4396399063804043955}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6be234132ac61a54aba837a21f9aec93, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pathPrefab: {fileID: 2102475592777998154, guid: 3f62e153359ed9540abc7eaeb2e922c5, type: 3}
+  flagPanel: {fileID: 0}
+  pathPanel: {fileID: 0}
+  debugText: {fileID: 0}
 --- !u!114 &8188857330458174697
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,3 +66,49 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   saveFileName: save.dat
+  nodeManager: {fileID: 7448625677430454358}
+--- !u!114 &7448625677430454358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4396399063804043955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a5e85ecf821ae24d92e3c5685a817a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodePrefab: {fileID: 8046427031281768760, guid: 229feeec5a57aa648b2caa3566677101, type: 3}
+  nodeHeightOffset: 0.1
+  raycastDistance: 1000
+  terrainLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  defaultColor: {r: 0, g: 0, b: 0, a: 0}
+--- !u!114 &7122753751745299138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4396399063804043955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6be234132ac61a54aba837a21f9aec93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxPathLength: 20
+--- !u!114 &842763248962344101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4396399063804043955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3edf5c376aa83dd49ac3d94227a7a98a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  highlightColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}

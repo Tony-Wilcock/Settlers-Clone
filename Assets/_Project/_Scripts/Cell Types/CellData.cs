@@ -17,7 +17,7 @@ public class CellData
         terrainType = terrain;
         buildingType = BuildingType.None;
         resourceType = ResourceType.None;
-        hasObstacle = false; // Default: no obstacle
+        hasObstacle = false;
         hasFlag = false;
         hasPath = false;
         buildingID = -1;

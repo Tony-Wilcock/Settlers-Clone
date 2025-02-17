@@ -2,109 +2,173 @@
 using UnityEngine;
 using TGS;
 using UnityEngine.Events;
-
+using TMPro;
 
 public class GridNodeManager : MonoBehaviour
 {
     [SerializeField] private Input_SO input;
     [SerializeField] private GameObject flagPrefab;
 
-    private NodePlacer nodePlacer;
-    private NodeHighlighter nodeHighlighter;
+    [SerializeField] private GameObject flagPanel;
+    [SerializeField] private GameObject pathPanel;
+    [SerializeField] private TMP_Text debugText;
+
+    private NodeManager nodeManager;
+    private NodeSelection nodeSelection;
     private PathManager pathManager;
     private TerrainGridSystem tgs;
+    private GridManager gridManager;
+
+    private GameObject nearestNode = null;
 
     public event UnityAction<GameObject> OnStartPathCreation;
 
-
     private void Awake()
     {
-        nodePlacer = GetComponent<NodePlacer>();
-        nodeHighlighter = GetComponent<NodeHighlighter>();
+        nodeManager = GetComponent<NodeManager>();
+        nodeSelection = GetComponent<NodeSelection>();
         pathManager = GetComponent<PathManager>();
         tgs = TerrainGridSystem.instance;
+        gridManager = GetComponent<GridManager>();
 
-        if (nodePlacer == null) Debug.LogError("nodePlacer component not found.");
-        if (nodeHighlighter == null) Debug.LogError("nodeHighlighter component not found.");
-        if (pathManager == null) Debug.LogError("PathManager component not found.");
-        if (input == null) Debug.LogError("Input_SO is not assigned.");
+        if (!nodeManager || !nodeSelection || !pathManager || !input || !gridManager)
+        {
+            Debug.LogError("GridNodeManager: Missing required components or assignments.");
+            enabled = false; // Disable the script if dependencies are missing.
+            return;
+        }
+
+        nodeSelection.Initialize(nodeManager);
     }
 
     void Start()
     {
-        input.OnInteractAction += HandleInteractAction;
-        input.OnAlternateInteractAction += HandleAlternateInteractAction;
-        nodeHighlighter.Initialize(nodePlacer);
+        input.OnInteractAction += HandleNodeInteraction;
     }
 
     private void Update()
     {
+        debugText.text = pathManager.GetAllPaths().Count.ToString();
         if (tgs != null)
         {
-            nodeHighlighter.HighlightNode(tgs.CellGetAtMousePosition());
-            if (Input.GetKeyDown(KeyCode.P))
+            if (tgs)
             {
-                StartPathCreation();
+                nodeSelection.HighlightNode(tgs.CellGetAtMousePosition());
+            }
+
+            if (Input.GetKeyDown(KeyCode.C)) CheckCell();
+            if (Input.GetMouseButtonDown(1) && pathManager.IsPathingMode) CancelPathPlacement();
+        }
+    }
+
+    public void HandleNodeInteraction()
+    {
+        GameObject node = nodeSelection.NearestNode;
+        if (!node) return;
+
+        nearestNode = node;
+
+        Cell cell = nodeManager.GetCellFromNode(nearestNode);
+        CellData cellData = gridManager.GetCellData(cell);
+
+        if (nodeManager.CanPlaceFlag(nearestNode, tgs) && !pathManager.IsPathingMode)
+        {
+            flagPanel.SetActive(true);
+        }
+
+        if (cellData.hasFlag && !pathManager.IsPathingMode)
+        {
+            pathPanel.SetActive(true);
+        }
+
+        if (pathManager.IsPathingMode)
+        {
+            pathManager.TryAddNodeToPath(nearestNode);
+        }
+    }
+
+    public void PlaceFlag()
+    {
+        if (!nodeManager.CanPlaceFlag(nearestNode, tgs))
+        {
+            Debug.Log("Cannot place flag here.");
+            return;
+        }
+
+        GameObject newFlag = Instantiate(flagPrefab, nearestNode.transform.position, Quaternion.identity, nearestNode.transform);
+        if (!newFlag.TryGetComponent(out Flag _))
+        {
+            newFlag.AddComponent<Flag>();
+        }
+
+        nodeManager.SetNodeVisibility(nearestNode, true, nodeManager.defaultColor); // Use NodeManager
+        Cell cell = nodeManager.GetCellFromNode(nearestNode);
+        gridManager.SetCellFlag(cell, true);
+
+        CellData cellData = gridManager.GetCellData(cell);
+
+        if (cellData.hasPath)
+        {
+            pathManager.SplitPathAt(cell); // Call the new PathManager method
+            nodeManager.SetNodeVisibility(nearestNode, true, Color.red);
+        }
+
+        flagPanel.SetActive(false);
+        nearestNode = null;
+    }
+
+    public void CancelFlagPlacement()
+    {
+        flagPanel.SetActive(false);
+        nearestNode = null;
+    }
+
+    private void CheckCell()
+    {
+        if (nodeSelection.NearestNode != null)
+        {
+            Cell cell = nodeManager.GetCellFromNode(nodeSelection.NearestNode);
+            if (cell != null)
+            {
+                // Check if the cell has a flag
+                bool hasFlag = gridManager.GetCellData(cell).hasFlag;
+
+                // Check if the cell has a path
+                bool hasPath = gridManager.GetCellData(cell).hasPath;
+
+                Debug.Log($"\"Cell: {cell.index} - Flag?: {hasFlag} | Path?: {hasPath}");
             }
         }
     }
 
-    private void HandleInteractAction()
+    public void StartPathPlacement()
     {
-        GameObject nearestNode = nodeHighlighter.NearestNode;
-
-        if (nearestNode != null)
+        if (nearestNode != null &&
+            nearestNode.transform.childCount > 0 &&
+            nearestNode.transform.GetChild(0).GetComponent<Flag>())
         {
-            if (!pathManager.IsPathingMode)
-            {
-                if (nodePlacer.CanPlaceFlag(nearestNode, tgs))
-                {
-                    GameObject newFlag = Instantiate(flagPrefab, nearestNode.transform.position, Quaternion.identity, nearestNode.transform);
-                    if (newFlag.GetComponent<Flag>() == null)
-                    {
-                        newFlag.AddComponent<Flag>();
-                    }
-                    nodeHighlighter.SetNodeColor(nearestNode, nodePlacer.defaultColor);
-                    Cell cell = nodePlacer.GetCellFromNode(nearestNode);
-                    FindFirstObjectByType<GridManager>().SetCellFlag(cell, true);
-                }
-            }
-            else
-            {
-                pathManager.TryAddNodeToPath(nearestNode);
-            }
-        }
-    }
-
-    private void HandleAlternateInteractAction()
-    {
-        pathManager.CancelPathCreation();
-    }
-
-    public void StartPathCreation()
-    {
-        Debug.Log("StartPathCreation button clicked!");
-
-        if (nodeHighlighter.NearestNode != null &&
-            nodeHighlighter.NearestNode.transform.childCount > 0 &&
-            nodeHighlighter.NearestNode.transform.GetChild(0).GetComponent<Flag>())
-        {
-            OnStartPathCreation?.Invoke(nodeHighlighter.NearestNode);
+            OnStartPathCreation?.Invoke(nearestNode);
         }
         else
         {
             Debug.Log("No flag selected to start the path.");
         }
+
+        pathPanel.SetActive(false);
+    }
+
+    public void CancelPathPlacement()
+    {
+        pathPanel.SetActive(false);
+        if (!pathManager.IsPathingMode) return;
+        pathManager.CancelPathCreation();
+        nearestNode = null;
     }
 
     private void OnDestroy()
     {
-        input.OnInteractAction -= HandleInteractAction;
-        input.OnAlternateInteractAction -= HandleAlternateInteractAction;
+        input.OnInteractAction -= HandleNodeInteraction;
     }
 
-    public GameObject GetFlagPrefab()
-    {
-        return flagPrefab;
-    }
+    public GameObject GetFlagPrefab => flagPrefab;
 }

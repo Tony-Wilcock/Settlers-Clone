@@ -3,21 +3,27 @@ using UnityEngine;
 using System.Collections.Generic;
 using TGS;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using static CellTypes;
 
 public class GridManager : MonoBehaviour
 {
-    private TerrainGridSystem _tgs;
-    private Dictionary<Cell, CellData> _cellData = new Dictionary<Cell, CellData>();
-    public string saveFileName = "save.json";
+    private TerrainGridSystem tgs;
+    private Dictionary<Cell, CellData> cellData = new Dictionary<Cell, CellData>();
+    [SerializeField] private string saveFileName = "save.json";
 
-    private NodePlacer _nodePlacer;
+    [SerializeField] private NodeManager nodeManager;
+    private PathManager pathManager;
+
+    private const float WaterHeight = 0.2f;
+    private const float MarshHeight = 0.4f;
+    private const float GrassHeight = 0.6f;
+    private const float DesertHeight = 0.8f;
 
     public void OnEnable()
     {
-        _tgs = TerrainGridSystem.instance;
-        _nodePlacer = FindFirstObjectByType<NodePlacer>();
+        tgs = TerrainGridSystem.instance;
+        nodeManager = FindFirstObjectByType<NodeManager>();
+        pathManager = FindFirstObjectByType<PathManager>();
 
         InitializeGrid();
         LoadGame();
@@ -25,37 +31,45 @@ public class GridManager : MonoBehaviour
 
     public void InitializeGrid()
     {
-        if (_tgs != null)
+        if (tgs != null)
         {
-            _tgs.Init();
+            tgs.Init();
         }
-        if (_nodePlacer != null)
+        if (nodeManager != null)
         {
-            _nodePlacer.InitializeNodes(_tgs);
+            nodeManager.InitializeNodes(tgs);
         }
+        InitializeCells();
     }
 
     public void InitializeCells()
     {
-        _cellData.Clear();
+        cellData.Clear();
         ClearFlags();
-        foreach (Cell cell in _tgs.cells)
+
+        if (tgs == null || tgs.cells == null)
+        {
+            return;
+        }
+
+        foreach (Cell cell in tgs.cells)
         {
             TerrainType terrain;
             float height = cell.center.y;
-            if (height < 0.2f)
+
+            if (height < WaterHeight)
             {
                 terrain = TerrainType.Water;
             }
-            else if (height < 0.4f)
+            else if (height < MarshHeight)
             {
                 terrain = TerrainType.Marsh;
             }
-            else if (height < 0.6f)
+            else if (height < GrassHeight)
             {
                 terrain = TerrainType.Grass;
             }
-            else if (height < 0.8f)
+            else if (height < DesertHeight)
             {
                 terrain = TerrainType.Desert;
             }
@@ -64,25 +78,27 @@ public class GridManager : MonoBehaviour
                 terrain = TerrainType.Mountain;
             }
 
-            _cellData.Add(cell, new CellData(terrain));
-            UpdateCellWalkability(cell);
+            cellData.Add(cell, new CellData(terrain));
+            UpdateCellPathability(cell);
         }
     }
+
     public void SetCellData(Cell cell, CellData data)
     {
-        if (_cellData.ContainsKey(cell))
+        if (cellData.ContainsKey(cell))
         {
-            _cellData[cell] = data;
+            cellData[cell] = data;
         }
         else
         {
-            _cellData.Add(cell, data);
+            cellData.Add(cell, data);
         }
-        UpdateCellWalkability(cell);
+        UpdateCellPathability(cell);
     }
+
     public CellData GetCellData(Cell cell)
     {
-        if (_cellData.TryGetValue(cell, out CellData data))
+        if (cellData.TryGetValue(cell, out CellData data))
         {
             return data;
         }
@@ -95,6 +111,7 @@ public class GridManager : MonoBehaviour
         data.terrainType = type;
         SetCellData(cell, data);
     }
+
     public void SetCellBuildingType(Cell cell, BuildingType type, int buildingId = -1)
     {
         CellData data = GetCellData(cell);
@@ -102,6 +119,7 @@ public class GridManager : MonoBehaviour
         data.buildingID = buildingId;
         SetCellData(cell, data);
     }
+
     public void SetCellObstacle(Cell cell, bool hasObstacle)
     {
         CellData data = GetCellData(cell);
@@ -130,7 +148,8 @@ public class GridManager : MonoBehaviour
         data.hasPath = hasPath;
         SetCellData(cell, data);
     }
-    private void UpdateCellWalkability(Cell cell)
+
+    private void UpdateCellPathability(Cell cell)
     {
         CellData data = GetCellData(cell);
 
@@ -146,59 +165,66 @@ public class GridManager : MonoBehaviour
         {
             if (data.buildingType != BuildingType.None) canWalk = false;
             if (data.hasObstacle) canWalk = false;
-            if (data.hasFlag) canWalk = false;
         }
 
-
-        int cellIndex = _tgs.CellGetIndex(cell);
-        _tgs.CellSetTag(cellIndex, canWalk ? 0 : 1);
+        int cellIndex = tgs.CellGetIndex(cell);
+        tgs.CellSetTag(cellIndex, canWalk ? 0 : 1);
     }
-
 
     public void SaveGame()
     {
         SaveData saveData = new SaveData();
-        foreach (var kvp in _cellData)
+        foreach (var kvp in cellData)
         {
-            int cellIndex = _tgs.CellGetIndex(kvp.Key);
+            int cellIndex = tgs.CellGetIndex(kvp.Key);
             saveData.cellIndices.Add(cellIndex);
             saveData.cellData.Add(kvp.Value);
         }
 
         string json = JsonUtility.ToJson(saveData);
-
-        using (StreamWriter writer = new StreamWriter(Application.persistentDataPath + "/" + saveFileName))
-        {
-            writer.Write(json);
-        }
+        File.WriteAllText(Application.persistentDataPath + "/" + saveFileName, json);
         Debug.Log("Game Saved");
+    }
+
+    public void DeleteSavedData()
+    {
+        string savePath = Application.persistentDataPath + "/" + saveFileName;
+        if (File.Exists(savePath))
+        {
+            File.Delete(savePath);
+            Debug.Log("Save file deleted.");
+        }
+        else
+        {
+            Debug.Log("No save file found.");
+        }
     }
 
     public void LoadGame()
     {
+        InitializeCells(); // Clears existing cell data and flag GameObjects
+
+        // IMPORTANT: Reset node visibility *before* restoring anything.
+        foreach (var kvp in nodeManager.GetCellNodeMap())
+        {
+            nodeManager.SetNodeVisibility(kvp.Value, false, nodeManager.defaultColor);
+        }
+
         string savePath = Application.persistentDataPath + "/" + saveFileName;
 
         if (File.Exists(savePath))
         {
-            ClearFlags();
-
-            string json;
-            using (StreamReader reader = new StreamReader(savePath))
-            {
-                json = reader.ReadToEnd();
-            }
+            string json = File.ReadAllText(savePath);
 
             SaveData saveData = JsonUtility.FromJson<SaveData>(json);
-
-            _cellData.Clear();
 
             for (int i = 0; i < saveData.cellIndices.Count; i++)
             {
                 int cellIndex = saveData.cellIndices[i];
-                if (cellIndex >= 0 && cellIndex < _tgs.cells.Count)
+                if (cellIndex >= 0 && cellIndex < tgs.cells.Count)
                 {
-                    _cellData[_tgs.cells[cellIndex]] = saveData.cellData[i];
-                    UpdateCellWalkability(_tgs.cells[cellIndex]);
+                    cellData[tgs.cells[cellIndex]] = saveData.cellData[i];
+                    UpdateCellPathability(tgs.cells[cellIndex]);
                 }
                 else
                 {
@@ -207,31 +233,35 @@ public class GridManager : MonoBehaviour
             }
 
             RestoreFlags();
-            FindFirstObjectByType<PathManager>().VisualizeAllPaths();
+            RestorePaths(); // Now correctly restores path data
             Debug.Log("Game Loaded");
         }
         else
         {
             Debug.Log("No save file found. Initializing new grid.");
-            InitializeCells();
         }
+        pathManager.ClearAllPaths();  //Clear all paths
+
+        // Visualize paths *after* everything is loaded.
+        pathManager.VisualizeAllPaths();
     }
+
     private void RestoreFlags()
     {
-        GameObject flagPrefab = FindFirstObjectByType<GridNodeManager>().GetFlagPrefab();
+        GameObject flagPrefab = FindFirstObjectByType<GridNodeManager>().GetFlagPrefab;
 
-        foreach (var kvp in _cellData)
+        foreach (var kvp in cellData)
         {
             Cell cell = kvp.Key;
             CellData data = kvp.Value;
 
             if (data.hasFlag)
             {
-                if (_nodePlacer.GetHexCellCenterNodes().TryGetValue(cell, out GameObject node))
+                if (nodeManager.GetCellNodeMap().TryGetValue(cell, out GameObject node))
                 {
-                    _nodePlacer.SetNodeVisibility(node, true);
+                    // Don't just set visibility, *instantiate* the flag:
                     GameObject newFlag = Instantiate(flagPrefab, node.transform.position, Quaternion.identity, node.transform);
-                    if (newFlag.GetComponent<Flag>() == null)
+                    if (!newFlag.TryGetComponent<Flag>(out _))
                     {
                         newFlag.AddComponent<Flag>();
                     }
@@ -241,6 +271,64 @@ public class GridManager : MonoBehaviour
                     Debug.LogError($"Could not find node for cell {cell} during flag restoration.");
                 }
             }
+        }
+    }
+
+    private void RestorePaths()
+    {
+        // Rebuild paths from cell data
+        foreach (var kvp in cellData)
+        {
+            if (kvp.Value.hasPath)
+            {
+                SetCellPath(kvp.Key, true); // Correctly set the path
+            }
+        }
+    }
+
+    private void FindPathRecursive(Cell currentCell, List<Cell> currentPath, HashSet<Cell> processedCells)
+    {
+        currentPath.Add(currentCell);
+        processedCells.Add(currentCell);
+        // Check neighbours
+        List<Cell> neighbors = tgs.CellGetNeighbours(currentCell);
+        foreach (Cell neighbor in neighbors)
+        {
+            if (neighbor != null)
+            {
+                CellData neighborData = GetCellData(neighbor);
+                // If neighbor is on path and not processed, add it.
+                if (neighborData.hasPath && !processedCells.Contains(neighbor))
+                {
+                    FindPathRecursive(neighbor, currentPath, processedCells);
+                }
+            }
+        }
+    }
+
+    public void RemovePath(Cell cell)
+    {
+        if (GetCellData(cell).hasPath)
+        {
+            SetCellPath(cell, false); // Remove the path flag
+
+            // Find and remove the path from PathManager's allPaths
+            List<List<Cell>> pathsToRemove = new List<List<Cell>>();
+            foreach (List<Cell> path in FindFirstObjectByType<PathManager>().GetAllPaths())
+            {
+                if (path.Contains(cell))
+                {
+                    pathsToRemove.Add(path);
+                }
+            }
+
+            foreach (List<Cell> pathToRemove in pathsToRemove)
+            {
+                FindFirstObjectByType<PathManager>().GetAllPaths().Remove(pathToRemove);
+            }
+
+            // Visualize after changes.
+            FindFirstObjectByType<PathManager>().VisualizeAllPaths();
         }
     }
 
@@ -255,7 +343,7 @@ public class GridManager : MonoBehaviour
 
     public List<Cell> GetAllCells()
     {
-        return _tgs.cells;
+        return tgs.cells;
     }
 
     [System.Serializable]

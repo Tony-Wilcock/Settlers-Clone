@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class CellTypes
 {
     public bool hasObstacle = false;
