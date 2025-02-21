@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 8d0a44756a99bff4ebef1715fb92bea5
+ShaderIncludeImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 282879
+  packageName: Decal Splines
+  packageVersion: 1.4.3
+  assetPath: Assets/Decal Splines/Shaders/UVPlotter.hlsl
+  uploadId: 702752

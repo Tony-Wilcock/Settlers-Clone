@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: c8687f95504296f4d85feffd0e2b6727
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 282879
+  packageName: Decal Splines
+  packageVersion: 1.4.3
+  assetPath: Assets/Decal Splines/Scripts/Decal Spline.cs
+  uploadId: 702752

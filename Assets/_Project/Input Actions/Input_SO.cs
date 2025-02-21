@@ -7,6 +7,7 @@ public class Input_SO : ScriptableObject, PlayerInput.IPlayerActions
 {
     public event Action<Vector2> OnMoveAction;
     public event Action OnInteractAction;
+    public event Action OnCheckCellAction;
 
     public PlayerInput playerInput;
 
@@ -52,5 +53,13 @@ public class Input_SO : ScriptableObject, PlayerInput.IPlayerActions
     public void OnPrevious(InputAction.CallbackContext context)
     {
 
+    }
+
+    public void OnCheckCell(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+        {
+            OnCheckCellAction?.Invoke();
+        }
     }
 }
