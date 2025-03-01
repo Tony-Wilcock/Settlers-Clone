@@ -368,7 +368,7 @@ namespace TGS_Editor {
                 expandRenderingOptions = DrawSectionTitle("Rendering Options", expandRenderingOptions);
                 if (expandRenderingOptions) {
 
-                    tgs.disableMeshGeneration = EditorGUILayout.Toggle(new GUIContent("Disable Mesh Generation", "Grid system can be used through API but don't render any grid feature."), tgs.disableMeshGeneration);
+                    tgs.disableMeshGeneration = EditorGUILayout.Toggle(new GUIContent("OnDestroy Mesh Generation", "Grid system can be used through API but don't render any grid feature."), tgs.disableMeshGeneration);
 
                     if (tgs.disableMeshGeneration) {
                         EditorGUILayout.Separator();

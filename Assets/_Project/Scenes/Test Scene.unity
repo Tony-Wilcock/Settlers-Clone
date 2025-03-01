@@ -241,7 +241,7 @@ Transform:
   m_GameObject: {fileID: 68700426}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 75, y: 0.009899983, z: 25}
+  m_LocalPosition: {x: 75, y: 0.009900013, z: 25}
   m_LocalScale: {x: 150, y: 150, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -779,6 +779,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 842763248962344101, guid: 6c100cf06ad8a38488e64f193b9ef55d, type: 3}
+      propertyPath: nodeIconPrefabs.Array.size
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 842763248962344101, guid: 6c100cf06ad8a38488e64f193b9ef55d, type: 3}
       propertyPath: 'nodeIconPrefabs.Array.data[0]'
       value: 
       objectReference: {fileID: 153520109726365247, guid: 88c75ebbaf309a74bb690110b45a96ea, type: 3}
@@ -790,6 +794,18 @@ PrefabInstance:
       propertyPath: 'nodeIconPrefabs.Array.data[2]'
       value: 
       objectReference: {fileID: 9051403699649857881, guid: d973b9e70ad94cf4ba4877a08cc3ae01, type: 3}
+    - target: {fileID: 842763248962344101, guid: 6c100cf06ad8a38488e64f193b9ef55d, type: 3}
+      propertyPath: 'nodeIconPrefabs.Array.data[3]'
+      value: 
+      objectReference: {fileID: 153520109726365247, guid: 88c75ebbaf309a74bb690110b45a96ea, type: 3}
+    - target: {fileID: 842763248962344101, guid: 6c100cf06ad8a38488e64f193b9ef55d, type: 3}
+      propertyPath: 'nodeIconPrefabs.Array.data[4]'
+      value: 
+      objectReference: {fileID: 153520109726365247, guid: 88c75ebbaf309a74bb690110b45a96ea, type: 3}
+    - target: {fileID: 842763248962344101, guid: 6c100cf06ad8a38488e64f193b9ef55d, type: 3}
+      propertyPath: 'nodeIconPrefabs.Array.data[5]'
+      value: 
+      objectReference: {fileID: 153520109726365247, guid: 88c75ebbaf309a74bb690110b45a96ea, type: 3}
     - target: {fileID: 4396399063804043955, guid: 6c100cf06ad8a38488e64f193b9ef55d, type: 3}
       propertyPath: m_Name
       value: Grid
@@ -834,6 +850,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6107977476840869227, guid: 6c100cf06ad8a38488e64f193b9ef55d, type: 3}
+      propertyPath: decalSplinePrefab
+      value: 
+      objectReference: {fileID: 6783889016887484558, guid: 52a3587d081ba8e4f8170f75bd250584, type: 3}
     - target: {fileID: 6431127817348966083, guid: 6c100cf06ad8a38488e64f193b9ef55d, type: 3}
       propertyPath: debugText
       value: 
