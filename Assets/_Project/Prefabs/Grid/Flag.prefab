@@ -181,7 +181,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7829625387133821854}
-  - component: {fileID: 2345322789626202898}
   - component: {fileID: 2361743169992588056}
   m_Layer: 0
   m_Name: Flag
@@ -208,18 +207,6 @@ Transform:
   - {fileID: 2972065017912543502}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2345322789626202898
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8298529908306606255}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34e419f1ba1c03e4f9f4ec5d5be6c284, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!65 &2361743169992588056
 BoxCollider:
   m_ObjectHideFlags: 0
