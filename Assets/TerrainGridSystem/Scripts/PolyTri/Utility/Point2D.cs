@@ -287,7 +287,7 @@ namespace TGS.Poly2Tri {
 			return p;
 		}
 
-		// returns a scaled perpendicular vector.  Which direction it goes depends on the order in which the arguments are passed
+		// returns a scaled perpendicular vector.  Which movementDirection it goes depends on the order in which the arguments are passed
 		public static Point2D Perpendicular (Point2D lhs, double scalar) {
 			Point2D p = new Point2D (lhs.Y * scalar, lhs.X * -scalar);
 			return p;

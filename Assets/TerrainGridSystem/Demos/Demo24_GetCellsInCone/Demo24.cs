@@ -122,7 +122,7 @@ namespace TGSDemos {
 
 				// Get Cells within Cone				
 				List<int> cellsInCone = new List<int>();
-				// Set start cell, direction , distance and angle here
+				// Set start cell, movementDirection , distance and angle here
 				tgs.CellGetWithinCone(cellStartIndex, direction, maxDistance, 60.0f, cellsInCone);
 
 				// Color the cone

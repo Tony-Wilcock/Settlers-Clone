@@ -491,7 +491,7 @@ namespace TGS.ClipperLib {
 		internal EdgeSide Side;
 		//side only refers to current side of solution poly
 		internal int WindDelta;
-		//1 or -1 depending on winding direction
+		//1 or -1 depending on winding movementDirection
 		internal int WindCnt;
 		internal int WindCnt2;
 		//winding count of the opposite polytype
@@ -1868,7 +1868,7 @@ namespace TGS.ClipperLib {
 					//so we're outside the previous polygon ...
 					if (Math.Abs (e.WindCnt) > 1) {
 						//outside prev poly but still inside another.
-						//when reversing direction of prev poly use the same WC 
+						//when reversing movementDirection of prev poly use the same WC 
 						if (e.WindDelta * edge.WindDelta < 0)
 							edge.WindCnt = e.WindCnt;
               //otherwise continue to 'decrease' WC ...
@@ -1882,7 +1882,7 @@ namespace TGS.ClipperLib {
 					//so we're inside the previous polygon ...
 					if (edge.WindDelta == 0)
 						edge.WindCnt = (e.WindCnt < 0 ? e.WindCnt - 1 : e.WindCnt + 1);
-            //if wind direction is reversing prev then use same WC
+            //if wind movementDirection is reversing prev then use same WC
             else if (e.WindDelta * edge.WindDelta < 0)
 						edge.WindCnt = e.WindCnt;
             //otherwise add to WC ...

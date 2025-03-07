@@ -6,6 +6,9 @@ using UnityEngine.InputSystem;
 public class Input_SO : ScriptableObject, PlayerInput.IPlayerActions
 {
     public event Action<Vector2> OnMoveAction;
+    public event Action<Vector2> OnMouseDeltaAction;
+    public event Action<float> OnRotateAction;
+    public event Action<float> OnZoomAction;
     public event Action OnInteractAction;
     public event Action OnCheckCellAction;
 
@@ -34,11 +37,6 @@ public class Input_SO : ScriptableObject, PlayerInput.IPlayerActions
         }
     }
 
-    public void OnLook(InputAction.CallbackContext context)
-    {
-
-    }
-
     public void OnMove(InputAction.CallbackContext context)
     {
         OnMoveAction?.Invoke(context.ReadValue<Vector2>());
@@ -60,5 +58,20 @@ public class Input_SO : ScriptableObject, PlayerInput.IPlayerActions
         {
             OnCheckCellAction?.Invoke();
         }
+    }
+
+    public void OnRotate(InputAction.CallbackContext context)
+    {
+        OnRotateAction?.Invoke(context.ReadValue<float>());
+    }
+
+    public void OnMouseDelta(InputAction.CallbackContext context)
+    {
+        OnMouseDeltaAction?.Invoke(context.ReadValue<Vector2>());
+    }
+
+    public void OnZoom(InputAction.CallbackContext context)
+    {
+        OnZoomAction?.Invoke(context.ReadValue<float>());
     }
 }

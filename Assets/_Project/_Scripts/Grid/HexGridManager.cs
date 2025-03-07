@@ -28,7 +28,7 @@ public class HexGridManager : MonoBehaviour
     [SerializeField] private BuildingManager buildingManager;
     [SerializeField] private ResourceManager resourceManager;
     [SerializeField] private WorkerManager workerManager;
-    [SerializeField] private int hqStartingNode = 50; // Example starting node
+    [SerializeField] private int hqStartingNode = 90; // Example starting node
 
     public Input_SO Input_SO => input;
     public UIManager UIManager => uiManager;

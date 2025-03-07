@@ -2309,7 +2309,7 @@ namespace TGS {
         /// </summary>
         /// <param name="cellIndex">Cell index.</param>
         /// <param name="side">Side of the cell.</param>/// 
-        /// <param name="direction">The direction for getting the cost. Entering or exiting values are acceptable. Both will return the entering cost.</param>
+        /// <param name="direction">The movementDirection for getting the cost. Entering or exiting values are acceptable. Both will return the entering cost.</param>
         public float CellGetSideCrossCost (int cellIndex, CELL_SIDE side, CELL_DIRECTION direction = CELL_DIRECTION.Any) {
             if (!ValidCellIndex(cellIndex)) return 0;
             Cell cell = cells[cellIndex];
@@ -2846,7 +2846,7 @@ namespace TGS {
 
 
         /// <summary>
-        /// Returns a list of cells contained in a cone defined by a starting cell, a direction, max distance and an angle for the cone
+        /// Returns a list of cells contained in a cone defined by a starting cell, a movementDirection, max distance and an angle for the cone
         /// </summary>
         /// <param name="cellIndices">List where results will be returned. Must be previously initialized.</param>
         /// <returns>The number of found cells (-1 if some index is out of range)</returns>

@@ -262,10 +262,7 @@ public class PathManager : MonoBehaviour
         return false;
     }
 
-    public List<int> FindPath(int startVertexIndex, int endVertexIndex)
-    {
-        return pathFinder.FindPath(startVertexIndex, endVertexIndex);
-    }
+    public List<int> FindPath(int startVertexIndex, int endVertexIndex) => pathFinder.FindPath(startVertexIndex, endVertexIndex);
 
     // Called from UI Cancel Path button
     public void CancelPathCreation()

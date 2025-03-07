@@ -193,7 +193,7 @@ namespace TGS.Poly2Tri {
 
 				if (vdelta.MagnitudeSquared () < kEpsilonSq) {
 					// Found match to the first point, now check the other points continuing round
-					// if the points don't match in the first direction we check, then it's possible
+					// if the points don't match in the first movementDirection we check, then it's possible
 					// that the polygons have a different winding order, so we check going round 
 					// the opposite way as well
 					int matchedVertIndex = k;
@@ -214,10 +214,10 @@ namespace TGS.Poly2Tri {
 							vdelta.Subtract (poly2 [k % numVerts2]);
 							if (vdelta.MagnitudeSquared () >= kEpsilonSq) {
 								if (bReverseSearch) {
-									// didn't find a match going in either direction, so the polygons are not the same
+									// didn't find a match going in either movementDirection, so the polygons are not the same
 									return false;
 								} else {
-									// mismatch in the first direction checked, so check the other direction.
+									// mismatch in the first movementDirection checked, so check the other movementDirection.
 									k = matchedVertIndex;
 									bReverseSearch = true;
 									bMatchFound = false;
@@ -720,7 +720,7 @@ namespace TGS.Poly2Tri {
 			int currentIndex = ctx.mStartingIndex;
 			subtract.Clear ();
 
-			// Trace direction
+			// Trace movementDirection
 			bool forward = true;
 
 			do {
@@ -762,7 +762,7 @@ namespace TGS.Poly2Tri {
 								// set currentIndex
 								currentIndex = otherIndex;
 
-								// Reverse direction
+								// Reverse movementDirection
 								forward = !forward;
 
 								// Stop checking ctx.mIntersections for this point.
@@ -796,7 +796,7 @@ namespace TGS.Poly2Tri {
 								// set currentIndex
 								currentIndex = otherIndex;
 
-								// Reverse direction
+								// Reverse movementDirection
 								forward = !forward;
 
 								// Stop checking intersections for this point.

@@ -231,7 +231,7 @@ namespace TGS.Geom {
             return s;
         }
 
-        // Change the winding direction of the outer and inner
+        // Change the winding movementDirection of the outer and inner
         // rings so the outer ring is counter-clockwise and
         // nesting rings alternate directions.
         void FixOrientation(Polygon g) {

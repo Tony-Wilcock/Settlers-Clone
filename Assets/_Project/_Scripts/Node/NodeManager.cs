@@ -322,7 +322,7 @@ public class NodeManager : MonoBehaviour
         int bestMatchIndex = -1;
         float smallestAngleDiff = float.MaxValue;
 
-        // Define direction angles based on orientation
+        // Define movementDirection angles based on orientation
         float targetAngle = direction switch
         {
             Direction.Northeast => 60f,   // NE
@@ -331,7 +331,7 @@ public class NodeManager : MonoBehaviour
             Direction.Southwest => 240f, // SW
             Direction.West => 180f,      // W
             Direction.Northwest => 120f, // NW
-            _ => throw new System.ArgumentException($"Unknown direction: {direction}")
+            _ => throw new System.ArgumentException($"Unknown movementDirection: {direction}")
         };
 
         foreach (int neighborIndex in neighbors)
@@ -350,7 +350,7 @@ public class NodeManager : MonoBehaviour
 
         if (bestMatchIndex == -1)
         {
-            Debug.LogWarning($"No neighbor found in direction {direction} for vertex {vertexIndex}");
+            Debug.LogWarning($"No neighbor found in movementDirection {direction} for vertex {vertexIndex}");
         }
 
         return bestMatchIndex;
