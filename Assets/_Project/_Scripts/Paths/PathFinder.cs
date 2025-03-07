@@ -139,7 +139,7 @@ public class PathFinder
         return null;
     }
 
-    private List<int> FindDirectGridPath(int fromNode, int toNode)
+    public List<int> FindDirectGridPath(int fromNode, int toNode)
     {
         Queue<int> toVisit = new Queue<int>();
         HashSet<int> visited = new HashSet<int>();

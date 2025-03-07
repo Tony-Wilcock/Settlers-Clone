@@ -209,7 +209,12 @@ public class PathManager : MonoBehaviour
             NodeData nodeData = manager.NodeManager.GetNodeData(northwestNeighbour);
             if (nodeData.HasBuilding && (nodeData.BuildingType == BuildingType.HQ || nodeData.BuildingType == BuildingType.Storehouse))
             {
-                return true; // Found a storehouse or HQ
+                // Make sure it's fully constructed
+                Building building = buildingManager.GetBuildingFromNode(nodeData.BuildingID);
+                if (building != null && building.IsConstructed)
+                {
+                    return true; // Found a storehouse or HQ
+                }
             }
 
             foreach (var path in allPaths.Values) // Check all paths
@@ -359,14 +364,14 @@ public class PathManager : MonoBehaviour
                         allPaths[secondPathId] = secondPath;
                         manager.NodeManager.SetMultipleNodesPath(secondPart, true);
 
-                        int hqNode = GetHQNode();
-                        if (hqNode != -1)
+                        int hqEntranceNode = GetHQEntranceNode();
+                        if (hqEntranceNode != -1)
                         {
-                            Carrier newCarrier = (Carrier)workerManager.GetWorker(CharacterType.Carrier, hqNode);
-                            List<int> pathToMidpoint = pathFinder.FindPathThroughPaths(hqNode, secondPath.Midpoint);
+                            Carrier newCarrier = (Carrier)workerManager.GetWorker(CharacterType.Carrier, hqEntranceNode);
+                            List<int> pathToMidpoint = pathFinder.FindPathThroughPaths(hqEntranceNode, secondPath.Midpoint);
                             if (pathToMidpoint != null)
                             {
-                                newCarrier.MoveToPathMidpoint(secondPathId, hqNode, secondPath.StartFlag, secondPath.EndFlag, pathToMidpoint, secondPath.Midpoint);
+                                newCarrier.MoveToPathMidpoint(secondPathId, hqEntranceNode, secondPath.StartFlag, secondPath.EndFlag, pathToMidpoint, secondPath.Midpoint);
                                 pathCarriers[secondPathId] = newCarrier;
                             }
                             else
@@ -585,7 +590,8 @@ public class PathManager : MonoBehaviour
         {
             carrier.AssignPath(pathToEntrance, () =>
             {
-                List<int> pathToHQ = pathFinder.FindPathThroughPaths(hqEntranceNode, hqNode) ?? new List<int> { hqEntranceNode, hqNode };
+                //List<int> pathToHQ = pathFinder.FindPathThroughPaths(hqEntranceNode, hqNode) ?? new List<int> { hqEntranceNode, hqNode };
+                List<int> pathToHQ = pathFinder.FindDirectGridPath(hqEntranceNode, hqNode) ?? new List<int> { hqEntranceNode, hqNode };
                 if (pathToHQ != null && pathToHQ.Count > 0)
                 {
                     Action returnCallback = () =>

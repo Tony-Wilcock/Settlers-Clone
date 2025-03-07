@@ -56,31 +56,30 @@ public class BuildingManager : MonoBehaviour
         List<int> reservedNodes = GetReservedNodes(centralVertexIndex, size);
         entranceVertexIndex = nodeManager.GetNeighborInDirection(centralVertexIndex, Direction.Southeast);
 
-        // Instantiate and initialize building
+         //Instantiate and initialize building
         GameObject buildingPrefab = DetermineBuildingObject(buildingType);
         GameObject buildingObj = Instantiate(buildingPrefab, nodeManager.GlobalVertices[centralVertexIndex], Quaternion.identity);
-        Building buildingScript = buildingObj.GetComponent<Building>();
+        buildingObj.SetActive(true);Building buildingScript = buildingObj.GetComponent<Building>();
         buildingScript.Initialise(this, nodeManager, pathManager, workerManager, buildingType, centralVertexIndex, entranceVertexIndex, reservedNodes);
 
         bool canAfford = CanAffordBuilding(buildingType);
-        if (buildingType != BuildingType.HQ && canAfford)
-        {
-            CompleteConstruction(buildingType); // Deduct resources and complete if affordable
-            buildingScript.SetConstructed(true);
-        }
-        else if (buildingType == BuildingType.HQ)
-        {
-            CompleteConstruction(buildingType); // HQ construction is free
-            buildingScript.SetConstructed(true);
-        }
-        else if (!canAfford && buildingType != BuildingType.HQ)
-        {
-            Debug.Log($"Site marked for {buildingType} at {centralVertexIndex}, awaiting resources.");
-        }
+        //if (buildingType != BuildingType.HQ && canAfford)
+        //{
+        //    CompleteConstruction(buildingType); // Deduct resources and complete if affordable
+        //    buildingScript.SetConstructed(true);
+        //}
+        //else if (buildingType == BuildingType.HQ)
+        //{
+        //    CompleteConstruction(buildingType); // HQ construction is free
+        //    buildingScript.SetConstructed(true);
+        //}
+        //else if (!canAfford && buildingType != BuildingType.HQ)
+        //{
+        //    Debug.Log($"Site marked for {buildingType} at {centralVertexIndex}, awaiting resources.");
+        //}
 
-        // Create path from CentralNode to EntranceNode
+        // Create path visuals from CentralNode to EntranceNode
         List<int> buildingPath = new() { centralVertexIndex, entranceVertexIndex };
-
         manager.PathVisualsGenerator.DrawPath(buildingPath);
 
         AddBuilding(buildingScript);
@@ -196,28 +195,32 @@ public class BuildingManager : MonoBehaviour
 
         if (size == BuildingSize.Large && reservedNodes.Count != 4)
         {
+            Debug.LogWarning("Plot not large enough for this building.");
             return false;
         }
 
-        int southEast = nodeManager.GetNeighborInDirection(vertexIndex, Direction.Southeast);
+        int entranceNode = nodeManager.GetNeighborInDirection(vertexIndex, Direction.Southeast);
 
-        if (southEast == -1 || reservedNodes.Contains(southEast))
+        if (entranceNode == -1 || reservedNodes.Contains(entranceNode))
         {
+            Debug.LogWarning("Invalid entrance node.");
             return false;
         }
 
-        if (southEast == -1 && buildingType != BuildingType.HQ)
+        // Only allow for 1 HQ
+        if (buildingType == BuildingType.HQ && AllBuildings.ContainsKey(BuildingType.HQ))
         {
-            Debug.LogWarning($"No Southeast neighbor for {buildingType} at {vertexIndex}.");
+            Debug.LogWarning("HQ already exists.");
+            manager.HexGridInteraction.SetBuildingType(BuildingType.None);
             return false;
         }
 
-        if (southEast != -1)
+        if (entranceNode != -1)
         {
-            if (reservedNodes.Contains(southEast)) return false;
-            if (nodeManager.HasNodeGotFlag(southEast)) return true;
-            if (!nodeManager.CanPlaceFlag(southEast)) return false;
-            NodeData southEastData = nodeManager.GetNodeData(southEast);
+            if (reservedNodes.Contains(entranceNode)) return false;
+            if (nodeManager.HasNodeGotFlag(entranceNode)) return true;
+            if (!nodeManager.CanPlaceFlag(entranceNode)) return false;
+            NodeData southEastData = nodeManager.GetNodeData(entranceNode);
             if (southEastData == null || southEastData.HasBuilding || southEastData.HasFlag || southEastData.HasObstacle)
                 return false;
         }
@@ -235,5 +238,20 @@ public class BuildingManager : MonoBehaviour
             Debug.Log($"Added {type} to AllBuildings dictionary.");
         }
         AllBuildings[type].Add(building);
+    }
+
+    public Building GetBuildingFromNode(int node)
+    {
+        foreach (var buildings in AllBuildings.Values)
+        {
+            foreach (var building in buildings)
+            {
+                if (building.CentralNode == node)
+                {
+                    return building;
+                }
+            }
+        }
+        return null;
     }
 }

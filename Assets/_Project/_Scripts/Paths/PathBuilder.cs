@@ -177,35 +177,35 @@ public class PathBuilder
 
     public void FinalisePath(int endNode)
     {
-        int currentStartCell = currentPath.Last();
-        List<int> pathSegment = GeneratePathSegment(currentStartCell, endNode);
-        if (pathSegment == null)
+        int currentStartCell = currentPath.Last(); // Last node in currentPath
+        List<int> pathSegment = GeneratePathSegment(currentStartCell, endNode); // Find path segment from currentStartCell to endNode
+        if (pathSegment == null) // No path found
         {
             foreach (int node in currentPath)
             {
-                pathManager.Manager.NodeManager.SetNodePath(node, false);
+                pathManager.Manager.NodeManager.SetNodePath(node, false); // Reset all nodes in currentPath
             }
-            pathManager.CancelPathCreation();
+            pathManager.CancelPathCreation(); // Reset path creation mode
             return;
         }
 
-        currentPath.Remove(currentStartCell);
-        currentPath.AddRange(pathSegment);
-        if (!currentPath.Contains(endNode))
+        currentPath.Remove(currentStartCell); // Remove currentStartCell to avoid double-counting
+        currentPath.AddRange(pathSegment); // Add pathSegment to currentPath
+        if (!currentPath.Contains(endNode)) // Add endNode if not already in currentPath
         {
-            currentPath.Add(endNode);
+            currentPath.Add(endNode); // Add endNode to currentPath
         }
 
-        if (IsValidTemporaryPath(currentPath))
+        if (IsValidTemporaryPath(currentPath)) // Check if currentPath is valid
         {
-            SaveAndVisualiseFinalPath();
+            SaveAndVisualiseFinalPath(); // Save and visualise the final path
             pathManager.AssignCarriersToPaths(); // Reassign carriers to all connected paths
         }
         else
         {
             Debug.Log("Path creation failed: Invalid path");
         }
-        CancelPath();
+        CancelPath(); // Reset path creation mode
     }
 
     private List<int> GeneratePathSegment(int startNode, int endNode)
@@ -248,23 +248,22 @@ public class PathBuilder
 
     private bool IsValidTemporaryPath(List<int> path)
     {
-        if (path == null || path.Count < 2)
+        if (path == null || path.Count < 2) // Path must have at least 2 nodes
         {
             Debug.LogWarning("[PathManager] Temporary path invalid: Too few nodes");
             return false;
         }
 
-        HashSet<int> seenNodes = new HashSet<int>();
+        HashSet<int> seenNodes = new HashSet<int>(); // For quick lookup
         for (int i = 0; i < path.Count; i++)
         {
             int node = path[i];
-            NodeData nodeData = pathManager.Manager.NodeManager.GetNodeData(node);
 
-            // Check for self-overlap within tempPath
+            // Check for self-overlap within tempPath, if self-overlap, find alternate route
             if (seenNodes.Contains(node) && i != 0 && i != path.Count - 1)
             {
                 Debug.LogWarning($"[PathManager] Temporary path invalid: Node {node} overlaps within path at index {i}");
-                return false;
+                continue;
             }
 
             // Check for overlap with other paths in allPaths

@@ -131,5 +131,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3929bb1e984d70a4784feec35a40a58f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <BuildingType>k__BackingField: 0
+  buildingGFXPrefab: {fileID: 7231022420465034616}
+  <BuildingType>k__BackingField: 1
   <BuildingGFXTransform>k__BackingField: {fileID: 7052954514356315525}

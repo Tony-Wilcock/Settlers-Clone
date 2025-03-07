@@ -77,7 +77,22 @@ public abstract class Building : MonoBehaviour
         }
         else
         {
+            SetConstructed(false);
             Debug.Log($"Building site marked for {BuildingType} at {CentralNode}");
+            // Check if building is connected to a constructed storehouse
+            if (pathManager.IsConnectedToStorehouse(EntranceNode))
+            {
+                UpdateState();
+            }
+            else
+            {
+                Debug.Log($"Building site for {BuildingType} at {CentralNode} not connected to storehouse.");
+            }
+            // See if site area is level
+            // Task groundworker to level the site if not already level
+            // Task resources to be delivered to the site
+            // Task builder to go to the site to construct the building
+
         }
     }
 

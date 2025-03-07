@@ -554,6 +554,7 @@ public class NodeManager : MonoBehaviour
             switch (pathCount)
             {
                 case 0:
+                    Debug.LogWarning($"Why is this running if there's no path? {vertexIndex}.");
                     RemoveFlag(vertexIndex);
                     break;
                 case 1:
@@ -571,6 +572,10 @@ public class NodeManager : MonoBehaviour
                     // Remove all paths attached to this node if user confirms
                     break;
             }
+        }
+        else
+        {
+            RemoveFlag(vertexIndex);
         }
 
         manager.UIManager.HideAllPanels();
