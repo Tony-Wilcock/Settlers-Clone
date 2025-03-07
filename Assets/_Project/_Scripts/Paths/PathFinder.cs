@@ -68,7 +68,6 @@ public class PathFinder
 
     public List<int> FindPathThroughPaths(int fromNode, int toNode)
     {
-        Debug.Log($"[PathManager] Finding path from {fromNode} to {toNode}, allPaths: {string.Join("; ", pathManager.allPaths.Select(kvp => $"ID {kvp.Key}: {string.Join(", ", kvp.Value.Nodes)}"))}");
         Queue<int> toVisit = new Queue<int>();
         HashSet<int> visited = new HashSet<int>();
         Dictionary<int, int> cameFrom = new Dictionary<int, int>();
@@ -97,7 +96,6 @@ public class PathFinder
             if (currentNode == toNode)
             {
                 List<int> path = ReconstructPath(cameFrom, toNode);
-                Debug.Log($"[PathManager] Found path from {fromNode} to {toNode}: {string.Join(", ", path)}");
                 return path;
             }
 

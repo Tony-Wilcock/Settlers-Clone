@@ -9,15 +9,20 @@ public class BuildingManager : MonoBehaviour
 
     public Dictionary<BuildingType, List<Building>> AllBuildings { get; private set; } = new Dictionary<BuildingType, List<Building>>();
 
+    private HexGridManager manager;
     private NodeManager nodeManager;
     private PathManager pathManager;
     private WorkerManager workerManager;
 
-    public void Initialise(NodeManager nodeManager, PathManager pathManager, WorkerManager workerManager)
+    public void Initialise(HexGridManager manager)
     {
-        this.nodeManager = nodeManager;
-        this.pathManager = pathManager;
-        this.workerManager = workerManager;
+        this.manager = manager;
+
+        nodeManager = manager.NodeManager;
+        pathManager = manager.PathManager;
+        workerManager = manager.WorkerManager;
+
+        TryPlaceBuilding(manager.HqStartingNode, BuildingType.HQ, out _);
     }
 
     public Dictionary<BuildingType, Dictionary<StockResourceType, int>> BuildingCosts = new()
@@ -49,19 +54,7 @@ public class BuildingManager : MonoBehaviour
 
         BuildingSize size = BuildingSizes[buildingType];
         List<int> reservedNodes = GetReservedNodes(centralVertexIndex, size);
-
-        if (size == BuildingSize.Large && reservedNodes.Count != 4)
-        {
-            Debug.LogWarning($"Invalid number of reserved nodes for {buildingType} at vertex {centralVertexIndex}.");
-            return false;
-        }
-
         entranceVertexIndex = nodeManager.GetNeighborInDirection(centralVertexIndex, Direction.Southeast);
-        if (entranceVertexIndex == -1 || reservedNodes.Contains(entranceVertexIndex))
-        {
-            Debug.LogWarning($"No valid Southeast entrance for {buildingType} at vertex {centralVertexIndex}.");
-            return false;
-        }
 
         // Instantiate and initialize building
         GameObject buildingPrefab = DetermineBuildingObject(buildingType);
@@ -75,21 +68,20 @@ public class BuildingManager : MonoBehaviour
             CompleteConstruction(buildingType); // Deduct resources and complete if affordable
             buildingScript.SetConstructed(true);
         }
+        else if (buildingType == BuildingType.HQ)
+        {
+            CompleteConstruction(buildingType); // HQ construction is free
+            buildingScript.SetConstructed(true);
+        }
         else if (!canAfford && buildingType != BuildingType.HQ)
         {
             Debug.Log($"Site marked for {buildingType} at {centralVertexIndex}, awaiting resources.");
         }
 
         // Create path from CentralNode to EntranceNode
-        List<int> buildingPath = pathManager.FindPath(centralVertexIndex, entranceVertexIndex);
-        if (buildingPath != null && buildingPath.Count > 1)
-        {
-            pathManager.RegisterBuildingPath(buildingPath);
-        }
-        else
-        {
-            Debug.LogWarning($"Failed to create path from {centralVertexIndex} to {entranceVertexIndex} for {buildingType}");
-        }
+        List<int> buildingPath = new() { centralVertexIndex, entranceVertexIndex };
+
+        manager.PathVisualsGenerator.DrawPath(buildingPath);
 
         AddBuilding(buildingScript);
         return true;
@@ -155,7 +147,7 @@ public class BuildingManager : MonoBehaviour
         List<int> reservedNodes = new List<int> { centralVertexIndex };
         if (size != BuildingSize.Large) return reservedNodes;
 
-  Dictionary<Direction, int> directionNodes = new Dictionary<Direction, int>();
+        Dictionary<Direction, int> directionNodes = new Dictionary<Direction, int>();
         int west = nodeManager.GetNeighborInDirection(centralVertexIndex, Direction.West);
         if (west != -1) directionNodes[Direction.West] = west;
 
@@ -192,7 +184,9 @@ public class BuildingManager : MonoBehaviour
         if (centralData == null || centralData.HasBuilding || centralData.HasFlag || centralData.HasObstacle)
             return false;
 
-        List<int> reservedNodes = GetReservedNodes(vertexIndex, BuildingSizes[buildingType]);
+        BuildingSize size = BuildingSizes[buildingType];
+
+        List<int> reservedNodes = GetReservedNodes(vertexIndex, size);
         foreach (int node in reservedNodes)
         {
             NodeData nodeData = nodeManager.GetNodeData(node);
@@ -200,7 +194,17 @@ public class BuildingManager : MonoBehaviour
                 return false;
         }
 
+        if (size == BuildingSize.Large && reservedNodes.Count != 4)
+        {
+            return false;
+        }
+
         int southEast = nodeManager.GetNeighborInDirection(vertexIndex, Direction.Southeast);
+
+        if (southEast == -1 || reservedNodes.Contains(southEast))
+        {
+            return false;
+        }
 
         if (southEast == -1 && buildingType != BuildingType.HQ)
         {
@@ -228,6 +232,7 @@ public class BuildingManager : MonoBehaviour
         if (!AllBuildings.ContainsKey(type))
         {
             AllBuildings[type] = new List<Building>();
+            Debug.Log($"Added {type} to AllBuildings dictionary.");
         }
         AllBuildings[type].Add(building);
     }

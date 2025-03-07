@@ -37,6 +37,12 @@ public class CameraManager : MonoBehaviour
     private Quaternion targetRotation;
     private Vector3 currentRotationVelocity;
 
+    public bool IsMoving { get; private set; }
+    public bool IsRotating { get; private set; }
+    public bool IsZooming { get; private set; }
+    public bool IsDraggingForMovement => isDraggingForMovement;
+    public bool IsDraggingForRotation => isDraggingForRotation;
+
     private void Start()
     {
         thirdPersonFollow = cinemachineCamera.GetComponent<CinemachineThirdPersonFollow>();
@@ -121,6 +127,8 @@ public class CameraManager : MonoBehaviour
             targetPosition += moveSpeed * Time.deltaTime * movementDirection;
         }
 
+        IsMoving = movementDirection != Vector3.zero;
+
         transform.position = Vector3.Lerp(transform.position, targetPosition, moveSmoothing * Time.deltaTime);
     }
 
@@ -141,6 +149,7 @@ public class CameraManager : MonoBehaviour
             );
 
         Vector3 targetRotationEulerAngles = transform.eulerAngles + new Vector3(0, yRotation * rotationSpeed * Time.deltaTime, 0); // Calculate target rotation as Euler angles
+        IsRotating = yRotation != 0;
         transform.eulerAngles = Vector3.SmoothDamp(transform.eulerAngles, targetRotationEulerAngles, ref currentRotationVelocity, rotationSmoothing * Time.deltaTime); // Smooth rotation using SmoothDamp
     }
 
@@ -151,6 +160,8 @@ public class CameraManager : MonoBehaviour
             cameraDistance -= zoomInput * zoomSpeed;
             cameraDistance = Mathf.Clamp(cameraDistance, zoomMin, zoomMax);
         }
+
+        IsZooming = zoomInput != 0;
 
         thirdPersonFollow.CameraDistance = Mathf.Lerp(thirdPersonFollow.CameraDistance, cameraDistance, Time.deltaTime * zoomSmoothing);
     }

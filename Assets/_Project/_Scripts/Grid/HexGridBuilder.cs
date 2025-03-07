@@ -39,10 +39,10 @@ public class HexGridBuilder : MonoBehaviour
     private int Height => settings.height;
     private int ChunkSize => settings.chunkSize;
 
-    public void Initialise(HexGridManager manager, HexGridSettings settings)
+    public void Initialise(HexGridManager manager)
     {
         this.manager = manager;
-        this.settings = settings;
+        settings = manager.settings;
     }
 
     public IEnumerator CreateHexGridAsync(List<Chunk> chunks, Dictionary<int, Vector3> globalVertices, Action<int, Dictionary<(int, int), List<int>>, int[]> onComplete)

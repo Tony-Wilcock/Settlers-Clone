@@ -47,14 +47,13 @@ public class PathBuilder
         {
             currentPath = tempPath;
             VisualizeTempPath();
-            Debug.Log($"[PathManager] Extended path to {endNode}: {string.Join(", ", currentPath)}");
         }
         else
         {
             // Overlap detected, find alternate route
             HashSet<int> excludedNodes = GetAllExcludedNodes(currentPath); // Exclude all currentPath nodes
             excludedNodes.Remove(currentStartNode); // Allow currentStartNode for connection
-            Debug.Log($"[PathManager] Overlap detected in path {string.Join(", ", tempPath)}, excluded nodes: {string.Join(", ", excludedNodes)}");
+            Debug.LogWarning($"[PathManager] Overlap detected in path {string.Join(", ", tempPath)}, excluded nodes: {string.Join(", ", excludedNodes)}");
 
             List<int> alternatePath = FindPathExcludingNodes(currentStartNode, endNode, excludedNodes);
             if (alternatePath != null)
@@ -164,7 +163,6 @@ public class PathBuilder
             Debug.Log("Cannot extend path: Cell already in an existing path.");
             return false;
         }
-        Debug.Log($"Can extend path to node {endNode}");
         return true;
     }
 

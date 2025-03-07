@@ -27,10 +27,10 @@ public class HexGridInteraction : MonoBehaviour
 
     [SerializeField] private BuildingType selectedBuildingType = BuildingType.Storehouse;
 
-    public void Initialise(HexGridManager manager, PathManager pathManager)
+    public void Initialise(HexGridManager manager)
     {
         this.manager = manager;
-        this.pathManager = pathManager;
+        pathManager = manager.PathManager;
 
         instantiatedNodeIcons = new GameObject[nodeIconPrefabs.Length];
         for (int i = 0; i < nodeIconPrefabs.Length; i++)
@@ -209,6 +209,12 @@ public class HexGridInteraction : MonoBehaviour
         if (!IsValidIconIndex(iconIndex))
         {
             Debug.LogError($"NodeSelection: Invalid icon index: {iconIndex}");
+            return;
+        }
+
+        if (manager.CameraManager.IsMoving || manager.CameraManager.IsRotating || manager.CameraManager.IsZooming || manager.CameraManager.IsDraggingForMovement || manager.CameraManager.IsDraggingForRotation)
+        {
+            DeactivateAllIcons();
             return;
         }
 

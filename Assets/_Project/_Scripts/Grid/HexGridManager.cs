@@ -6,6 +6,8 @@ using static NodeTypes;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
 public class HexGridManager : MonoBehaviour
 {
+    [field: SerializeField] public int HqStartingNode { get; private set; } = 90; // Example starting node
+
     public bool isDebugModeActive = false;
     public Transform chunksTransform;
     public Transform nodeIconsTransform;
@@ -24,20 +26,23 @@ public class HexGridManager : MonoBehaviour
     [SerializeField] private Input_SO input;
     [SerializeField] private UIManager uiManager;
     [SerializeField] private NodeManager nodeManager;
-    [SerializeField] private PathManager pathFindingManager;
+    [SerializeField] private PathManager pathManager;
     [SerializeField] private BuildingManager buildingManager;
     [SerializeField] private ResourceManager resourceManager;
     [SerializeField] private WorkerManager workerManager;
-    [SerializeField] private int hqStartingNode = 90; // Example starting node
+    [SerializeField] private CameraManager cameraManager;
 
     public Input_SO Input_SO => input;
     public UIManager UIManager => uiManager;
     public NodeManager NodeManager => nodeManager;
-    public PathManager PathManager => pathFindingManager;
+    public PathManager PathManager => pathManager;
     public HexGridInteraction HexGridInteraction => interactionHandler;
     public PathVisualsGenerator PathVisualsGenerator => pathVisualsGenerator;
     public HexGridEdgeIdentifier EdgeIdentifier => edgeIdentifier;
     public BuildingManager BuildingManager => buildingManager;
+    public ResourceManager ResourceManager => resourceManager;
+    public WorkerManager WorkerManager => workerManager;
+    public CameraManager CameraManager => cameraManager;
 
     #endregion ^Components^
 
@@ -71,12 +76,13 @@ public class HexGridManager : MonoBehaviour
         gridBuilder = gridBuilder != null ? gridBuilder : GetComponent<HexGridBuilder>();
         uiManager = uiManager != null ? uiManager : FindFirstObjectByType<UIManager>();
         nodeManager = nodeManager != null ? nodeManager : GetComponent<NodeManager>();
-        pathFindingManager = pathFindingManager != null ? pathFindingManager : GetComponent<PathManager>();
+        pathManager = pathManager != null ? pathManager : GetComponent<PathManager>();
         interactionHandler = interactionHandler != null ? interactionHandler : GetComponent<HexGridInteraction>();
         pathVisualsGenerator = pathVisualsGenerator != null ? pathVisualsGenerator : GetComponent<PathVisualsGenerator>();
         adjacencyBuilder = adjacencyBuilder != null ? adjacencyBuilder : GetComponent<HexGridAdjacencyBuilder>();
         buildingManager = buildingManager != null ? buildingManager : GetComponent<BuildingManager>();
         workerManager = workerManager != null ? workerManager : GetComponent<WorkerManager>();
+        cameraManager = cameraManager != null ? cameraManager : GetComponent<CameraManager>();
         resourceManager = ResourceManager.Instance;
     }
 
@@ -89,30 +95,21 @@ public class HexGridManager : MonoBehaviour
     private IEnumerator InitializeGame()
     {
         edgeIdentifier?.Initialise(this);
-        gridBuilder?.Initialise(this, settings);
-        nodeManager?.Initialise(this, settings);
-        pathVisualsGenerator?.Initialise(this);
-        interactionHandler?.Initialise(this, pathFindingManager);
-        pathFindingManager?.Initialise(this, workerManager, buildingManager);
-        adjacencyBuilder?.Initialise(this, settings);
+        gridBuilder?.Initialise(this);
+        adjacencyBuilder?.Initialise(this);
+        nodeManager?.Initialise(this);
+        interactionHandler?.Initialise(this);
 
         // Generate grid and wait for completion
         yield return StartCoroutine(GenerateGridAsync());
 
-        resourceManager?.Initialise();
-        buildingManager?.Initialise(nodeManager, pathFindingManager, workerManager);
+        pathVisualsGenerator?.Initialise(this);
+        pathManager?.Initialise(this);
+        buildingManager?.Initialise(this);
+        resourceManager?.Initialise(this);
+        workerManager?.Initialise(this);
 
-        // Place HQ after grid is fully generated
-        if (!buildingManager.TryPlaceBuilding(hqStartingNode, BuildingType.HQ, out int entranceNode))
-        {
-            Debug.LogError($"Failed to place HQ at {hqStartingNode}");
-        }
-        else
-        {
-            Debug.Log($"HQ placed successfully at {hqStartingNode} with entrance at {entranceNode}");
-        }
-        workerManager?.Initialise(buildingManager, nodeManager, pathFindingManager, resourceManager, hqStartingNode);
-        pathFindingManager.AssignCarriersToPaths();
+        pathManager.AssignCarriersToPaths();
     }
 
     private void OnDestroy()
@@ -124,7 +121,7 @@ public class HexGridManager : MonoBehaviour
     {
         interactionHandler.HighlightNode(); // Highlight node under mouse on every frame
 
-        if (Input.GetKeyDown(KeyCode.D) && !pathFindingManager.IsInPathCreationMode)
+        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.D) && !pathManager.IsInPathCreationMode)
         {
             isDebugModeActive = !isDebugModeActive;
         }

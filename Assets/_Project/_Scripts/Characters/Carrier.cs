@@ -45,7 +45,6 @@ public class Carrier : Character
         // Move to midpoint and stay there using AssignPath with callback
         AssignPath(pathToMidpoint, () =>
         {
-            Debug.Log($"[Carrier] Reached midpoint {midpoint}, staying at position");
             CurrentNode = midpoint; // Set position to midpoint
             atMidpoint = true; // Mark as at midpoint
             onPathComplete = null; // Clear callback to prevent returning to HQ

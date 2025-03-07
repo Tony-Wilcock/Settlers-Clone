@@ -113,7 +113,6 @@ public abstract class Character : MonoBehaviour
 
     protected virtual void OnReachedDestination()
     {
-        Debug.Log($"[Carrier] OnReachedDestination called at {CurrentNode}, onPathComplete exists: {(onPathComplete != null ? "Yes" : "No")}");
     }
 
     protected abstract void StartTask();

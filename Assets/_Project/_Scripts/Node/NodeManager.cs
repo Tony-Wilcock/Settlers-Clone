@@ -43,10 +43,10 @@ public class NodeManager : MonoBehaviour
     public int startPathVertexIndex = -1; // To store start vertex index for pathfinding
     public int endPathVertexIndex = -1;   // To store end vertex index for pathfinding
 
-    public void Initialise(HexGridManager manager, HexGridSettings settings) // Constructor (optional: if needed)
+    public void Initialise(HexGridManager manager) // Constructor (optional: if needed)
     {
         this.manager = manager;
-        this.settings = settings;
+        settings = manager.settings;
         InitialisePools(); // Initialize the object pool at startup
     }
 
@@ -524,7 +524,6 @@ public class NodeManager : MonoBehaviour
                 attachedPathIds.Add(path.Key);
             }
         }
-        Debug.Log($"[NodeManager] Node {vertexIndex} has {count} paths attached, path IDs: {string.Join(", ", attachedPathIds)}");
         return count;
     }
 

@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using UnityEngine;
 using static NodeTypes;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class PathManager : MonoBehaviour
 {
@@ -34,11 +32,11 @@ public class PathManager : MonoBehaviour
     private WorkerManager workerManager;
     private BuildingManager buildingManager;
 
-    public void Initialise(HexGridManager manager, WorkerManager workerManager, BuildingManager buildingManager)
+    public void Initialise(HexGridManager manager)
     {
         this.manager = manager;
-        this.workerManager = workerManager;
-        this.buildingManager = buildingManager;
+        workerManager = manager.WorkerManager;
+        buildingManager = manager.BuildingManager;
         isInPathCreationMode = false;
 
         pathBuilder = new PathBuilder(this);
@@ -89,18 +87,16 @@ public class PathManager : MonoBehaviour
         NodeData endNodeData = manager.NodeManager.GetNodeData(endNode);
         if (endNodeData == null)
         {
-            Debug.Log("Path creation cancelled: End node invalid.");
+            Debug.LogWarning("Path creation cancelled: End node invalid.");
             return;
         }
 
         if (endNodeData.HasFlag)
         {
-            Debug.Log("End node has a flag. Finalising path");
             pathBuilder.FinalisePath(endNode);
         }
         else
         {
-            Debug.Log("Extending path");
             pathBuilder.ExtendPath(endNode);
         }
     }
@@ -116,7 +112,7 @@ public class PathManager : MonoBehaviour
         Path newPath = new Path(nextPathId, path, Manager);
         if (allPaths.Any(kvp => kvp.Value.StartFlag == newPath.StartFlag && kvp.Value.EndFlag == newPath.EndFlag))
         {
-            Debug.Log($"Path from {newPath.StartFlag} to {newPath.EndFlag} already exists");
+            Debug.LogWarning($"Path from {newPath.StartFlag} to {newPath.EndFlag} already exists");
             return;
         }
 
@@ -156,29 +152,28 @@ public class PathManager : MonoBehaviour
         Path path = allPaths[pathId];
         if (IsConnectedToStorehouse(path.StartFlag) || IsConnectedToStorehouse(path.EndFlag))
         {
-            int hqNode = GetHQNode();
-            if (hqNode == -1) return;
+            int hqEntranceNode = GetHQEntranceNode();
+            if (hqEntranceNode == -1) return;
 
-            Carrier carrier = (Carrier)workerManager.GetWorker(CharacterType.Carrier, hqNode);
+            Carrier carrier = (Carrier)workerManager.GetWorker(CharacterType.Carrier, hqEntranceNode);
             if (carrier != null)
             {
-                List<int> pathToMidpoint = pathFinder.FindPathThroughPaths(hqNode, path.Midpoint);
+                List<int> pathToMidpoint = pathFinder.FindPathThroughPaths(hqEntranceNode, path.Midpoint);
                 if (pathToMidpoint != null)
                 {
-                    Debug.Log($"Carrier assigned to path ID {pathId}: {path.StartFlag} to {path.EndFlag}, moving from HQ {hqNode} to midpoint {path.Midpoint} via {string.Join(", ", pathToMidpoint)}");
-                    carrier.MoveToPathMidpoint(pathId, hqNode, path.StartFlag, path.EndFlag, pathToMidpoint, path.Midpoint);
+                    carrier.MoveToPathMidpoint(pathId, hqEntranceNode, path.StartFlag, path.EndFlag, pathToMidpoint, path.Midpoint);
                     pathCarriers[pathId] = carrier;
                 }
                 else
                 {
                     workerManager.ReturnWorker(carrier); // Return if no path
-                    Debug.LogWarning($"No path found from HQ {hqNode} to midpoint {path.Midpoint} for path ID {pathId}");
+                    Debug.LogWarning($"No path found from HQ {hqEntranceNode} to midpoint {path.Midpoint} for path ID {pathId}");
                 }
             }
         }
     }
 
-    private int GetHQNode()
+    public int GetHQNode()
     {
         if (buildingManager.AllBuildings.ContainsKey(BuildingType.HQ) && buildingManager.AllBuildings[BuildingType.HQ].Count > 0)
         {
@@ -210,7 +205,8 @@ public class PathManager : MonoBehaviour
             if (visited.Contains(node)) continue; // Skip if already visited
             visited.Add(node); // Mark as visited
 
-            NodeData nodeData = manager.NodeManager.GetNodeData(node);
+            int northwestNeighbour = manager.NodeManager.GetNeighborInDirection(node, Direction.Northwest);
+            NodeData nodeData = manager.NodeManager.GetNodeData(northwestNeighbour);
             if (nodeData.HasBuilding && (nodeData.BuildingType == BuildingType.HQ || nodeData.BuildingType == BuildingType.Storehouse))
             {
                 return true; // Found a storehouse or HQ
@@ -285,7 +281,6 @@ public class PathManager : MonoBehaviour
 
     public void RemovePathById(int pathId)
     {
-        Debug.Log($"[PathManager] Removing path ID {pathId}: {string.Join(", ", allPaths[pathId].Nodes)}");
         if (allPaths.ContainsKey(pathId))
         {
             Path path = allPaths[pathId];
@@ -298,24 +293,20 @@ public class PathManager : MonoBehaviour
                     if (manager.NodeManager.NumberOfPathsAttachedToNode(node) <= 1)
                     {
                         nodeData.HasPath = false;
-                        Debug.Log($"[PathManager] Cleared HasPath for node {node}");
                     }
                 }
             }
             if (pathCarriers.ContainsKey(pathId))
             {
-                Debug.Log($"[PathManager] Carrier for path ID {pathId} at {pathCarriers[pathId].CurrentNode} will be returned to HQ");
                 ReturnCarrierToHQ(pathCarriers[pathId]);
                 pathCarriers.Remove(pathId);
             }
             allPaths.Remove(pathId);
-            Debug.Log($"[PathManager] Post-removal allPaths count: {allPaths.Count}");
         }
     }
 
     public void SplitPathAt(int splitNode)
     {
-        Debug.Log($"[PathManager] Splitting at node {splitNode}, allPaths: {string.Join("; ", allPaths.Select(kvp => $"ID {kvp.Key}: {string.Join(", ", kvp.Value.Nodes)}"))}");
         var pathsToSplit = allPaths.Where(kvp => kvp.Value.ContainsNode(splitNode)).ToList();
 
         foreach (var kvp in pathsToSplit)
@@ -325,7 +316,6 @@ public class PathManager : MonoBehaviour
             int splitIndex = path.Nodes.IndexOf(splitNode);
             if (splitIndex >= 0)
             {
-                Debug.Log($"[PathManager] Splitting path {pathId} at node {splitNode}, index {splitIndex}. Original path: {string.Join(", ", path.Nodes)}");
                 Carrier originalCarrier = pathCarriers.ContainsKey(pathId) ? pathCarriers[pathId] : null;
                 pathCarriers.Remove(pathId);
 
@@ -341,14 +331,12 @@ public class PathManager : MonoBehaviour
                     {
                         allPaths[firstPathId] = firstPath;
                         manager.NodeManager.SetMultipleNodesPath(firstPart, true);
-                        Debug.Log($"[PathManager] Added first part (ID: {firstPathId}): {string.Join(", ", firstPart)}");
 
                         if (originalCarrier != null)
                         {
                             List<int> pathToMidpoint = pathFinder.FindPathThroughPaths(originalCarrier.CurrentNode, firstPath.Midpoint);
                             if (pathToMidpoint != null)
                             {
-                                Debug.Log($"[PathManager] Original carrier moving to midpoint {firstPath.Midpoint} of path ID {firstPathId} via {string.Join(", ", pathToMidpoint)}");
                                 originalCarrier.MoveToPathMidpoint(firstPathId, originalCarrier.CurrentNode, firstPath.StartFlag, firstPath.EndFlag, pathToMidpoint, firstPath.Midpoint);
                                 pathCarriers[firstPathId] = originalCarrier;
                             }
@@ -370,7 +358,6 @@ public class PathManager : MonoBehaviour
                     {
                         allPaths[secondPathId] = secondPath;
                         manager.NodeManager.SetMultipleNodesPath(secondPart, true);
-                        Debug.Log($"[PathManager] Added second part (ID: {secondPathId}): {string.Join(", ", secondPart)}");
 
                         int hqNode = GetHQNode();
                         if (hqNode != -1)
@@ -379,7 +366,6 @@ public class PathManager : MonoBehaviour
                             List<int> pathToMidpoint = pathFinder.FindPathThroughPaths(hqNode, secondPath.Midpoint);
                             if (pathToMidpoint != null)
                             {
-                                Debug.Log($"[PathManager] New carrier moving to midpoint {secondPath.Midpoint} of path ID {secondPathId} via {string.Join(", ", pathToMidpoint)}");
                                 newCarrier.MoveToPathMidpoint(secondPathId, hqNode, secondPath.StartFlag, secondPath.EndFlag, pathToMidpoint, secondPath.Midpoint);
                                 pathCarriers[secondPathId] = newCarrier;
                             }
@@ -420,13 +406,10 @@ public class PathManager : MonoBehaviour
         Path path1 = pathsToJoin[0].Value;
         Path path2 = pathsToJoin[1].Value;
 
-        Debug.Log($"[PathManager] Joining paths: ID {path1.Id}: {string.Join(", ", path1.Nodes)}, ID {path2.Id}: {string.Join(", ", path2.Nodes)} at {joinNode}");
-
         // Collect original carriers
         List<Carrier> originalCarriers = new List<Carrier>();
         if (pathCarriers.ContainsKey(pathsToJoin[0].Key)) originalCarriers.Add(pathCarriers[pathsToJoin[0].Key]);
         if (pathCarriers.ContainsKey(pathsToJoin[1].Key)) originalCarriers.Add(pathCarriers[pathsToJoin[1].Key]);
-        Debug.Log($"[PathManager] Original carriers: {string.Join(", ", originalCarriers.Select(c => $"at {c.CurrentNode}"))}");
 
         // Determine join indices
         int path1JoinIndex = path1.Nodes.IndexOf(joinNode);
@@ -440,8 +423,6 @@ public class PathManager : MonoBehaviour
         // Log flags for debugging
         List<int> path1Flags = path1.Nodes.Where(n => manager.NodeManager.GetNodeData(n).HasFlag).ToList();
         List<int> path2Flags = path2.Nodes.Where(n => manager.NodeManager.GetNodeData(n).HasFlag).ToList();
-        Debug.Log($"[PathManager] Path1 flags: {string.Join(", ", path1Flags)}, Path2 flags: {string.Join(", ", path2Flags)}");
-
         List<int> joinedNodes = new List<int>();
         int newPathId = nextPathId++;
 
@@ -458,7 +439,6 @@ public class PathManager : MonoBehaviour
                 joinedNodes.AddRange(path2.Nodes);
                 joinedNodes.AddRange(path1.Nodes.Skip(1)); // Skip joinNode to avoid duplication
             }
-            Debug.Log($"[PathManager] Joined path (end-to-start): {string.Join(", ", joinedNodes)}");
         }
         // Case 2: Both paths start at joinNode (diverging paths)
         else if (path1StartsAtJoin && path2StartsAtJoin)
@@ -470,7 +450,6 @@ public class PathManager : MonoBehaviour
             // Add the rest of Path 2 (skip joinNode) as a separate branch, marked with a flag or delimiter
             joinedNodes.Add(joinNode); // Return to join node for branching
             joinedNodes.AddRange(path2.Nodes.Skip(1));
-            Debug.Log($"[PathManager] Joined path (diverging branches): {string.Join(", ", joinedNodes)}");
         }
         // Case 3: Both paths end at joinNode with a shared flagged start
         else if (path1EndsAtJoin && path2EndsAtJoin)
@@ -486,7 +465,6 @@ public class PathManager : MonoBehaviour
                 {
                     joinedNodes.Add(sharedStart);
                 }
-                Debug.Log($"[PathManager] Joined path (loop from shared start): {string.Join(", ", joinedNodes)}");
             }
             else
             {
@@ -521,7 +499,6 @@ public class PathManager : MonoBehaviour
             {
                 midpoint = GetCentreNodeOfPath(newPathId);
             }
-            Debug.Log($"[PathManager] Joined path ID {newPathId} added, midpoint: {midpoint}");
 
             // Assign carrier to the new path's midpoint
             Carrier selectedCarrier = originalCarriers.FirstOrDefault();
@@ -532,7 +509,6 @@ public class PathManager : MonoBehaviour
                 {
                     selectedCarrier.MoveToPathMidpoint(newPathId, selectedCarrier.CurrentNode, joinedPath.StartFlag, joinedPath.EndFlag, pathToMidpoint, midpoint);
                     pathCarriers[newPathId] = selectedCarrier;
-                    Debug.Log($"[PathManager] Carrier moved to midpoint {midpoint} on path ID {newPathId}");
                 }
             }
 
@@ -540,7 +516,6 @@ public class PathManager : MonoBehaviour
             foreach (var extraCarrier in originalCarriers.Skip(1))
             {
                 ReturnCarrierToHQ(extraCarrier);
-                Debug.Log($"[PathManager] Extra carrier returned to HQ from {extraCarrier.CurrentNode}");
             }
 
             // Update visuals and UI
@@ -573,9 +548,7 @@ public class PathManager : MonoBehaviour
             return;
         }
 
-        Debug.Log($"[ReturnCarrierToHQ] Carrier at {carrier.CurrentNode}, allPaths: {string.Join("; ", allPaths.Select(kvp => $"ID {kvp.Key}: {string.Join(", ", kvp.Value.Nodes)}"))}");
         HashSet<int> connectedNodes = GetNodesConnectedToHQ(hqEntranceNode);
-        Debug.Log($"[ReturnCarrierToHQ] Connected nodes to HQ entrance {hqEntranceNode}: {string.Join(", ", connectedNodes)}");
 
         if (!connectedNodes.Contains(carrier.CurrentNode))
         {
@@ -585,7 +558,6 @@ public class PathManager : MonoBehaviour
                 List<int> pathToNearest = pathFinder.FindPathThroughPaths(carrier.CurrentNode, nearestConnectedNode) ?? FindPath(carrier.CurrentNode, nearestConnectedNode);
                 if (pathToNearest != null)
                 {
-                    Debug.Log($"[ReturnCarrierToHQ] Carrier moving to nearest connected node {nearestConnectedNode} from {carrier.CurrentNode} via {string.Join(", ", pathToNearest)}");
                     carrier.AssignPath(pathToNearest, () => MoveToHQEntrance(carrier, hqEntranceNode, hqNode));
                 }
                 else
@@ -611,21 +583,16 @@ public class PathManager : MonoBehaviour
         List<int> pathToEntrance = pathFinder.FindPathThroughPaths(carrier.CurrentNode, hqEntranceNode);
         if (pathToEntrance != null)
         {
-            Debug.Log($"[ReturnCarrierToHQ] Carrier returning to HQ entrance {hqEntranceNode} from {carrier.CurrentNode} via {string.Join(", ", pathToEntrance)}");
             carrier.AssignPath(pathToEntrance, () =>
             {
-                Debug.Log($"[ReturnCarrierToHQ] Carrier reached HQ entrance {hqEntranceNode}, CurrentNode: {carrier.CurrentNode}");
                 List<int> pathToHQ = pathFinder.FindPathThroughPaths(hqEntranceNode, hqNode) ?? new List<int> { hqEntranceNode, hqNode };
                 if (pathToHQ != null && pathToHQ.Count > 0)
                 {
-                    Debug.Log($"[ReturnCarrierToHQ] Carrier moving to HQ {hqNode} via {string.Join(", ", pathToHQ)}");
                     Action returnCallback = () =>
                     {
-                        Debug.Log($"[ReturnCarrierToHQ] Carrier reached HQ {hqNode}, returning to pool, CurrentNode: {carrier.CurrentNode}");
                         workerManager.ReturnWorker(carrier);
                     };
                     carrier.AssignPath(pathToHQ, returnCallback);
-                    Debug.Log($"[ReturnCarrierToHQ] Assigned path to HQ with callback for carrier at {carrier.CurrentNode}");
                 }
                 else
                 {
@@ -675,7 +642,6 @@ public class PathManager : MonoBehaviour
                 }
             }
         }
-        Debug.Log($"[GetNodesConnectedToHQ] Found {connectedNodes.Count} nodes connected to HQ entrance {hqEntranceNode}: {string.Join(", ", connectedNodes)}");
         return connectedNodes;
     }
 
@@ -697,7 +663,6 @@ public class PathManager : MonoBehaviour
                 nearestNode = node;
             }
         }
-        Debug.Log($"[FindNearestConnectedNode] Nearest connected node to {currentNode} is {nearestNode} at distance {minDistance}");
         return nearestNode;
     }
 
@@ -729,7 +694,6 @@ public class PathManager : MonoBehaviour
                 }
             }
 
-            Debug.Log($"[PathManager] Loop path ID {pathId}, midpoint set to farthest node {farthestNode} from {startNode}, distance: {maxDistance}");
             return farthestNode;
         }
 
@@ -745,7 +709,6 @@ public class PathManager : MonoBehaviour
             if (rightIndex < path.Count && !manager.NodeManager.GetNodeData(path[rightIndex]).HasFlag)
                 return path[rightIndex];
         }
-        Debug.Log($"[PathManager] Non-loop path ID {pathId}, midpoint: {path[midIndex]}");
         return path[midIndex];
     }
 

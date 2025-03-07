@@ -18,10 +18,10 @@ public class HexGridAdjacencyBuilder : MonoBehaviour
 
     private float adjacencyDistanceToleranceFactor = 1.15f;
 
-    public void Initialise(HexGridManager manager, HexGridSettings settings)
+    public void Initialise(HexGridManager manager)
     {
         this.manager = manager;
-        this.settings = settings;
+        settings = manager.settings;
     }
 
     public Dictionary<int, List<int>> BuildAdjacencyList()

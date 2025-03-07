@@ -14,8 +14,11 @@ public class ResourceManager : Singleton<ResourceManager>
 {
     private Dictionary<StockResourceType, int> stockResources = new Dictionary<StockResourceType, int>(); // Store the amount of each resource
 
-    public void Initialise()
+    private HexGridManager manager;
+
+    public void Initialise(HexGridManager manager)
     {
+        this.manager = manager;
         stockResources.Clear(); // Reset in case of re-initialization
         foreach (StockResourceType resource in System.Enum.GetValues(typeof(StockResourceType)))
         {

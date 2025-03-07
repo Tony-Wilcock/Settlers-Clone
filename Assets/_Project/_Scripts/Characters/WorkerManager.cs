@@ -12,19 +12,21 @@ public class WorkerManager : MonoBehaviour
 
     private int poolSize = 10; // Initial pool size (adjust as needed)
 
+    private HexGridManager manager;
     private BuildingManager buildingManager;
     private NodeManager nodeManager;
     private PathManager pathManager;
     private ResourceManager resourceManager;
 
-    public void Initialise(BuildingManager buildingManager, NodeManager nodeManager, PathManager pathManager, ResourceManager resourceManager, int hqNode)
+    public void Initialise(HexGridManager manager)
     {
-        this.buildingManager = buildingManager;
-        this.nodeManager = nodeManager;
-        this.pathManager = pathManager;
-        this.resourceManager = resourceManager;
+        this.manager = manager;
+        buildingManager = manager.BuildingManager;
+        nodeManager = manager.NodeManager;
+        pathManager = manager.PathManager;
+        resourceManager = manager.ResourceManager;
 
-        InitialisePool(hqNode);
+        InitialisePool(pathManager.GetHQNode());
     }
 
     private void InitialisePool(int spawnNode)
