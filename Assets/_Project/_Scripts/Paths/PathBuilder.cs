@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class PathBuilder
 {
-    private PathManager pathManager;
-
-    private List<int> currentPath = new();
+    private readonly PathManager pathManager;
+    private readonly List<int> currentPath = new List<int>();
     public List<int> CurrentPath => currentPath;
 
     public PathBuilder(PathManager pathManager)
@@ -19,7 +18,7 @@ public class PathBuilder
         if (startNode == -1) return;
 
         pathManager.IsInPathCreationMode = true;
-        currentPath?.Clear();
+        currentPath.Clear();
         currentPath.Add(startNode);
     }
 
@@ -27,35 +26,31 @@ public class PathBuilder
     {
         if (!CanExtendPath(endNode)) return;
 
-        pathManager.Manager.NodeManager.endPathVertexIndex = endNode;
         int currentStartNode = currentPath.Last();
         pathManager.Manager.NodeManager.startPathVertexIndex = currentStartNode;
-        List<int> pathSegment = pathManager.FindPath(currentStartNode, endNode);
+        pathManager.Manager.NodeManager.endPathVertexIndex = endNode;
 
-        if (pathSegment == null || !CanCreatePath(pathSegment.ToArray()))
+        List<int> pathSegment = pathManager.FindPath(currentStartNode, endNode);
+        if (pathSegment == null)
         {
-            Debug.LogWarning($"[PathManager] No initial path from {currentStartNode} to {endNode}");
             CancelPath();
             return;
         }
 
         List<int> tempPath = new List<int>(currentPath);
-        tempPath.RemoveAt(tempPath.Count - 1); // Remove currentStartNode to avoid double-counting
+        tempPath.RemoveAt(tempPath.Count - 1);
         tempPath.AddRange(pathSegment);
 
         if (IsValidTemporaryPath(tempPath))
         {
-            currentPath = tempPath;
+            currentPath.Clear();
+            currentPath.AddRange(tempPath);
             VisualizeTempPath();
         }
         else
         {
-            // Overlap detected, find alternate route
-            HashSet<int> excludedNodes = GetAllExcludedNodes(currentPath); // Exclude all currentPath nodes
-            excludedNodes.Remove(currentStartNode); // Allow currentStartNode for connection
-            Debug.LogWarning($"[PathManager] Overlap detected in path {string.Join(", ", tempPath)}, excluded nodes: {string.Join(", ", excludedNodes)}");
-
-            List<int> alternatePath = FindPathExcludingNodes(currentStartNode, endNode, excludedNodes);
+            HashSet<int> excludedNodes = GetExcludedNodes();
+            List<int> alternatePath = pathManager.PathFinder.FindPathThroughPaths(currentStartNode, endNode) ?? FindPathExcludingNodes(currentStartNode, endNode, excludedNodes);
             if (alternatePath != null)
             {
                 tempPath = new List<int>(currentPath);
@@ -63,42 +58,37 @@ public class PathBuilder
                 tempPath.AddRange(alternatePath);
                 if (IsValidTemporaryPath(tempPath))
                 {
-                    currentPath = tempPath;
+                    currentPath.Clear();
+                    currentPath.AddRange(tempPath);
                     VisualizeTempPath();
-                    Debug.Log($"[PathManager] Found alternate path to {endNode}: {string.Join(", ", currentPath)}");
                 }
                 else
                 {
-                    Debug.LogWarning($"[PathManager] Alternate path {string.Join(", ", tempPath)} still invalid");
                     CancelPath();
                 }
             }
             else
             {
-                Debug.LogWarning($"[PathManager] No alternate path found from {currentStartNode} to {endNode} avoiding {string.Join(", ", excludedNodes)}");
                 CancelPath();
             }
         }
     }
 
-    private HashSet<int> GetAllExcludedNodes(List<int> currentPath)
+    private HashSet<int> GetExcludedNodes()
     {
-        HashSet<int> excludedNodes = new HashSet<int>(currentPath);
-        foreach (var path in pathManager.allPaths.Values)
+        var excluded = new HashSet<int>(currentPath);
+        foreach (var path in pathManager.AllPaths.Values)
         {
-            foreach (int node in path.Nodes)
-            {
-                excludedNodes.Add(node); // Exclude all nodes, flag or not
-            }
+            excluded.UnionWith(path.Nodes);
         }
-        return excludedNodes;
+        return excluded;
     }
 
     private List<int> FindPathExcludingNodes(int startNode, int endNode, HashSet<int> excludedNodes)
     {
-        Queue<int> toVisit = new Queue<int>();
-        HashSet<int> visited = new HashSet<int>();
-        Dictionary<int, int> cameFrom = new Dictionary<int, int>();
+        var toVisit = new Queue<int>();
+        var visited = new HashSet<int>();
+        var cameFrom = new Dictionary<int, int>();
         toVisit.Enqueue(startNode);
         visited.Add(startNode);
         cameFrom[startNode] = -1;
@@ -111,35 +101,6 @@ public class PathBuilder
                 return pathManager.PathFinder.ReconstructPath(cameFrom, endNode);
             }
 
-            foreach (var path in pathManager.allPaths.Values)
-            {
-                int index = path.Nodes.IndexOf(currentNode);
-                if (index != -1)
-                {
-                    if (index > 0)
-                    {
-                        int prevNode = path.Nodes[index - 1];
-                        if (!visited.Contains(prevNode) && !excludedNodes.Contains(prevNode))
-                        {
-                            visited.Add(prevNode);
-                            toVisit.Enqueue(prevNode);
-                            cameFrom[prevNode] = currentNode;
-                        }
-                    }
-                    if (index < path.Nodes.Count - 1)
-                    {
-                        int nextNode = path.Nodes[index + 1];
-                        if (!visited.Contains(nextNode) && !excludedNodes.Contains(nextNode))
-                        {
-                            visited.Add(nextNode);
-                            toVisit.Enqueue(nextNode);
-                            cameFrom[nextNode] = currentNode;
-                        }
-                    }
-                }
-            }
-
-            // Fallback to grid neighbors if needed
             foreach (int neighbor in pathManager.Manager.NodeManager.GetNodeNieghbors(currentNode))
             {
                 NodeData neighborData = pathManager.Manager.NodeManager.GetNodeData(neighbor);
@@ -151,139 +112,73 @@ public class PathBuilder
                 }
             }
         }
-        Debug.LogWarning($"[PathManager] No path found from {startNode} to {endNode} excluding {string.Join(", ", excludedNodes)}");
-        return null; // No path found
+        return null;
     }
 
     private bool CanExtendPath(int endNode)
     {
-        NodeData endNodeData = pathManager.Manager.NodeManager.GetNodeData(endNode);
-        if (!pathManager.Manager.NodeManager.IsNodeValidForPath(endNode))
-        {
-            Debug.Log("Cannot extend path: Cell already in an existing path.");
-            return false;
-        }
-        return true;
-    }
-
-    private bool CanCreatePath(int[] points)
-    {
-        if (points == null || points.Length < 2)
-        {
-            return false;
-        }
-        return true;
+        return pathManager.Manager.NodeManager.IsNodeValidForPath(endNode);
     }
 
     public void FinalisePath(int endNode)
     {
-        int currentStartCell = currentPath.Last(); // Last node in currentPath
-        List<int> pathSegment = GeneratePathSegment(currentStartCell, endNode); // Find path segment from currentStartCell to endNode
-        if (pathSegment == null) // No path found
+        int currentStartCell = currentPath.Last();
+        List<int> pathSegment = pathManager.FindPath(currentStartCell, endNode);
+        if (pathSegment == null)
         {
-            foreach (int node in currentPath)
-            {
-                pathManager.Manager.NodeManager.SetNodePath(node, false); // Reset all nodes in currentPath
-            }
-            pathManager.CancelPathCreation(); // Reset path creation mode
+            CancelPath();
             return;
         }
 
-        currentPath.Remove(currentStartCell); // Remove currentStartCell to avoid double-counting
-        currentPath.AddRange(pathSegment); // Add pathSegment to currentPath
-        if (!currentPath.Contains(endNode)) // Add endNode if not already in currentPath
+        currentPath.Remove(currentStartCell);
+        currentPath.AddRange(pathSegment);
+        if (!currentPath.Contains(endNode))
         {
-            currentPath.Add(endNode); // Add endNode to currentPath
+            currentPath.Add(endNode);
         }
 
-        if (IsValidTemporaryPath(currentPath)) // Check if currentPath is valid
+        if (IsValidTemporaryPath(currentPath))
         {
-            SaveAndVisualiseFinalPath(); // Save and visualise the final path
-            pathManager.AssignCarriersToPaths(); // Reassign carriers to all connected paths
+            SaveAndVisualiseFinalPath();
+            pathManager.AssignCarriersToPaths();
         }
-        else
-        {
-            Debug.Log("Path creation failed: Invalid path");
-        }
-        CancelPath(); // Reset path creation mode
-    }
-
-    private List<int> GeneratePathSegment(int startNode, int endNode)
-    {
-        List<int> nodeIndices = pathManager.FindPath(startNode, endNode);
-        if (nodeIndices == null)
-        {
-            Debug.Log($"No path found between {startNode} and {endNode}");
-            return null;
-        }
-
-        List<int> segment = new();
-        foreach (int index in nodeIndices)
-        {
-            segment.Add(index);
-        }
-        return segment;
+        CancelPath();
     }
 
     private void SaveAndVisualiseFinalPath()
     {
-        Path newPath = new Path(pathManager.nextPathId, currentPath, pathManager.Manager);
-        if (!newPath.IsValid(pathManager.Manager)) // Final check with strict rules
-        {
-            Debug.LogWarning($"Path ID {pathManager.nextPathId} rejected: Invalid final path");
-            return;
-        }
+        Path newPath = new Path(pathManager.NextPathId, currentPath, pathManager.Manager);
+        if (!newPath.IsValid(pathManager.Manager)) return;
 
-        int pathId = pathManager.nextPathId++;
-        pathManager.allPaths[pathId] = newPath;
+        int pathId = pathManager.NextPathId++;
+        pathManager.AllPaths[pathId] = newPath;
         foreach (int node in newPath.Nodes)
         {
-            NodeData nodeData = pathManager.Manager.NodeManager.GetNodeData(node);
-            nodeData.HasPath = true;
+            pathManager.Manager.NodeManager.GetNodeData(node).HasPath = true;
         }
-
         pathManager.Manager.PathVisualsGenerator.DrawPath(newPath.Nodes);
-        pathManager.Manager.UIManager.UpdateUIText("Paths", $"Paths: {pathManager.allPaths.Count}");
+        pathManager.Manager.UIManager.UpdateUIText("Paths", $"Paths: {pathManager.AllPaths.Count}");
+        pathManager.Manager.UIManager.HideAllPanels();
     }
 
     private bool IsValidTemporaryPath(List<int> path)
     {
-        if (path == null || path.Count < 2) // Path must have at least 2 nodes
-        {
-            Debug.LogWarning("[PathManager] Temporary path invalid: Too few nodes");
-            return false;
-        }
+        if (path == null || path.Count < 2) return false;
 
-        HashSet<int> seenNodes = new HashSet<int>(); // For quick lookup
+        var seenNodes = new HashSet<int>();
         for (int i = 0; i < path.Count; i++)
         {
             int node = path[i];
+            if (seenNodes.Contains(node) && i != 0 && i != path.Count - 1) continue;
 
-            // Check for self-overlap within tempPath, if self-overlap, find alternate route
-            if (seenNodes.Contains(node) && i != 0 && i != path.Count - 1)
+            foreach (var existingPath in pathManager.AllPaths.Values)
             {
-                Debug.LogWarning($"[PathManager] Temporary path invalid: Node {node} overlaps within path at index {i}");
-                continue;
-            }
-
-            // Check for overlap with other paths in allPaths
-            foreach (var existingPath in pathManager.allPaths.Values)
-            {
-                if (existingPath.Nodes.Contains(node)) // Non-flag node
+                int index = existingPath.Nodes.IndexOf(node);
+                if (index != -1 && index != 0 && index != existingPath.Nodes.Count - 1 && i != 0 && i != path.Count - 1)
                 {
-                    int existingIndex = existingPath.Nodes.IndexOf(node);
-                    if (existingIndex != 0 && existingIndex != existingPath.Nodes.Count - 1) // Intermediate node
-                    {
-                        // Allow if this is the start or end node of the tempPath being extended
-                        if (i != 0 && i != path.Count - 1)
-                        {
-                            Debug.LogWarning($"[PathManager] Temporary path invalid: Node {node} overlaps with existing path ID {existingPath.Id} at index {existingIndex}");
-                            return false;
-                        }
-                    }
+                    return false;
                 }
             }
-
             seenNodes.Add(node);
         }
         return true;
@@ -291,9 +186,10 @@ public class PathBuilder
 
     private void VisualizeTempPath()
     {
+        ClearTempPathVisuals();
         foreach (int node in currentPath)
         {
-            GameObject tempNode = GameObject.Instantiate(pathManager.TempPathPrefab, pathManager.Manager.globalVertices[node], Quaternion.identity);
+            GameObject tempNode = Object.Instantiate(pathManager.TempPathPrefab, pathManager.Manager.globalVertices[node], Quaternion.identity);
             tempNode.transform.SetParent(pathManager.Manager.tempPathTransform);
         }
     }
@@ -302,18 +198,18 @@ public class PathBuilder
     {
         foreach (Transform child in pathManager.Manager.tempPathTransform)
         {
-            GameObject.Destroy(child.gameObject);
+            Object.Destroy(child.gameObject);
         }
     }
 
     public void CancelPath()
     {
-        currentPath ??= new List<int>();
-        pathManager.Manager.UIManager.HideAllPanels();
+        currentPath.Clear();
         ClearTempPathVisuals();
-        if (pathManager.Manager.NodeManager.heldVertexIndex != -1) pathManager.Manager.NodeManager.heldVertexIndex = -1;
-        if (pathManager.Manager.NodeManager.startPathVertexIndex != -1) pathManager.Manager.NodeManager.startPathVertexIndex = -1;
-        if (pathManager.Manager.NodeManager.endPathVertexIndex != -1) pathManager.Manager.NodeManager.endPathVertexIndex = -1;
+        pathManager.Manager.UIManager.HideAllPanels();
+        pathManager.Manager.NodeManager.heldVertexIndex = -1;
+        pathManager.Manager.NodeManager.startPathVertexIndex = -1;
+        pathManager.Manager.NodeManager.endPathVertexIndex = -1;
         pathManager.IsInPathCreationMode = false;
     }
 }

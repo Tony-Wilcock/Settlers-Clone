@@ -18,4 +18,4 @@ MonoBehaviour:
   curviness: 3
   freeHandles: 0
   material: {fileID: 2100000, guid: 3f4230ddd5199dc43be9543dfc1b455c, type: 2}
-  resolution: 3
+  resolution: 1

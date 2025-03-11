@@ -48,7 +48,7 @@ public class Carrier : Character
             CurrentNode = midpoint; // Set position to midpoint
             atMidpoint = true; // Mark as at midpoint
             onPathComplete = null; // Clear callback to prevent returning to HQ
-            pathManager.pathCarriers[pathId] = this; // Ensure carrier is assigned to path
+            pathManager.PathCarriers[pathId] = this; // Ensure carrier is assigned to path
         });
     }
 

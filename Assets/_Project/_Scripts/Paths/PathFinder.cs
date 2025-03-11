@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class PathFinder
 {
-    private PathManager pathManager;
+    private readonly PathManager pathManager;
 
     public PathFinder(PathManager pathManager)
     {
@@ -15,70 +16,65 @@ public class PathFinder
     {
         if (!pathManager.Manager.AdjacencyList.ContainsKey(startVertexIndex) || !pathManager.Manager.AdjacencyList.ContainsKey(endVertexIndex))
         {
-            Debug.LogWarning("Start or end vertex index is invalid or not in adjacency list.");
-            return null; // Or return an empty list if you prefer
+            return null;
         }
 
         if (startVertexIndex == endVertexIndex)
         {
-            return new List<int> { startVertexIndex }; // Start and end are the same
+            return new List<int> { startVertexIndex };
         }
 
-        Dictionary<int, int> cameFrom = new Dictionary<int, int>();
-        Dictionary<int, float> costSoFar = new Dictionary<int, float>();
-        PriorityQueue<int> frontier = new PriorityQueue<int>(); // Using Optimized Priority Queue
+        var cameFrom = new Dictionary<int, int>();
+        var costSoFar = new Dictionary<int, float>();
+        var frontier = new PriorityQueue<int>();
 
-        frontier.Enqueue(startVertexIndex, 0); // **Enqueue() #1 - Start node**
-        cameFrom[startVertexIndex] = -1; // No parent for start node
+        frontier.Enqueue(startVertexIndex, 0);
+        cameFrom[startVertexIndex] = -1;
         costSoFar[startVertexIndex] = 0;
 
         while (!frontier.IsEmpty())
         {
-            int currentVertexIndex = frontier.Dequeue();
-
-            if (currentVertexIndex == endVertexIndex)
+            int current = frontier.Dequeue();
+            if (current == endVertexIndex)
             {
                 return ReconstructPath(cameFrom, endVertexIndex);
             }
 
-            if (!pathManager.Manager.AdjacencyList.ContainsKey(currentVertexIndex)) continue;
+            if (!pathManager.Manager.AdjacencyList.TryGetValue(current, out var neighbors)) continue;
 
-            foreach (int neighborIndex in pathManager.Manager.AdjacencyList[currentVertexIndex])
+            foreach (int neighbor in neighbors)
             {
-                NodeData nodeData = pathManager.Manager.NodeManager.nodeDataDictionary[neighborIndex];
+                NodeData nodeData = pathManager.Manager.NodeManager.GetNodeData(neighbor);
                 if (nodeData.HasObstacle) continue;
 
-                bool isInCurrentPath = pathManager.IsInPathCreationMode && pathManager.PathBuilder.CurrentPath.Contains(neighborIndex);
-                if (nodeData.HasPath && neighborIndex != endVertexIndex && !isInCurrentPath) continue;
-                if (nodeData.HasFlag && neighborIndex != endVertexIndex) continue;
+                bool isInCurrentPath = pathManager.IsInPathCreationMode && pathManager.PathBuilder.CurrentPath.Contains(neighbor);
+                if (nodeData.HasPath && neighbor != endVertexIndex && !isInCurrentPath) continue;
+                if (nodeData.HasFlag && neighbor != endVertexIndex) continue;
 
-                float newCost = costSoFar[currentVertexIndex] + GetCost(currentVertexIndex, neighborIndex);
-                if (!costSoFar.ContainsKey(neighborIndex) || newCost < costSoFar[neighborIndex])
+                float newCost = costSoFar[current] + GetCost(current, neighbor);
+                if (!costSoFar.TryGetValue(neighbor, out float oldCost) || newCost < oldCost)
                 {
-                    costSoFar[neighborIndex] = newCost;
-                    float priority = newCost + Heuristic(neighborIndex, endVertexIndex);
-                    frontier.Enqueue(neighborIndex, priority);
-                    cameFrom[neighborIndex] = currentVertexIndex;
+                    costSoFar[neighbor] = newCost;
+                    float priority = newCost + Heuristic(neighbor, endVertexIndex);
+                    frontier.Enqueue(neighbor, priority);
+                    cameFrom[neighbor] = current;
                 }
             }
         }
-
-        return null; // No path found
+        return null;
     }
 
     public List<int> FindPathThroughPaths(int fromNode, int toNode)
     {
-        Queue<int> toVisit = new Queue<int>();
-        HashSet<int> visited = new HashSet<int>();
-        Dictionary<int, int> cameFrom = new Dictionary<int, int>();
+        var toVisit = new Queue<int>();
+        var visited = new HashSet<int>();
+        var cameFrom = new Dictionary<int, int>();
         toVisit.Enqueue(fromNode);
         visited.Add(fromNode);
         cameFrom[fromNode] = -1;
 
-        // Fallback if fromNode isn't in allPaths
-        if (!pathManager.allPaths.Any(p => p.Value.ContainsNode(fromNode)))
+        if (!pathManager.AllPaths.Any(p => p.Value.ContainsNode(fromNode)))
         {
-            Debug.LogWarning($"[PathManager] Starting node {fromNode} not in any path, trying grid neighbors");
             foreach (int neighbor in pathManager.Manager.NodeManager.GetNodeNieghbors(fromNode))
             {
                 if (!visited.Contains(neighbor) && pathManager.Manager.NodeManager.GetNodeData(neighbor).HasPath)
@@ -95,11 +91,10 @@ public class PathFinder
             int currentNode = toVisit.Dequeue();
             if (currentNode == toNode)
             {
-                List<int> path = ReconstructPath(cameFrom, toNode);
-                return path;
+                return ReconstructPath(cameFrom, toNode);
             }
 
-            foreach (var path in pathManager.allPaths.Values)
+            foreach (var path in pathManager.AllPaths.Values)
             {
                 int index = path.Nodes.IndexOf(currentNode);
                 if (index != -1)
@@ -127,23 +122,14 @@ public class PathFinder
                 }
             }
         }
-        Debug.LogWarning($"[PathManager] No path found through existing paths from {fromNode} to {toNode}, trying direct grid path");
-
-        // Fallback to direct grid path if no path found in existing paths
-        List<int> gridPath = FindDirectGridPath(fromNode, toNode);
-        if (gridPath != null)
-        {
-            Debug.Log($"[PathManager] Found direct grid path from {fromNode} to {toNode}: {string.Join(", ", gridPath)}");
-            return gridPath;
-        }
-        return null;
+        return FindDirectGridPath(fromNode, toNode);
     }
 
     public List<int> FindDirectGridPath(int fromNode, int toNode)
     {
-        Queue<int> toVisit = new Queue<int>();
-        HashSet<int> visited = new HashSet<int>();
-        Dictionary<int, int> cameFrom = new Dictionary<int, int>();
+        var toVisit = new Queue<int>();
+        var visited = new HashSet<int>();
+        var cameFrom = new Dictionary<int, int>();
         toVisit.Enqueue(fromNode);
         visited.Add(fromNode);
         cameFrom[fromNode] = -1;
@@ -167,23 +153,17 @@ public class PathFinder
                 }
             }
         }
-        Debug.LogWarning($"[PathManager] No direct grid path found from {fromNode} to {toNode}");
         return null;
     }
 
     public List<int> ReconstructPath(Dictionary<int, int> cameFrom, int endVertexIndex)
     {
-        List<int> path = new List<int>();
+        var path = new List<int>();
         int current = endVertexIndex;
         while (current != -1)
         {
             path.Add(current);
-            if (!cameFrom.ContainsKey(current))
-            {
-                Debug.LogWarning($"Key {current} not found in cameFrom during path reconstruction");
-                break;
-            }
-            current = cameFrom[current];
+            if (!cameFrom.TryGetValue(current, out current)) break;
         }
         path.Reverse();
         return path;
@@ -191,30 +171,94 @@ public class PathFinder
 
     private float GetCost(int startVertexIndex, int endVertexIndex)
     {
-        float baseCost = 1f; // Base cost for moving to an adjacent cell
-
         Vector3 startPos = pathManager.Manager.globalVertices[startVertexIndex];
         Vector3 endPos = pathManager.Manager.globalVertices[endVertexIndex];
-
-        float heightDifference = endPos.y - startPos.y; // Calculate height difference (slope)
-
-        float slopeCost = 0f; // Initialize slope cost
-
-        if (heightDifference > 0) // Uphill
-        {
-            slopeCost = heightDifference * 2f; // Example: Higher cost for uphill (adjust multiplier as needed)
-        }
-        else if (heightDifference < 0) // Downhill
-        {
-            slopeCost = heightDifference * -0.5f; // Example: Lower (negative) cost/benefit for downhill (adjust multiplier)
-        }
-        // If heightDifference == 0, slopeCost remains 0 (no slope penalty/benefit)
-
-        return baseCost + slopeCost; // Total cost is base cost + slope cost
+        float heightDifference = endPos.y - startPos.y;
+        float slopeCost = heightDifference > 0 ? heightDifference * 2f : heightDifference < 0 ? heightDifference * -0.5f : 0f;
+        return 1f + slopeCost;
     }
 
     private float Heuristic(int current, int target)
     {
-        return Vector3.Distance(pathManager.Manager.globalVertices[current], pathManager.Manager.globalVertices[target]); // Euclidean distance heuristic
+        return Vector3.Distance(pathManager.Manager.globalVertices[current], pathManager.Manager.globalVertices[target]);
+    }
+}
+
+// PriorityQueue remains unchanged as it’s already efficient
+public class PriorityQueue<T>
+{
+    private readonly List<(float priority, int counter, T item)> heap = new List<(float, int, T)>();
+    private int counter = 0;
+
+    public int Count => heap.Count;
+
+    public void Enqueue(T item, float priority)
+    {
+        heap.Add((priority, counter++, item));
+        HeapifyUp(heap.Count - 1);
+    }
+
+    public T Dequeue()
+    {
+        if (Count == 0) throw new InvalidOperationException("PriorityQueue is empty");
+
+        T item = heap[0].item;
+        heap[0] = heap[Count - 1];
+        heap.RemoveAt(Count - 1);
+
+        if (Count > 0) HeapifyDown(0);
+
+        return item;
+    }
+
+    public bool IsEmpty() => Count == 0;
+
+    public void Clear()
+    {
+        heap.Clear();
+        counter = 0;
+    }
+
+    private void HeapifyUp(int index)
+    {
+        while (index > 0)
+        {
+            int parent = (index - 1) / 2;
+            if (Compare(heap[parent], heap[index]) <= 0) break;
+
+            Swap(parent, index);
+            index = parent;
+        }
+    }
+
+    private void HeapifyDown(int index)
+    {
+        int minIndex = index;
+        int leftChild = 2 * index + 1;
+        int rightChild = 2 * index + 2;
+
+        if (leftChild < Count && Compare(heap[leftChild], heap[minIndex]) < 0)
+            minIndex = leftChild;
+        if (rightChild < Count && Compare(heap[rightChild], heap[minIndex]) < 0)
+            minIndex = rightChild;
+
+        if (minIndex != index)
+        {
+            Swap(index, minIndex);
+            HeapifyDown(minIndex);
+        }
+    }
+
+    private void Swap(int i, int j)
+    {
+        var temp = heap[i];
+        heap[i] = heap[j];
+        heap[j] = temp;
+    }
+
+    private int Compare((float priority, int counter, T item) a, (float priority, int counter, T item) b)
+    {
+        int cmp = a.priority.CompareTo(b.priority);
+        return cmp != 0 ? cmp : a.counter.CompareTo(b.counter);
     }
 }

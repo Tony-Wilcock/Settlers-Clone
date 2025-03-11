@@ -28,7 +28,7 @@ public class NodeManager : MonoBehaviour
     private HexGridSettings settings;
 
     public ConcurrentDictionary<int, NodeData> nodeDataDictionary = new ConcurrentDictionary<int, NodeData>();
-    private ConcurrentDictionary<int, bool> nodeValidityCache = new ConcurrentDictionary<int, bool>(); // Update this too if using Suggestion 1 from PathManager
+    private ConcurrentDictionary<int, bool> nodeValidityCache = new ConcurrentDictionary<int, bool>(); // Update this too if using Suggestion 1 from TerrainPainter
 
     private float MaxHeightDifference => settings.maxHeightDifference;
     private float SmoothingFactor => settings.smoothingFactor;
