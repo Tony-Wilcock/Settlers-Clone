@@ -1,133 +1,124 @@
 using UnityEngine;
 using TMPro;
 
-public enum UIPanel { None, PathPanel, FlagPanel, DebugPanel } // Enum for panel states
-
-public class UIManager : MonoBehaviour
+namespace PunkyFruitBat
 {
-    public TMP_Text pathText;
-    public TMP_Text flagText;
-    public TMP_Text debugText;
+    public enum UIPanel { NodePanel, BuildingPanel, DebugPanel } // Enum for panel states
 
-    private UIPanel currentPanel = UIPanel.None; // Track current panel state
-    public UIPanel CurrentPanel => currentPanel; // Public read-only access
-
-    [SerializeField] private GameObject pathPanel;
-    [SerializeField] private GameObject flagPanel;
-    [SerializeField] private GameObject debugPanel;
-
-    private void Awake()
+    public class UIManager : MonoBehaviour
     {
-        HideAllPanels();
-        ValidateTextReferences(); // Ensure all text fields are assigned
-    }
+        private HexGridManager manager;
 
-    private void ValidateTextReferences()
-    {
-        if (pathText == null) Debug.LogError("UIManager: pathText is not assigned!");
-        if (flagText == null) Debug.LogError("UIManager: flagText is not assigned!");
-        if (debugText == null) Debug.LogError("UIManager: debugText is not assigned!");
-    }
+        public TMP_Text pathText;
+        public TMP_Text flagText;
+        public TMP_Text debugText;
 
-    public void UpdateUIText(string key, string value)
-    {
-        switch (key)
+        [SerializeField] private GameObject nodePanel;
+        [SerializeField] private GameObject buildingPanel;
+        [SerializeField] private GameObject debugPanel;
+
+        private void Awake()
         {
-            case "Paths":
-                if (pathText != null) pathText.text = value;
-                else Debug.LogWarning("UIManager: pathText is null, cannot update Paths.");
-                break;
-            case "Flags":
-                if (flagText != null) flagText.text = value;
-                else Debug.LogWarning("UIManager: flagText is null, cannot update Flags.");
-                break;
-            case "Debug":
-                if (debugText != null) debugText.text = value;
-                else Debug.LogWarning("UIManager: debugText is null, cannot update Debug.");
-                break;
-            default:
-                Debug.LogWarning($"UIManager: Unknown UI text key: {key}");
-                break;
+            HideAllPanels();
+            ValidateTextReferences(); // Ensure all text fields are assigned
+            manager = HexGridManager.Instance; // Cache HexGridManager instance
         }
-    }
 
-    public void ShowPanelsForNode(HexGridManager manager, int node, NodeData nodeData)
-    {
-        if (nodeData.HasFlag)
+        private void ValidateTextReferences()
         {
-            TryShowPathPanel(manager, node);
+            if (pathText == null) Debug.LogError("UIManager: pathText is not assigned!");
+            if (flagText == null) Debug.LogError("UIManager: flagText is not assigned!");
+            if (debugText == null) Debug.LogError("UIManager: debugText is not assigned!");
         }
-        else
+
+        public void UpdateUIText(string key, string value)
         {
-            TryShowFlagPanel(manager, node);
+            switch (key)
+            {
+                case "Paths":
+                    if (pathText != null) pathText.text = value;
+                    else Debug.LogWarning("UIManager: pathText is null, cannot update Paths.");
+                    break;
+                case "Flags":
+                    if (flagText != null) flagText.text = value;
+                    else Debug.LogWarning("UIManager: flagText is null, cannot update Flags.");
+                    break;
+                case "Debug":
+                    if (debugText != null) debugText.text = value;
+                    else Debug.LogWarning("UIManager: debugText is null, cannot update Debug.");
+                    break;
+                default:
+                    Debug.LogWarning($"UIManager: Unknown UI text key: {key}");
+                    break;
+            }
         }
-    }
 
-    private void TryShowFlagPanel(HexGridManager manager, int node)
-    {
-        if (manager.NodeManager.CanPlaceFlag(node))
+        public void ShowPanel(UIPanel panelType) // Centralized ShowPanel method
         {
-            manager.UIManager.ShowPanel(UIPanel.FlagPanel);
+            switch (panelType)
+            {
+                case UIPanel.NodePanel:
+                    if (nodePanel != null) nodePanel.SetActive(true);
+                    break;
+                case UIPanel.BuildingPanel:
+                    if (buildingPanel != null) buildingPanel.SetActive(true);
+                    break;
+                case UIPanel.DebugPanel:
+                    if (debugPanel != null) debugPanel.SetActive(true);
+                    break;
+                default:
+                    Debug.LogWarning($"UIManager: Unknown panel type: {panelType}");
+                    break;
+            }
         }
-    }
 
-    private void TryShowPathPanel(HexGridManager manager, int node)
-    {
-        NodeData nodeData = manager.NodeManager.nodeDataDictionary[node]; // Access NodeData from dictionary
-        if (nodeData.HasFlag)
+        private void HidePanel(UIPanel panelType) // Generic HidePanel
         {
-            manager.UIManager.ShowPanel(UIPanel.PathPanel);
+            switch (panelType)
+            {
+                case UIPanel.NodePanel:
+                    if (nodePanel != null && IsPanelActive(UIPanel.NodePanel)) nodePanel.SetActive(false);
+                    break;
+                case UIPanel.BuildingPanel:
+                    if (buildingPanel != null && IsPanelActive(UIPanel.BuildingPanel)) buildingPanel.SetActive(false);
+                    break;
+                case UIPanel.DebugPanel:
+                    if (debugPanel != null && IsPanelActive(UIPanel.DebugPanel)) debugPanel.SetActive(false);
+                    break;
+                default:
+                    Debug.LogWarning($"UIManager: Unknown panel type: {panelType}");
+                    break;
+            }
         }
-        else
+
+        public bool IsPanelActive(UIPanel panelType) // Generic IsPanelActive
         {
-            manager.PathManager.IsInPathCreationMode = false;
+            switch (panelType)
+            {
+                case UIPanel.NodePanel:
+                    return nodePanel != null && nodePanel.activeSelf;
+                case UIPanel.BuildingPanel:
+                    return buildingPanel != null && buildingPanel.activeSelf;
+                case UIPanel.DebugPanel:
+                    return debugPanel != null && debugPanel.activeSelf;
+                default:
+                    Debug.LogWarning($"UIManager: Unknown panel type: {panelType}");
+                    return false;
+            }
         }
-    }
 
-    public void ShowPanel(UIPanel panelType) // Centralized ShowPanel method
-    {
-        HideAllPanels();
-        currentPanel = panelType; // Update current panel state
-
-        switch (panelType)
+        public bool AreAnyPanelsActive()
         {
-            case UIPanel.PathPanel:
-                if (pathPanel != null) pathPanel.SetActive(true);
-                break;
-            case UIPanel.FlagPanel:
-                if (flagPanel != null) flagPanel.SetActive(true);
-                break;
-            case UIPanel.DebugPanel:
-                if (debugPanel != null) debugPanel.SetActive(true);
-                break;
-            case UIPanel.None:
-                break;
-            default:
-                Debug.LogWarning($"UIManager: Unknown panel type: {panelType}");
-                currentPanel = UIPanel.None;
-                break;
+            return IsPanelActive(UIPanel.NodePanel) || IsPanelActive(UIPanel.BuildingPanel);
         }
+
+        public void HideAllPanels()
+        {
+            HidePanel(UIPanel.NodePanel);
+            HidePanel(UIPanel.BuildingPanel);
+        }
+
+        public void HideNodePanel() => HidePanel(UIPanel.NodePanel);
+        public void HideBuildingPanel() => HidePanel(UIPanel.BuildingPanel);
     }
-
-    public void HideAllPanels()
-    {
-        if (pathPanel != null) pathPanel.SetActive(false);
-        if (flagPanel != null) flagPanel.SetActive(false);
-        if (debugPanel != null) debugPanel.SetActive(false);
-        currentPanel = UIPanel.None;
-    }
-
-    public bool IsPanelActive(UIPanel panelType) // Generic IsPanelActive
-    {
-        return currentPanel == panelType;
-    }
-
-    public bool AreAnyPanelsActive() => currentPanel != UIPanel.None; // Check currentPanel state
-
-
-    // Example methods to be called by UI Buttons (if you have buttons directly controlling panels)
-    public void OnShowPathPanelButton() => ShowPanel(UIPanel.PathPanel);
-    public void OnShowFlagPanelButton() => ShowPanel(UIPanel.FlagPanel);
-    public void OnShowDebugPanelButton() => ShowPanel(UIPanel.DebugPanel);
-    public void OnHideAllPanelsButton() => HideAllPanels();
 }

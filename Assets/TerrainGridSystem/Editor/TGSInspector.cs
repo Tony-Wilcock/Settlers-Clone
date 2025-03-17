@@ -710,7 +710,7 @@ namespace TGS_Editor {
                     EditorGUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
                     if (GUILayout.Button("Export Grid Config")) {
-                        if (EditorUtility.DisplayDialog("Export Grid Config", "A TGS Config component will be atteched to this game object with current cell settings. You can restore this configuration just enabling this new component.\nContinue?", "Ok", "Cancel")) {
+                        if (EditorUtility.DisplayDialog("Export Grid Config", "A TGS Config component will be atteched to this game object with current cell Settings. You can restore this configuration just enabling this new component.\nContinue?", "Ok", "Cancel")) {
                             ExportGridConfig();
                         }
                     }

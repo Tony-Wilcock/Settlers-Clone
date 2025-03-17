@@ -39,7 +39,7 @@ namespace TGS {
 				}
 			}
 			if (GUILayout.Button ("Reload Config")) {
-				if (EditorUtility.DisplayDialog ("Reload Grid Configuration", "The stored cell settings will be loaded. Continue?", "Ok", "Cancel")) {
+				if (EditorUtility.DisplayDialog ("Reload Grid Configuration", "The stored cell Settings will be loaded. Continue?", "Ok", "Cancel")) {
 					config.LoadConfiguration ();
 				}
 			}

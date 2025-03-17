@@ -128,9 +128,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7231022420465034616}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3929bb1e984d70a4784feec35a40a58f, type: 3}
+  m_Script: {fileID: 11500000, guid: 0a702524ee960324983f70c0350ec7d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingGFXPrefab: {fileID: 7231022420465034616}
-  <BuildingType>k__BackingField: 1
-  <BuildingGFXTransform>k__BackingField: {fileID: 7052954514356315525}
+  buildingType: 1
+  buildingSize: 2
+  buildingGFXTransform: {fileID: 7052954514356315525}
+  centerIndex: 0
+  entranceIndex: 0
+  reservedNodes: 

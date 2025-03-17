@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6050101038988380010
+--- !u!1 &171701524966849675
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,65 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 9012044012717250057}
-  - component: {fileID: 9156851472071985145}
-  - component: {fileID: 6992630606383448202}
+  - component: {fileID: 280374442620362823}
+  - component: {fileID: 7098043452132775638}
+  m_Layer: 0
+  m_Name: Decal Projector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &280374442620362823
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 171701524966849675}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 1336065850292578275}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7098043452132775638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 171701524966849675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: 325a5fa4699db434c85932e27644d36b, type: 2}
+  m_DrawDistance: 1000
+  m_FadeScale: 0.9
+  m_StartAngleFade: 180
+  m_EndAngleFade: 180
+  m_UVScale: {x: 1, y: 1}
+  m_UVBias: {x: 0, y: 0}
+  m_DecalLayerMask: 256
+  m_ScaleMode: 0
+  m_Offset: {x: 0, y: 0, z: 0.5}
+  m_Size: {x: 1.4, y: 1.4, z: 1}
+  m_FadeFactor: 1
+--- !u!1 &1229551306982295675
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6810591320054561902}
+  - component: {fileID: 2793929144123804851}
+  - component: {fileID: 991820769183726822}
   m_Layer: 0
   m_Name: Flag
   m_TagString: Untagged
@@ -18,36 +74,36 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &9012044012717250057
+--- !u!4 &6810591320054561902
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6050101038988380010}
+  m_GameObject: {fileID: 1229551306982295675}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0.65, y: 2.29, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0.062501}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7829625387133821854}
+  m_Father: {fileID: 1336065850292578275}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &9156851472071985145
+--- !u!33 &2793929144123804851
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6050101038988380010}
+  m_GameObject: {fileID: 1229551306982295675}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &6992630606383448202
+--- !u!23 &991820769183726822
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6050101038988380010}
+  m_GameObject: {fileID: 1229551306982295675}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -86,7 +142,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &6129738284473314035
+--- !u!1 &2953739206101886955
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,9 +150,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2014525906639354192}
-  - component: {fileID: 6656636819733550566}
-  - component: {fileID: 8935912096353001372}
+  - component: {fileID: 3236571422178095688}
+  - component: {fileID: 3742801668276438115}
+  - component: {fileID: 481218594802780716}
   m_Layer: 0
   m_Name: Flag Pole
   m_TagString: Untagged
@@ -104,36 +160,36 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2014525906639354192
+--- !u!4 &3236571422178095688
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6129738284473314035}
+  m_GameObject: {fileID: 2953739206101886955}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 1.24, z: 0}
   m_LocalScale: {x: 0.15246, y: 3.4137, z: 0.2510015}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7829625387133821854}
+  m_Father: {fileID: 1336065850292578275}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &6656636819733550566
+--- !u!33 &3742801668276438115
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6129738284473314035}
+  m_GameObject: {fileID: 2953739206101886955}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &8935912096353001372
+--- !u!23 &481218594802780716
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6129738284473314035}
+  m_GameObject: {fileID: 2953739206101886955}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -172,7 +228,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &8298529908306606255
+--- !u!1 &5712576297424080313
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -180,40 +236,40 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7829625387133821854}
-  - component: {fileID: 2361743169992588056}
+  - component: {fileID: 1336065850292578275}
+  - component: {fileID: 1560064344353856457}
   m_Layer: 0
-  m_Name: Flag
+  m_Name: Flag GFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7829625387133821854
+--- !u!4 &1336065850292578275
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8298529908306606255}
+  m_GameObject: {fileID: 5712576297424080313}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2014525906639354192}
-  - {fileID: 9012044012717250057}
-  - {fileID: 2972065017912543502}
-  m_Father: {fileID: 0}
+  - {fileID: 3236571422178095688}
+  - {fileID: 6810591320054561902}
+  - {fileID: 280374442620362823}
+  m_Father: {fileID: 8460924887181919823}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &2361743169992588056
+--- !u!65 &1560064344353856457
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8298529908306606255}
+  m_GameObject: {fileID: 5712576297424080313}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -228,7 +284,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.4041312, y: 3.4504251, z: 1}
   m_Center: {x: 0.47600567, y: 1.2252126, z: 0}
---- !u!1 &8852927273274428733
+--- !u!1 &7926471097893628335
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -236,51 +292,41 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2972065017912543502}
-  - component: {fileID: 4550659063820748978}
+  - component: {fileID: 8460924887181919823}
+  - component: {fileID: 1048092472111154723}
   m_Layer: 0
-  m_Name: Decal Projector
+  m_Name: Flag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2972065017912543502
+--- !u!4 &8460924887181919823
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8852927273274428733}
+  m_GameObject: {fileID: 7926471097893628335}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 1
-  m_Children: []
-  m_Father: {fileID: 7829625387133821854}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1336065850292578275}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4550659063820748978
+--- !u!114 &1048092472111154723
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8852927273274428733}
+  m_GameObject: {fileID: 7926471097893628335}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
+  m_Script: {fileID: 11500000, guid: d1a5aaeffb2a56b4583b9343c5f64734, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 270669165cc827f47b26c067b5771c03, type: 2}
-  m_DrawDistance: 1000
-  m_FadeScale: 0.9
-  m_StartAngleFade: 180
-  m_EndAngleFade: 180
-  m_UVScale: {x: 1, y: 1}
-  m_UVBias: {x: 0, y: 0}
-  m_DecalLayerMask: 256
-  m_ScaleMode: 0
-  m_Offset: {x: 0, y: 0, z: 0.5}
-  m_Size: {x: 1.4, y: 1.4, z: 1}
-  m_FadeFactor: 1
+  <Id>k__BackingField: 0

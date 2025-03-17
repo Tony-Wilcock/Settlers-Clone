@@ -1487,7 +1487,7 @@ namespace TGS {
             try {
                 colors = texture.GetPixels();
             } catch {
-                Debug.Log("Texture used to create territories is not readable. Check import settings.");
+                Debug.Log("Texture used to create territories is not readable. Check import Settings.");
                 return;
             }
             for (int k = 0; k < cellCount; k++) {
@@ -1734,7 +1734,7 @@ namespace TGS {
         }
 
         /// <summary>
-        /// If territory color scheme is set to user-defined, copy those settings into current territories and redraw
+        /// If territory color scheme is set to user-defined, copy those Settings into current territories and redraw
         /// </summary>
         public void TerritoryUpdateFillColors() {
             if (territories == null || territoriesTexture != null) return;

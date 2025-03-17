@@ -3007,9 +3007,9 @@ namespace TGS {
         }
 
         /// <summary>
-        /// Returns a string-packed representation of current cells settings.
+        /// Returns a string-packed representation of current cells Settings.
         /// Each cell separated by ;
-        /// Individual settings mean:
+        /// Individual Settings mean:
         /// Position	Meaning
         /// 0			Visibility (0 = invisible, 1 = visible)
         /// 1			Territory Index
@@ -3068,9 +3068,9 @@ namespace TGS {
 
 
         /// <summary>
-        /// Returns an array with the main settings of each cell
+        /// Returns an array with the main Settings of each cell
         /// </summary>
-        /// <returns>The get settings.</returns>
+        /// <returns>The get Settings.</returns>
         public TGSConfigEntry[] CellGetSettings () {
             if (cells == null)
                 return null;

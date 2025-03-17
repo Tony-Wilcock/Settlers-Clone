@@ -162,7 +162,7 @@ namespace TGS {
         public event PathFindingEvent OnPathFindingCrossCell;
 
         /// <summary>
-        /// Occurs when some grid settings are changed
+        /// Occurs when some grid Settings are changed
         /// </summary>
         public event GridSettingsChangedEvent OnGridSettingsChanged;
 

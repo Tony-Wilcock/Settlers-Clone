@@ -1,199 +1,221 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static NodeTypes;
 
-[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
-public class HexGridManager : MonoBehaviour
+namespace PunkyFruitBat
 {
-    [field: SerializeField] public int HqStartingNode { get; private set; } = 90; // Example starting node
-
-    public bool isDebugModeActive = false;
-    public Transform chunksTransform;
-    public Transform nodeIconsTransform;
-    public Transform flagsTransform;
-    public Transform decalSplineTransform;
-    public Transform tempPathTransform;
-
-    #region Components
-
-    public HexGridSettings settings = new HexGridSettings();
-    [SerializeField] private HexGridBuilder gridBuilder;
-    [SerializeField] private HexGridAdjacencyBuilder adjacencyBuilder;
-    [SerializeField] private HexGridEdgeIdentifier edgeIdentifier;
-    [SerializeField] private PathVisualsGenerator pathVisualsGenerator;
-    [SerializeField] private HexGridInteraction interactionHandler;
-    [SerializeField] private Input_SO input;
-    [SerializeField] private UIManager uiManager;
-    [SerializeField] private NodeManager nodeManager;
-    [SerializeField] private PathManager pathManager;
-    [SerializeField] private BuildingManager buildingManager;
-    [SerializeField] private ResourceManager resourceManager;
-    [SerializeField] private WorkerManager workerManager;
-    [SerializeField] private CameraManager cameraManager;
-
-    public Input_SO Input_SO => input;
-    public UIManager UIManager => uiManager;
-    public NodeManager NodeManager => nodeManager;
-    public PathManager PathManager => pathManager;
-    public HexGridInteraction HexGridInteraction => interactionHandler;
-    public PathVisualsGenerator PathVisualsGenerator => pathVisualsGenerator;
-    public HexGridEdgeIdentifier EdgeIdentifier => edgeIdentifier;
-    public BuildingManager BuildingManager => buildingManager;
-    public ResourceManager ResourceManager => resourceManager;
-    public WorkerManager WorkerManager => workerManager;
-    public CameraManager CameraManager => cameraManager;
-
-    #endregion ^Components^
-
-    public List<Chunk> chunks = new List<Chunk>();
-    public int[] editableVerticesIndices;
-
-    public Dictionary<(int x, int y), List<int>> cellVertexMap;
-
-    public Camera MainCamera { get; private set; }
-
-    public Dictionary<int, Vector3> globalVertices = new Dictionary<int, Vector3>();
-    public HashSet<int> EdgeVertices { get => edgeIdentifier?.edgeVertices; set => edgeIdentifier.edgeVertices = value; }
-    public Dictionary<int, List<int>> AdjacencyList { get => adjacencyBuilder?.adjacencyList; set => adjacencyBuilder.adjacencyList = value; }
-
-    private int globalVertexCounter = 0;
-
-    public Chunk CreateChunkObject(GameObject chunkObject)
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
+    public class HexGridManager : Singleton<HexGridManager>
     {
-        int decalSplinesLayer = LayerMask.NameToLayer("Decal Splines");
-        Renderer renderer = chunkObject.GetComponent<Renderer>();
-        renderer.renderingLayerMask = (uint)decalSplinesLayer; // Set to Decal Splines layer
+        public event Action<int, bool> OnCreateFlagButtonPressed;
+        public event Action<int> OnRemoveFlagButtonPressed;
 
-        return new Chunk(chunkObject);
-    }
+        public event Action<int, BuildingType> OnCreateBuildingButtonPressed;
+        public event Action OnGridComplete;
 
-    void Awake()
-    {
-        if (transform.position != Vector3.zero) transform.position = Vector3.zero; // Ensure grid is at origin
+        [field: SerializeField] public IconPrefabs_SO IconPrefabs { get; private set; }
+        [field: SerializeField] public BuildingPrefabs_SO BuildingPrefabs { get; private set; }
+        [SerializeField] private Flag flagPrefab;
+        [field: SerializeField] public GameObject PathVisualPrefab { get; private set; }
+        [SerializeField] private GameObject tempPathVisualPrefab;
 
-        edgeIdentifier = edgeIdentifier != null ? edgeIdentifier : GetComponent<HexGridEdgeIdentifier>();
-        gridBuilder = gridBuilder != null ? gridBuilder : GetComponent<HexGridBuilder>();
-        uiManager = uiManager != null ? uiManager : FindFirstObjectByType<UIManager>();
-        nodeManager = nodeManager != null ? nodeManager : GetComponent<NodeManager>();
-        pathManager = pathManager != null ? pathManager : GetComponent<PathManager>();
-        interactionHandler = interactionHandler != null ? interactionHandler : GetComponent<HexGridInteraction>();
-        pathVisualsGenerator = pathVisualsGenerator != null ? pathVisualsGenerator : GetComponent<PathVisualsGenerator>();
-        adjacencyBuilder = adjacencyBuilder != null ? adjacencyBuilder : GetComponent<HexGridAdjacencyBuilder>();
-        buildingManager = buildingManager != null ? buildingManager : GetComponent<BuildingManager>();
-        workerManager = workerManager != null ? workerManager : GetComponent<WorkerManager>();
-        cameraManager = cameraManager != null ? cameraManager : GetComponent<CameraManager>();
-        resourceManager = ResourceManager.Instance;
-    }
+        public int NearestNode => nodeManager.NearestNodeIndex;
 
-    private void Start()
-    {
-        MainCamera = Camera.main;
-        StartCoroutine(InitializeGame());
-    }
+        [field: SerializeField] public bool IsDebugModeActive { get; set; } = false;
+        [field: SerializeField] public GameObject NodePrefab { get; private set; }
+        [field: SerializeField] public int SelectedNode { get; private set; }
+        [field: SerializeField] public Transform ChunksTransform { get; private set; }
+        [field: SerializeField] public Transform NodesTransform { get; private set; }
+        [field: SerializeField] public Transform NodeIconsTransform { get; private set; }
+        [field: SerializeField] public Transform FlagsTransform { get; private set; }
+        [field: SerializeField] public Transform PathVisualsTransform { get; private set; }
+        [field: SerializeField] public Transform TempPathTransform { get; private set; }
+        [field: SerializeField] public Transform BuildingTransform { get; private set; }
 
-    private IEnumerator InitializeGame()
-    {
-        edgeIdentifier?.Initialise(this);
-        gridBuilder?.Initialise(this);
-        adjacencyBuilder?.Initialise(this);
-        nodeManager?.Initialise(this);
-        interactionHandler?.Initialise(this);
+        #region Components
 
-        // Generate grid and wait for completion
-        yield return StartCoroutine(GenerateGridAsync());
+        [SerializeField] private Input_SO input;
+        [SerializeField] private UIManager uiManager;
+        [SerializeField] private CameraManager cameraManager;
 
-        pathVisualsGenerator?.Initialise(this);
-        pathManager?.Initialise(this);
-        buildingManager?.Initialise(this);
-        resourceManager?.Initialise(this);
-        workerManager?.Initialise(this);
+        [SerializeField] private HexGridSettings settings = new();
+        [SerializeField] private PathManager pathManager = new();
+        [SerializeField] private HexGridBuilder gridBuilder = new();
+        [SerializeField] private NodeIconPicker iconPicker = new();
+        [SerializeField] private HexGridAdjacencyBuilder adjacencyBuilder = new();
+        [SerializeField] private HexGridEdgeIdentifier edgeIdentifier = new();
+        [SerializeField] private NodeSelector nodeSelector = new();
+        [SerializeField] private NodeManager nodeManager = new();
+        [SerializeField] private FlagManager flagManager = new();
+        [SerializeField] private BuildingManager buildingManager = new();
 
-        pathManager.AssignCarriersToPaths();
-    }
+        public HexGridSettings Settings => settings;
+        public Input_SO Input_SO => input;
+        public UIManager UIManager => uiManager;
+        public NodeIconPicker IconPicker => iconPicker;
+        public HexGridEdgeIdentifier EdgeIdentifier => edgeIdentifier;
+        public CameraManager CameraManager => cameraManager;
+        public NodeSelector NodeSelector => nodeSelector;
+        public NodeManager NodeManager => nodeManager;
+        public FlagManager FlagManager => flagManager;
+        public PathManager PathManager => pathManager;
+        public BuildingManager BuildingManager => buildingManager;
 
-    private void OnDestroy()
-    {
-        interactionHandler?.OnDestroy();
-    }
+        #endregion Components
 
-    private void Update()
-    {
-        interactionHandler.HighlightNode(); // Highlight node under mouse on every frame
+        public List<Chunk> chunks = new();
+        public Node[] EditableVerticesIndices { get; private set; }
 
-        if (Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.D) && !pathManager.IsInPathCreationMode)
+        public Dictionary<(int x, int y), List<int>> cellVertexMap;
+
+        public Camera MainCamera { get; private set; }
+
+        public Vector3[] globalVertices;
+        public HashSet<int> EdgeVertices { get => edgeIdentifier.edgeVertices; set => edgeIdentifier.edgeVertices = value; }
+        public Dictionary<int, List<int>> AdjacencyList { get => adjacencyBuilder.adjacencyList; set => adjacencyBuilder.adjacencyList = value; }
+
+        private bool isGridGenerated = false;
+
+        public Chunk CreateChunkObject(GameObject chunkObject)
         {
-            isDebugModeActive = !isDebugModeActive;
+            int decalSplinesLayer = LayerMask.NameToLayer("Decal Splines");
+            Renderer renderer = chunkObject.GetComponent<Renderer>();
+            renderer.renderingLayerMask = (uint)decalSplinesLayer; // Set to Decal Splines layer
+
+            return new Chunk(chunkObject);
         }
-    }
 
-    [ContextMenu("Generate Grid")]
-    public IEnumerator GenerateGridAsync()
-    {
-        ClearChunks();
-        yield return StartCoroutine(gridBuilder.CreateHexGridAsync(
-            chunks,
-            globalVertices,
-            (globalVertexCounter, cellVertexMap, editableVerticesIndices) =>
-            {
-                this.globalVertexCounter = globalVertexCounter;
-                this.cellVertexMap = cellVertexMap;
-                this.editableVerticesIndices = editableVerticesIndices;
-                AdjacencyList = adjacencyBuilder.BuildAdjacencyList();
-                EdgeVertices = edgeIdentifier.IdentifyEdgeVertices();
-                edgeIdentifier.ForceEdgeVerticesToZero();
-            }
-        ));
-    }
-
-    void ClearChunks()
-    {
-        foreach (var chunk in chunks)
+        protected override void Awake()
         {
-            if (chunk.chunkObject != null)
+            if (transform.position != Vector3.zero) transform.position = Vector3.zero; // Ensure grid is at origin
+        }
+
+        private void Start()
+        {
+            MainCamera = Camera.main;
+            adjacencyBuilder.Initialise(this);
+            edgeIdentifier.Initialise(this);
+            gridBuilder.Initialise(this);
+            nodeSelector.Initialise(this);
+            flagManager.Initialise(this, flagPrefab);
+            pathManager.Initialise(this, PathVisualPrefab, tempPathVisualPrefab);
+            nodeManager.Initialise(this);
+            buildingManager.Initialise(this, BuildingPrefabs);
+            iconPicker.Initialise(this, IconPrefabs);
+
+            cameraManager = cameraManager != null ? cameraManager : FindFirstObjectByType<CameraManager>();
+            uiManager = uiManager != null ? uiManager : FindFirstObjectByType<UIManager>();
+
+            InitializeGame();
+
+            nodeSelector.OnNodeSelected += (nodeIndex) => SelectedNode = nodeIndex;
+        }
+
+        private void OnDisable()
+        {
+            iconPicker?.Unsubscribe();
+            nodeSelector?.Unsubscribe();
+            flagManager?.Unsubscribe();
+            pathManager?.Unsubscribe();
+            buildingManager?.Unsubscribe();
+
+            nodeSelector.OnNodeSelected -= (nodeIndex) => SelectedNode = nodeIndex;
+        }
+
+        private void InitializeGame()
+        {
+            globalVertices = new Vector3[Settings.width * Settings.height * 7];
+
+            GenerateGrid();
+        }
+
+        private void Update()
+        {
+            if (!isGridGenerated)
             {
-                if (Application.isPlaying)
+                return;
+            }
+            nodeManager.UpdateCurrentNodeIndex(Input.mousePosition);
+            uiManager.debugText.text = $"Nearest Node: {NearestNode}";
+        }
+
+        [ContextMenu("Generate Grid")]
+        public void GenerateGrid()
+        {
+            StartCoroutine(gridBuilder.CreateHexGridAsync(chunks, globalVertices, OnGridGenerationComplete));
+        }
+
+        private void OnGridGenerationComplete(int vertexCount, Dictionary<(int, int), List<int>> cellVertexMap, Node[] editableVerticesIndices)
+        {
+            EditableVerticesIndices = editableVerticesIndices;
+            this.cellVertexMap = cellVertexMap;
+
+            AdjacencyList = adjacencyBuilder.BuildAdjacencyList();
+            EdgeVertices = edgeIdentifier.IdentifyEdgeVertices();
+            edgeIdentifier.ForceEdgeVerticesToZero();
+
+            for (int i = 0; i < vertexCount; i++)
+            {
+                globalVertices[i] = EditableVerticesIndices[i].position;
+            }
+
+            // Set isEdgeNode property
+            foreach (int edgeVertexIndex in EdgeVertices)
+            {
+                if (edgeVertexIndex >= 0 && edgeVertexIndex < EditableVerticesIndices.Length && EditableVerticesIndices[edgeVertexIndex] != null)
                 {
-                    Destroy(chunk.chunkObject); // Runtime: Destroy at end of frame
+                    EditableVerticesIndices[edgeVertexIndex].isEdgeNode = true;
                 }
                 else
                 {
-                    DestroyImmediate(chunk.chunkObject); // Editor: Destroy immediately
+                    Debug.LogError($"Invalid edge vertex index or null Node at index {edgeVertexIndex}");
                 }
             }
+
+            isGridGenerated = true;
+
+            OnGridComplete?.Invoke();
+
+            #if UNITY_EDITOR
+                UnityEditor.SceneView.RepaintAll();
+            #endif
         }
-        chunks.Clear();
-        globalVertices.Clear();
-        globalVertexCounter = 0;
-        nodeManager.nodeDataDictionary.Clear(); // Clear Node Data Dictionary when grid is cleared
-    }
 
-    void OnDrawGizmosSelected()
-    {
-        if (editableVerticesIndices == null) return;
-
-        GUIStyle style = new GUIStyle();
-        style.normal.textColor = Color.black;
-
-        for (int i = 0; i < editableVerticesIndices.Length; i++)
+        public void CreateFlagButtonPressed() => OnCreateFlagButtonPressed?.Invoke(SelectedNode, false);
+        public void RemoveFlagButtonPressed() => OnRemoveFlagButtonPressed?.Invoke(SelectedNode);
+        public void CreatePathButtonPressed() => pathManager.StartPathPlacement();
+        public void CreateBuildingButtonPressed(int buildingTypeIndex)
         {
-            int globalIndex = editableVerticesIndices[i];
-            Vector3 worldPos = transform.TransformPoint(globalVertices[globalIndex]);
-            int adjacencyCount = AdjacencyList.ContainsKey(globalIndex) ? AdjacencyList[globalIndex].Count : 0;
-            Color gizmoColor = Color.yellow; // Default color is yellow
+            BuildingType buildingType = (BuildingType)buildingTypeIndex;
+            OnCreateBuildingButtonPressed?.Invoke(SelectedNode, buildingType);
+        }
 
-            if (EdgeVertices.Contains(globalIndex))
+        void OnDrawGizmosSelected()
+        {
+            if (EditableVerticesIndices == null)
             {
-                gizmoColor = Color.red;
-            }
-            else if (nodeManager.nodeDataDictionary.ContainsKey(globalIndex) && nodeManager.nodeDataDictionary[globalIndex].HasObstacle) // Obstacle vertices - Check NodeData
-            {
-                gizmoColor = Color.black; // Obstacle vertices are black
+                return;
             }
 
-            Gizmos.color = gizmoColor;
-            Gizmos.DrawSphere(worldPos, settings.vertexGizmoSize);
-            //UnityEditor.Handles.Label(worldPos, $"{globalIndex} ({adjacencyCount})", style);
+            for (int i = 0; i < EditableVerticesIndices.Length; i++)
+            {
+                Vector3 worldPos = transform.TransformPoint(EditableVerticesIndices[i].position);
+                Color gizmoColor = Color.yellow; // Default color is yellow
+
+                if (EditableVerticesIndices[i].isEdgeNode)
+                {
+                    gizmoColor = Color.red;
+                }
+
+                // Show center Node in purple
+                if (EditableVerticesIndices[i].isCenterNode)
+                {
+                    gizmoColor = Color.magenta;
+                }
+
+                Gizmos.color = gizmoColor;
+                Gizmos.DrawSphere(worldPos, Settings.vertexGizmoSize);
+            }
         }
     }
 }

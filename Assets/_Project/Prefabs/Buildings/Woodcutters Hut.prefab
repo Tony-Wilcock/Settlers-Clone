@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 3841369271420531915}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.258819, z: -0, w: 0.9659259}
-  m_LocalPosition: {x: -1.83, y: 5, z: 2.96}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -128,8 +128,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7231022420465034616}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f36772bab0d8b4545a6a7f1db8208985, type: 3}
+  m_Script: {fileID: 11500000, guid: 234f5acadbe29574784a6091f549ad63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <BuildingType>k__BackingField: 0
-  <BuildingGFXTransform>k__BackingField: {fileID: 7052954514356315525}
+  buildingType: 3
+  buildingSize: 0
+  buildingGFXTransform: {fileID: 7052954514356315525}
+  centerIndex: 0
+  entranceIndex: 0
+  reservedNodes: 

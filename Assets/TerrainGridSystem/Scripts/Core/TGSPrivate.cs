@@ -322,7 +322,7 @@ namespace TGS {
         }
 
         [SerializeField]
-        bool territoryThicknessSettingMigrated; // used to migrate old settings to new ranges and options
+        bool territoryThicknessSettingMigrated; // used to migrate old Settings to new ranges and options
 
         #region Gameloop events
 
@@ -386,7 +386,7 @@ namespace TGS {
                 _regularHexagonsWidth = _hexSize * transform.lossyScale.x;
             }
 
-            // Migration from old thickness settings
+            // Migration from old thickness Settings
             if (!territoryThicknessSettingMigrated) {
                 territoryThicknessSettingMigrated = true;
                 if (!_territoryCustomBorderThickness && _territoryFrontiersThickness > 1f) {
@@ -989,7 +989,7 @@ namespace TGS {
             }
             catch {
                 mask = null;
-                Debug.Log("Mask texture is not readable. Check import settings.");
+                Debug.Log("Mask texture is not readable. Check import Settings.");
             }
         }
 
@@ -1002,7 +1002,7 @@ namespace TGS {
             }
             catch {
                 flatMask = null;
-                Debug.Log("Flat mask texture is not readable. Check import settings.");
+                Debug.Log("Flat mask texture is not readable. Check import Settings.");
             }
         }
 
