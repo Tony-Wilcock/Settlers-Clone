@@ -11,10 +11,12 @@ namespace PunkyFruitBat
         public event Action<int> OnRemoveFlagButtonPressed;
 
         public event Action<int, BuildingType> OnCreateBuildingButtonPressed;
+
         public event Action OnGridComplete;
 
         [field: SerializeField] public IconPrefabs_SO IconPrefabs { get; private set; }
         [field: SerializeField] public BuildingPrefabs_SO BuildingPrefabs { get; private set; }
+        [field: SerializeField] public CharacterPrefabs_SO CharacterPrefabs { get; private set; }
         [SerializeField] private Flag flagPrefab;
         [field: SerializeField] public GameObject PathVisualPrefab { get; private set; }
         [SerializeField] private GameObject tempPathVisualPrefab;
@@ -31,6 +33,7 @@ namespace PunkyFruitBat
         [field: SerializeField] public Transform PathVisualsTransform { get; private set; }
         [field: SerializeField] public Transform TempPathTransform { get; private set; }
         [field: SerializeField] public Transform BuildingTransform { get; private set; }
+        [field: SerializeField] public Transform CharactersTransform { get; private set; }
 
         #region Components
 
@@ -48,6 +51,7 @@ namespace PunkyFruitBat
         [SerializeField] private NodeManager nodeManager = new();
         [SerializeField] private FlagManager flagManager = new();
         [SerializeField] private BuildingManager buildingManager = new();
+        [SerializeField] private CharacterManager characterManager = new();
 
         public HexGridSettings Settings => settings;
         public Input_SO Input_SO => input;
@@ -60,6 +64,7 @@ namespace PunkyFruitBat
         public FlagManager FlagManager => flagManager;
         public PathManager PathManager => pathManager;
         public BuildingManager BuildingManager => buildingManager;
+        public CharacterManager CharacterManager => characterManager;
 
         #endregion Components
 
@@ -102,6 +107,7 @@ namespace PunkyFruitBat
             nodeManager.Initialise(this);
             buildingManager.Initialise(this, BuildingPrefabs);
             iconPicker.Initialise(this, IconPrefabs);
+            characterManager.Initialise(this, CharacterPrefabs);
 
             cameraManager = cameraManager != null ? cameraManager : FindFirstObjectByType<CameraManager>();
             uiManager = uiManager != null ? uiManager : FindFirstObjectByType<UIManager>();
@@ -118,6 +124,7 @@ namespace PunkyFruitBat
             flagManager?.Unsubscribe();
             pathManager?.Unsubscribe();
             buildingManager?.Unsubscribe();
+            characterManager?.Unsubscribe();
 
             nodeSelector.OnNodeSelected -= (nodeIndex) => SelectedNode = nodeIndex;
         }
@@ -156,7 +163,7 @@ namespace PunkyFruitBat
 
             for (int i = 0; i < vertexCount; i++)
             {
-                globalVertices[i] = EditableVerticesIndices[i].position;
+                globalVertices[i] = EditableVerticesIndices[i].Position;
             }
 
             // Set isEdgeNode property
@@ -164,7 +171,7 @@ namespace PunkyFruitBat
             {
                 if (edgeVertexIndex >= 0 && edgeVertexIndex < EditableVerticesIndices.Length && EditableVerticesIndices[edgeVertexIndex] != null)
                 {
-                    EditableVerticesIndices[edgeVertexIndex].isEdgeNode = true;
+                    EditableVerticesIndices[edgeVertexIndex].SetEdgeNode(true);
                 }
                 else
                 {
@@ -184,6 +191,17 @@ namespace PunkyFruitBat
         public void CreateFlagButtonPressed() => OnCreateFlagButtonPressed?.Invoke(SelectedNode, false);
         public void RemoveFlagButtonPressed() => OnRemoveFlagButtonPressed?.Invoke(SelectedNode);
         public void CreatePathButtonPressed() => pathManager.StartPathPlacement();
+        public void RemovePathButtonPressed()
+        {
+            Path pathToRemove = pathManager.GetPathAtNode(SelectedNode);
+            if (pathToRemove != null)
+            {
+                pathManager.RemovePath(pathToRemove);
+                uiManager.HideAllPanels();
+            }
+        }
+        public void CancelButtonPressed() => pathManager.PathBuilder.CancelPath();
+
         public void CreateBuildingButtonPressed(int buildingTypeIndex)
         {
             BuildingType buildingType = (BuildingType)buildingTypeIndex;
@@ -199,16 +217,16 @@ namespace PunkyFruitBat
 
             for (int i = 0; i < EditableVerticesIndices.Length; i++)
             {
-                Vector3 worldPos = transform.TransformPoint(EditableVerticesIndices[i].position);
+                Vector3 worldPos = transform.TransformPoint(EditableVerticesIndices[i].Position);
                 Color gizmoColor = Color.yellow; // Default color is yellow
 
-                if (EditableVerticesIndices[i].isEdgeNode)
+                if (EditableVerticesIndices[i].IsEdgeNode)
                 {
                     gizmoColor = Color.red;
                 }
 
                 // Show center Node in purple
-                if (EditableVerticesIndices[i].isCenterNode)
+                if (EditableVerticesIndices[i].IsCentreNode)
                 {
                     gizmoColor = Color.magenta;
                 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +9,6 @@ namespace PunkyFruitBat
         private static readonly Dictionary<float, WaitForSeconds> _pool = new Dictionary<float, WaitForSeconds>();
 
         public static WaitForSeconds Get(float seconds)
-
         {
             if (!_pool.TryGetValue(seconds, out var waitForSeconds))
             {
@@ -16,6 +16,11 @@ namespace PunkyFruitBat
                 _pool.Add(seconds, waitForSeconds);
             }
             return waitForSeconds;
+        }
+
+        public static IEnumerator WaitCoroutine(float seconds)
+        {
+            yield return Get(seconds);
         }
     }
 }

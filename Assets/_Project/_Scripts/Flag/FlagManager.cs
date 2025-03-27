@@ -82,11 +82,11 @@ namespace PunkyFruitBat
             flag.SetFlagId(vertexIndex);
             if (isConnectedToBuilding) flag.SetFlagAttachedToBuilding(true);
             Node node = manager.NodeManager.GetNode(vertexIndex);
-            node.hasFlag = true;
+            node.SetFlagOnNode(flag);
 
             manager.UIManager.UpdateUIText("Flags", $"Flags: {allFlags.Count}");
 
-            if (node.hasPath)
+            if (node.HasPath)
             {
                 manager.PathManager.SplitPathAtNode(vertexIndex);
             }
@@ -109,7 +109,7 @@ namespace PunkyFruitBat
                 {
                     ReturnFlagToPool(flag);
                     allFlags.Remove(vertexIndex);
-                    manager.NodeManager.GetNode(vertexIndex).hasFlag = false;
+                    manager.NodeManager.GetNode(vertexIndex).RemoveFlagOnNode();
                     JoinOrRemovePaths(vertexIndex);
                 }                    
             }
@@ -193,9 +193,9 @@ namespace PunkyFruitBat
 
         private void JoinOrRemovePaths(int vertexIndex)
         {
-            if (manager.PathManager.GetPathCount(vertexIndex) == 0) return;
+            if (GetPathCountAtVertexIndex(vertexIndex) == 0) return;
 
-            if (manager.PathManager.GetPathCount(vertexIndex) == 1)
+            if (GetPathCountAtVertexIndex(vertexIndex) == 1)
             {
                 // Remove path
                 Path path = manager.PathManager.GetPathAtNode(vertexIndex);
@@ -204,7 +204,7 @@ namespace PunkyFruitBat
                     manager.PathManager.RemovePath(path);
                 }
             }
-            else if (manager.PathManager.GetPathCount(vertexIndex) == 2)
+            else if (GetPathCountAtVertexIndex(vertexIndex) == 2)
             {
                 // Join paths
                 manager.PathManager.JoinPathAtNode(vertexIndex);
@@ -219,6 +219,33 @@ namespace PunkyFruitBat
                     manager.PathManager.RemovePath(pathsToRemove[i]);
                 }
             }
+        }
+
+        // Calculate how many paths are attached to a flag
+        private int GetPathCountAtVertexIndex(int vertexIndex)
+        {
+            int count = 0;
+            foreach (var path in manager.PathManager.GetAllPaths.Values)
+            {
+                if (path.Nodes.Contains(vertexIndex))
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        public int GetPathCountAtFlag(Flag flag)
+        {
+            int count = 0;
+            foreach (var path in manager.PathManager.GetAllPaths.Values)
+            {
+                if (path.Nodes.Contains(flag.Id))
+                {
+                    count++;
+                }
+            }
+            return count;
         }
     }
 }

@@ -1,6 +1,3 @@
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace PunkyFruitBat
@@ -49,7 +46,7 @@ namespace PunkyFruitBat
             foreach (int nodeIndex in reservedNodes)
             {
                 Node node = manager.NodeManager.GetNode(nodeIndex);
-                node.hasBuilding = true;
+                node.SetBuildingOnNode(this);
             }
         }
 
@@ -66,6 +63,14 @@ namespace PunkyFruitBat
             GameObject visual = HexGridManager.Instance.PathManager.GetPathVisualsFromPool();
             visual.transform.SetPositionAndRotation(position, Quaternion.Euler(0, angle, 0));
             visual.transform.SetParent(transform);
+        }
+
+        public Building GetBuildingTypeAtNode(int nodeIndex)
+        {
+            Node node = manager.NodeManager.GetNode(nodeIndex);
+            if (node == null || !node.HasBuilding) return null;
+            Building building = node.transform.GetChild(0).GetComponent<Building>();
+            return building;
         }
     }
 }

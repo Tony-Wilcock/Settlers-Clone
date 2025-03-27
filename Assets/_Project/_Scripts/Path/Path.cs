@@ -10,7 +10,14 @@ namespace PunkyFruitBat
         [field: SerializeField] public Flag Flag2 { get; private set; }
         [field: SerializeField] public List<int> Nodes { get; private set; } = new List<int>();
         [field: SerializeField] public int CenterNode { get; private set; }
+        [field: SerializeField] public bool HasCarrier { get; private set; } = false;
+        [field: SerializeField] public Carrier Carrier { get; private set; }
         [field: SerializeField] public List<GameObject> PathVisuals { get; private set; } = new List<GameObject>();
+
+        //private void Awake()
+        //{
+        //    gameObject.SetActive(false);
+        //}
 
         public Path(Flag flag1, Flag flag2, List<int> nodes, int id)
         {
@@ -71,6 +78,22 @@ namespace PunkyFruitBat
             Id = -1;
             CenterNode = -1;
             Nodes.Clear();
+            Flag1 = null;
+            Flag2 = null;
         }
+
+        public void SetCarrier(Carrier carrier)
+        {
+            HasCarrier = true;
+            Carrier = carrier;
+        }
+
+        public void RemoveCarrier()
+        {
+            HasCarrier = false;
+            Carrier = null;
+        }
+
+        public List<int> GetNodes => Nodes;
     }
 }

@@ -80,7 +80,7 @@ namespace PunkyFruitBat
         {
             if (endNode < 0) return;
             Node endNodeData = manager.NodeManager.GetNode(endNode);
-            if (endNodeData == null || endNodeData.hasPath || endNodeData.hasObstacle) return;
+            if (endNodeData == null || endNodeData.HasPath || endNodeData.HasObstacle) return;
 
             int startNode = currentPath.Last();
             List<int> pathSegments = pathManager.PathFinder.FindPath(startNode, endNode);
@@ -164,7 +164,7 @@ namespace PunkyFruitBat
             pathManager.AddToAllPaths(newPath);
         }
 
-        private void CancelPath()
+        public void CancelPath()
         {
             ClearTempPathVisuals();
             currentPath.Clear();

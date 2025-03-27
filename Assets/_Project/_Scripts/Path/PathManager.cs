@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -9,6 +10,9 @@ namespace PunkyFruitBat
     [Serializable]
     public class PathManager
     {
+        public event Action<Path> OnPathCreationCompleted;
+        public event Action<Path> OnPathRemoved;
+
         private HexGridManager manager;
         private PathFinder pathFinder;
         private PathBuilder pathBuilder;
@@ -25,6 +29,8 @@ namespace PunkyFruitBat
 
         private Dictionary<int, Path> AllPaths { get; } = new Dictionary<int, Path>();
         public IReadOnlyDictionary<int, Path> GetAllPaths => new ReadOnlyDictionary<int, Path>(AllPaths);
+
+        public Queue<Path> UnconnectedPaths { get; set; } = new Queue<Path>();
 
         public int PathId { get; private set; } = 0;
 
@@ -115,7 +121,7 @@ namespace PunkyFruitBat
 
             Node startNodeData = manager.NodeManager.GetNode(startNode);
             if (startNodeData == null) return;
-            if (startNodeData.hasFlag)
+            if (startNodeData.HasFlag)
             {
                 IsInPathCreationMode = true;
                 pathBuilder.CreatePath(startNode);
@@ -129,7 +135,7 @@ namespace PunkyFruitBat
             Node endNodeData = manager.NodeManager.GetNode(endNode);
             if (endNodeData == null) return;
 
-            if (endNodeData.hasFlag)
+            if (endNodeData.HasFlag)
             {
                 pathBuilder.FinalisePath(endNode);
             }
@@ -139,7 +145,7 @@ namespace PunkyFruitBat
             }
         }
 
-        public void SplitPathAtNode(int splitNode)
+        public void SplitPathAtNode(int splitNode) // Split 1 path into 2 by adding a flag
         {
             Path path = GetPathAtNode(splitNode);
             if (path == null) return;
@@ -152,44 +158,22 @@ namespace PunkyFruitBat
             List<int> firstPart = path.Nodes.GetRange(0, splitIndex + 1);
             List<int> secondPart = path.Nodes.GetRange(splitIndex, path.Nodes.Count - splitIndex);
 
+            Carrier carrier = path.Carrier;
+
             RemovePath(path);
 
+            carrier.StopAllCoroutines();
+
             Path firstPath = new(flags[0], newFlag, firstPart, PathId);
+            manager.StartCoroutine(carrier.MoveCharacter(firstPath.CenterNode));
+            firstPath.SetCarrier(carrier);
             AddToAllPaths(firstPath);
+
             Path secondPath = new(newFlag, flags[1], secondPart, PathId);
             AddToAllPaths(secondPath);
         }
 
-        public void AddToAllPaths(Path newPath)
-        {
-            AllPaths[newPath.Id] = newPath;
-            PathId++;
-            foreach (int node in newPath.Nodes)
-            {
-                manager.NodeManager.GetNode(node).hasPath = true;
-            }
-
-            manager.UIManager.UpdateUIText("Paths", $"Paths: {AllPaths.Count}");
-        }
-
-        public void RemovePath(Path path)
-        {
-            for (int i = 0; i < path.Nodes.Count; i++)
-            {
-                Node node = manager.NodeManager.GetNode(path.Nodes[i]);
-                if (node != null)
-                {
-                    node.hasPath = false;
-                }
-            }
-
-            AllPaths.Remove(path.Id);
-            path.OnPathRemoved();
-
-            manager.UIManager.UpdateUIText("Paths", $"Paths: {AllPaths.Count}");
-        }
-
-        public void JoinPathAtNode(int joinNode)
+        public void JoinPathAtNode(int joinNode) // Join two paths at a node after removing a flag
         {
             List<Path> PathsToJoin = AllPaths.Values.Where(p => p.Nodes.Contains(joinNode)).ToList();
             if (PathsToJoin.Count != 2) return;
@@ -201,8 +185,14 @@ namespace PunkyFruitBat
 
             if (joinedNodes == null) return;
 
+            Carrier carrier = path1.Carrier;
+
+            carrier = path1.Carrier ? path1.Carrier : path2.Carrier;
+
             RemovePath(path1);
             RemovePath(path2);
+
+            carrier.StopAllCoroutines();
 
             Flag[] flags = manager.FlagManager.GetBothFlagsFromPath(joinedNodes);
 
@@ -215,6 +205,8 @@ namespace PunkyFruitBat
             }
             else
             {
+                manager.StartCoroutine(carrier.MoveCharacter(joinedPath.CenterNode));
+                joinedPath.SetCarrier(carrier);
                 AddToAllPaths(joinedPath);
             }
         }
@@ -261,6 +253,40 @@ namespace PunkyFruitBat
             return joinedNodes;
         }
 
+        public void AddToAllPaths(Path newPath)
+        {
+            AllPaths[newPath.Id] = newPath;
+            PathId++;
+            foreach (int node in newPath.Nodes)
+            {
+                manager.NodeManager.GetNode(node).SetPathOnNode(newPath);
+            }
+
+            manager.UIManager.UpdateUIText("Paths", $"Paths: {AllPaths.Count}");
+
+            OnPathCreationCompleted?.Invoke(newPath);
+        }
+
+        public void RemovePath(Path path)
+        {
+            for (int i = 0; i < path.Nodes.Count; i++)
+            {
+                Node node = manager.NodeManager.GetNode(path.Nodes[i]);
+                if (node != null)
+                {
+                    node.RemovePathOnNode();
+                }
+            }
+
+            AllPaths.Remove(path.Id);
+
+            OnPathRemoved?.Invoke(path);
+
+            path.OnPathRemoved();
+
+            manager.UIManager.UpdateUIText("Paths", $"Paths: {AllPaths.Count}");
+        }
+
         public Path GetPathAtNode(int nodeIndex)
         {
             foreach (Path path in AllPaths.Values)
@@ -271,20 +297,6 @@ namespace PunkyFruitBat
                 }
             }
             return null;
-        }
-
-        // Calculate how many paths are attached to a flag
-        public int GetPathCount(int vertexIndex)
-        {
-            int count = 0;
-            foreach (var path in manager.PathManager.GetAllPaths.Values)
-            {
-                if (path.Nodes.Contains(vertexIndex))
-                {
-                    count++;
-                }
-            }
-            return count;
         }
 
         public void Unsubscribe()

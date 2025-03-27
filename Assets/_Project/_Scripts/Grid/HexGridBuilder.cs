@@ -120,7 +120,7 @@ namespace PunkyFruitBat
                                 chunkTriangles.Add(vertexIndices[i + 1]);
                             }
 
-                            // Set the center node's isCenterNode property
+                            // Set the center node's isCentreNode property
                             VertexKey centerKey = new(center.x, center.y);
                             if (vertexMap.TryGetValue(centerKey, out int centerGlobalIndex))
                             {
@@ -200,13 +200,13 @@ namespace PunkyFruitBat
                     continue;
                 }
 
-                node.vertexIndex = i;
-                node.position = globalVertices[i];
+                node.SetVertexIndex(i);
+                node.SetPosition(globalVertices[i]);
                 editableVerticesIndices[i] = node;
 
                 if (centreVertices.Contains(i))
                 {
-                    node.isCenterNode = true;
+                    node.SetCenterNode(true);
                 }
             }
 

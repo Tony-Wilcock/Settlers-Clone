@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 namespace PunkyFruitBat
 {
@@ -11,6 +12,7 @@ namespace PunkyFruitBat
 
         public TMP_Text pathText;
         public TMP_Text flagText;
+        public TMP_Text fpsText;
         public TMP_Text debugText;
 
         [SerializeField] private GameObject nodePanel;
@@ -22,6 +24,17 @@ namespace PunkyFruitBat
             HideAllPanels();
             ValidateTextReferences(); // Ensure all text fields are assigned
             manager = HexGridManager.Instance; // Cache HexGridManager instance
+
+            StartCoroutine(UpdateFpsText()); // Start FPS text update coroutine
+        }
+
+        private IEnumerator UpdateFpsText()
+        {
+            while (true)
+            {
+                yield return WaitForSecondsFactory.Get(0.1f);
+                if (fpsText != null) fpsText.text = $"FPS: {Mathf.RoundToInt(1f / Time.deltaTime)}"; // Update FPS text
+            }
         }
 
         private void ValidateTextReferences()

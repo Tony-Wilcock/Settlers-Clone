@@ -13,7 +13,7 @@ namespace PunkyFruitBat
         Storehouse = 2,
         WoodCuttersHut = 3,
         GrainFarm = 4,
-        Forester = 5,
+        ForestersHut = 5,
         Sawmill = 6,
         Quarry = 7,
         Well = 8,
@@ -24,7 +24,7 @@ namespace PunkyFruitBat
         PigFarm = 13,
         Slaughterhouse = 14,
         Mine = 15,  // Generic mine, could be specialized later
-        Barracks = 16,
+        Military = 16,
         Blacksmith = 17,
         ChargingStation = 18, // For robots
         RobotFactory = 19,
@@ -37,12 +37,14 @@ namespace PunkyFruitBat
         Large
     }
 
+    [System.Serializable]
     public class BuildingManager
     {
         private HexGridManager manager;
 
         private BuildingPrefabs_SO buildingPrefabs;
 
+        [SerializeField] private int hqIndex = 50;
         public Building_HQ HQ { get; private set; }
 
         public void Initialise(HexGridManager manager, BuildingPrefabs_SO buildingPrefabs_SO)
@@ -62,14 +64,14 @@ namespace PunkyFruitBat
 
         private void BuildHq()
         {
-            TryBuildBuilding(50, BuildingType.HQ);
+            TryBuildBuilding(hqIndex, BuildingType.HQ);
         }
 
         private void TryBuildBuilding(int vertexIndex, BuildingType buildingType)
         {
             if (!CanPlaceBuilding(vertexIndex, buildingType)) return;
 
-            GameObject newBuilding = UnityEngine.Object.Instantiate(buildingPrefabs.buildingPrefabs[(int)buildingType], manager.NodeManager.GetNodePosition(vertexIndex), Quaternion.identity);
+            GameObject newBuilding = GameObject.Instantiate(buildingPrefabs.buildingPrefabs[(int)buildingType], manager.NodeManager.GetNodePosition(vertexIndex), Quaternion.identity);
             newBuilding.transform.SetParent(manager.BuildingTransform);
             Building building = newBuilding.GetComponent<Building>();
             building.InitialiseBuild(manager, this, buildingType, vertexIndex);
@@ -81,10 +83,10 @@ namespace PunkyFruitBat
         {
             if (buildingType == BuildingType.None || (buildingType == BuildingType.HQ && HQ != null)) return false;
             Node vertexIndexNodeData = manager.NodeManager.GetNode(vertexIndex);
-            if (vertexIndexNodeData == null || vertexIndexNodeData.hasBuilding || vertexIndexNodeData.hasFlag || vertexIndexNodeData.hasObstacle || vertexIndexNodeData .isEdgeNode) return false;
+            if (vertexIndexNodeData == null || vertexIndexNodeData.HasBuilding || vertexIndexNodeData.HasFlag || vertexIndexNodeData.HasObstacle || vertexIndexNodeData .IsEdgeNode) return false;
             int entranceIndex = manager.NodeManager.GetNeighbourInDirection(vertexIndex, Direction.Southeast);
             Node entranceNodeData = manager.NodeManager.GetNode(entranceIndex);
-            if (!manager.FlagManager.CanPlaceFlag(entranceIndex) && !entranceNodeData.hasFlag) return false;
+            if (!manager.FlagManager.CanPlaceFlag(entranceIndex) && !entranceNodeData.HasFlag) return false;
             BuildingSize BuildingSize = GetBuildingSize(buildingType);
             int[] reservedNodes = GetReservedNodes(vertexIndex, BuildingSize);
             if (BuildingSize == BuildingSize.Large && reservedNodes.Length < 4) return false;
@@ -99,7 +101,7 @@ namespace PunkyFruitBat
                 BuildingType.HQ => BuildingSize.Large,
                 BuildingType.Storehouse => BuildingSize.Medium,
                 BuildingType.WoodCuttersHut => BuildingSize.Small,
-                BuildingType.Forester => BuildingSize.Small,
+                BuildingType.ForestersHut => BuildingSize.Small,
                 BuildingType.Sawmill => BuildingSize.Medium,
                 BuildingType.Quarry => BuildingSize.Small,
                 BuildingType.Well => BuildingSize.Small,
@@ -111,7 +113,7 @@ namespace PunkyFruitBat
                 BuildingType.PigFarm => BuildingSize.Large,
                 BuildingType.Slaughterhouse => BuildingSize.Medium,
                 BuildingType.Mine => BuildingSize.Small,
-                BuildingType.Barracks => BuildingSize.Small,
+                BuildingType.Military => BuildingSize.Small,
                 BuildingType.Blacksmith => BuildingSize.Medium,
                 _ => BuildingSize.Small,
             };
@@ -155,7 +157,33 @@ namespace PunkyFruitBat
         public bool IsReservedNodeValid(int reservedNode)
         {
             Node nodeData = manager.NodeManager.GetNode(reservedNode);
-            return nodeData != null && !nodeData.hasBuilding && !nodeData.hasFlag && !nodeData.hasObstacle && !nodeData.isEdgeNode;
+            return nodeData != null && !nodeData.HasBuilding && !nodeData.HasFlag && !nodeData.HasObstacle && !nodeData.IsEdgeNode;
+        }
+
+        public int GetStorehouseNode()
+        {
+            return HQ.CenterIndex;
+        }
+
+        public int GetStorehouseEntranceNode()
+        {
+            return HQ.EntranceIndex;
+        }
+
+        public Building GetBuildingAtNode(int nodeIndex)
+        {
+            Node node = manager.NodeManager.GetNode(nodeIndex);
+            return node.GetBuildingOnNode();
+        }
+
+        public int GetBuildingNode(Building building)
+        {
+            return building.CenterIndex;
+        }
+
+        public int GetEntranceNode(Building building)
+        {
+            return building.EntranceIndex;
         }
 
         public void Unsubscribe()

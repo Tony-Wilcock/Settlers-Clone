@@ -22,9 +22,9 @@ namespace PunkyFruitBat
             edgeVertices.Clear();
             for (int i = 0; i < manager.EditableVerticesIndices.Length; i++)
             {
-                if (manager.AdjacencyList[manager.EditableVerticesIndices[i].vertexIndex].Count < 6)
+                if (manager.AdjacencyList[manager.EditableVerticesIndices[i].VertexIndex].Count < 6)
                 {
-                    edgeVertices.Add(manager.EditableVerticesIndices[i].vertexIndex); //Make sure you are adding the vertex index here.
+                    edgeVertices.Add(manager.EditableVerticesIndices[i].VertexIndex); //Make sure you are adding the vertex index here.
                 }
             }
             return edgeVertices;
