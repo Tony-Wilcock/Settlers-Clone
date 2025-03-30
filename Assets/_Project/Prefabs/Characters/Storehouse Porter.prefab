@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7730832968095691236}
-  - component: {fileID: -5205194021073811236}
+  - component: {fileID: 6492100777575151426}
   m_Layer: 0
-  m_Name: Builder
+  m_Name: Storehouse Porter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -33,7 +33,7 @@ Transform:
   - {fileID: 1926045561831827981}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-5205194021073811236
+--- !u!114 &6492100777575151426
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -42,10 +42,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 5665053327307811543}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53c057dcbf24c8c4ea625527fa0c05d5, type: 3}
+  m_Script: {fileID: 11500000, guid: 15dd36681d46e4446bebc6a537adc101, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterType: 1
+  characterType: 3
+  <HomeNodeIndex>k__BackingField: 0
   <CurrentNodeIndex>k__BackingField: 0
 --- !u!1 &7037745781429970408
 GameObject:
@@ -111,7 +112,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1048bacf27762a34e8745054223f4edb, type: 2}
+  - {fileID: 2100000, guid: eef1788c8c04b154e87dab964f53abe4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

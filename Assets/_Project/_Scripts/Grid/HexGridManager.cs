@@ -14,17 +14,18 @@ namespace PunkyFruitBat
 
         public event Action OnGridComplete;
 
+        [field: SerializeField] public Flag FlagPrefab { get; private set; }
+        [field: SerializeField] public GameObject TempPathVisualPrefab { get; private set; }
+        [field: SerializeField] public GameObject PathVisualPrefab { get; private set; }
+        [field: SerializeField] public GameObject NodePrefab { get; private set; }
         [field: SerializeField] public IconPrefabs_SO IconPrefabs { get; private set; }
         [field: SerializeField] public BuildingPrefabs_SO BuildingPrefabs { get; private set; }
         [field: SerializeField] public CharacterPrefabs_SO CharacterPrefabs { get; private set; }
-        [SerializeField] private Flag flagPrefab;
-        [field: SerializeField] public GameObject PathVisualPrefab { get; private set; }
-        [SerializeField] private GameObject tempPathVisualPrefab;
+        [field: SerializeField] public ResourcePrefabs_SO ResourcePrefabs { get; private set; }
 
         public int NearestNode => nodeManager.NearestNodeIndex;
 
         [field: SerializeField] public bool IsDebugModeActive { get; set; } = false;
-        [field: SerializeField] public GameObject NodePrefab { get; private set; }
         [field: SerializeField] public int SelectedNode { get; private set; }
         [field: SerializeField] public Transform ChunksTransform { get; private set; }
         [field: SerializeField] public Transform NodesTransform { get; private set; }
@@ -52,6 +53,7 @@ namespace PunkyFruitBat
         [SerializeField] private FlagManager flagManager = new();
         [SerializeField] private BuildingManager buildingManager = new();
         [SerializeField] private CharacterManager characterManager = new();
+        [SerializeField] private ResourceManager resourceManager = new();
 
         public HexGridSettings Settings => settings;
         public Input_SO Input_SO => input;
@@ -65,6 +67,7 @@ namespace PunkyFruitBat
         public PathManager PathManager => pathManager;
         public BuildingManager BuildingManager => buildingManager;
         public CharacterManager CharacterManager => characterManager;
+        public ResourceManager ResourceManager => resourceManager;
 
         #endregion Components
 
@@ -101,16 +104,17 @@ namespace PunkyFruitBat
             adjacencyBuilder.Initialise(this);
             edgeIdentifier.Initialise(this);
             gridBuilder.Initialise(this);
-            nodeSelector.Initialise(this);
-            flagManager.Initialise(this, flagPrefab);
-            pathManager.Initialise(this, PathVisualPrefab, tempPathVisualPrefab);
-            nodeManager.Initialise(this);
-            buildingManager.Initialise(this, BuildingPrefabs);
-            iconPicker.Initialise(this, IconPrefabs);
-            characterManager.Initialise(this, CharacterPrefabs);
 
-            cameraManager = cameraManager != null ? cameraManager : FindFirstObjectByType<CameraManager>();
-            uiManager = uiManager != null ? uiManager : FindFirstObjectByType<UIManager>();
+            //nodeSelector.Initialise(this);
+            //flagManager.Initialise(this, flagPrefab);
+            //pathManager.Initialise(this, PathVisualPrefab, tempPathVisualPrefab);
+            //nodeManager.Initialise(this);
+            //buildingManager.Initialise(this, BuildingPrefabs);
+            //iconPicker.Initialise(this, IconPrefabs);
+            //characterManager.Initialise(this, CharacterPrefabs);
+
+            //cameraManager = cameraManager != null ? cameraManager : FindFirstObjectByType<CameraManager>();
+            //uiManager = uiManager != null ? uiManager : FindFirstObjectByType<UIManager>();
 
             InitializeGame();
 
@@ -131,7 +135,7 @@ namespace PunkyFruitBat
 
         private void InitializeGame()
         {
-            globalVertices = new Vector3[Settings.width * Settings.height * 7];
+            globalVertices = new Vector3[Settings.width * Settings.height * 7]; // 7 vertices per hexagon
 
             GenerateGrid();
         }
@@ -180,6 +184,18 @@ namespace PunkyFruitBat
             }
 
             isGridGenerated = true;
+
+            nodeSelector.Initialise(this);
+            flagManager.Initialise(this, FlagPrefab);
+            pathManager.Initialise(this, PathVisualPrefab, TempPathVisualPrefab);
+            nodeManager.Initialise(this);
+            buildingManager.Initialise(this, BuildingPrefabs);
+            iconPicker.Initialise(this, IconPrefabs);
+            characterManager.Initialise(this, CharacterPrefabs);
+            resourceManager.Initialise(this, ResourcePrefabs);
+
+            cameraManager = cameraManager != null ? cameraManager : FindFirstObjectByType<CameraManager>();
+            uiManager = uiManager != null ? uiManager : FindFirstObjectByType<UIManager>();
 
             OnGridComplete?.Invoke();
 

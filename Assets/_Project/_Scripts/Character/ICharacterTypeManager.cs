@@ -21,8 +21,6 @@ namespace PunkyFruitBat
         void InstantlyReturnCharacterInstance(Character character);
 
         // Optional: Methods to handle specific events if needed
-        void HandlePathCreationOrConnectionChange(Path path);
-        void HandlePathRemoval(Path path);
         void HandleGridComplete(); // If specific setup is needed after grid is done
 
         // Clean up resources or subscriptions

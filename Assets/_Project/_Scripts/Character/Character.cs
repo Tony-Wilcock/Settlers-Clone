@@ -15,6 +15,7 @@ namespace PunkyFruitBat
         protected CharacterManager characterManager;
 
         protected float moveSpeed = 5f;
+        [field: SerializeField] public int HomeNodeIndex { get; protected set; }
         [field: SerializeField] public int CurrentNodeIndex { get; private set; }
 
         protected virtual void Awake()
@@ -27,6 +28,12 @@ namespace PunkyFruitBat
         {
             this.characterType = characterType;
             CurrentNodeIndex = startNode;
+            HomeNodeIndex = startNode;
+        }
+
+        public void SetHomeNodeIndex(int index)
+        {
+            HomeNodeIndex = index;
         }
 
         /// <summary>
@@ -76,10 +83,9 @@ namespace PunkyFruitBat
                 Building startBuilding = currentNode.GetBuildingOnNode();
                 if (startBuilding != null && startBuilding.EntranceIndex != CurrentNodeIndex)
                 {
-                    Debug.Log($"Starting inside building {CurrentNodeIndex}. Moving to entrance {startBuilding.EntranceIndex} first.");
                     // Use MoveAlongRoute for direct node-to-node (inside building to entrance)
                     yield return StartCoroutine(MoveAlongRoute(new List<int> { CurrentNodeIndex, startBuilding.EntranceIndex }));
-                    // CurrentNodeIndex should now be the entrance index after MoveAlongRoute completes
+                    // StartNodeIndex should now be the entrance index after MoveAlongRoute completes
                     pathfindingStartIndex = CurrentNodeIndex; // Update the starting point for the main pathfinding
                 }
                 else if (startBuilding == null)
@@ -99,7 +105,6 @@ namespace PunkyFruitBat
                     // Only pathfind to the entrance if we aren't already there
                     if (pathfindingStartIndex != targetBuilding.EntranceIndex)
                     {
-                        Debug.Log($"Destination {endNodeIndex} is inside a building. Pathfinding to entrance {targetBuilding.EntranceIndex}.");
                         pathfindingEndIndex = targetBuilding.EntranceIndex; // Target the entrance for the main move
                     }
                     else
@@ -107,7 +112,6 @@ namespace PunkyFruitBat
                         // We are starting at the entrance of the target building.
                         // No main pathfinding needed, just the final step inside.
                         pathfindingEndIndex = pathfindingStartIndex; // Prevent MoveCharacterToDestinationCoroutine call
-                        Debug.Log($"Starting at entrance {pathfindingStartIndex} of target building {endNodeIndex}.");
                     }
                     movingToBuildingInterior = true; // Flag that we need the final step into the building
                 }
@@ -121,7 +125,6 @@ namespace PunkyFruitBat
                 {
                     movingToBuildingInterior = false;
                     pathfindingEndIndex = endNodeIndex; // Target the entrance node directly
-                    Debug.Log($"Destination {endNodeIndex} is a building entrance node.");
                 }
             }
 
@@ -129,22 +132,16 @@ namespace PunkyFruitBat
             // Move from the adjusted start index to the adjusted end index (often the building entrance).
             if (pathfindingStartIndex != pathfindingEndIndex)
             {
-                Debug.Log($"Executing main movement from {pathfindingStartIndex} to {pathfindingEndIndex}.");
                 yield return StartCoroutine(MoveCharacterToDestinationCoroutine(pathfindingStartIndex, pathfindingEndIndex));
-                // CurrentNodeIndex should now be pathfindingEndIndex
-            }
-            else
-            {
-                Debug.Log($"Skipping main movement as start ({pathfindingStartIndex}) and end ({pathfindingEndIndex}) are the same.");
+                // StartNodeIndex should now be pathfindingEndIndex
             }
 
             // --- Step 4: Handle Final Step Into Building Interior (if flagged) ---
             if (movingToBuildingInterior && CurrentNodeIndex == pathfindingEndIndex) // Check we reached the entrance
             {
-                Debug.Log($"Executing final step from entrance {CurrentNodeIndex} into building {endNodeIndex}.");
                 // Use MoveAlongRoute for direct node-to-node (entrance to inside building)
                 yield return StartCoroutine(MoveAlongRoute(new List<int> { CurrentNodeIndex, endNodeIndex }));
-                // CurrentNodeIndex should now be endNodeIndex
+                // StartNodeIndex should now be endNodeIndex
             }
             else if (movingToBuildingInterior && CurrentNodeIndex != pathfindingEndIndex)
             {
@@ -154,7 +151,6 @@ namespace PunkyFruitBat
 
             // --- Step 5: Execute Callback ---
             // This point is reached after all potential movement steps are completed or skipped.
-            Debug.Log($"MoveCharacter to {endNodeIndex} finished. Final node: {CurrentNodeIndex}. Invoking callback.", this);
             try // Wrap callback invocation in try-catch for safety
             {
                 onComplete?.Invoke();
@@ -182,7 +178,7 @@ namespace PunkyFruitBat
             yield return StartCoroutine(MoveAlongRoute(path));
         }
 
-        public IEnumerator MoveAlongRoute(List<int> route)
+        private IEnumerator MoveAlongRoute(List<int> route)
         {
             for (int i = 0; i < route.Count; i++)
             {

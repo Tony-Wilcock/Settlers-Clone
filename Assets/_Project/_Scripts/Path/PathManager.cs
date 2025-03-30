@@ -299,6 +299,25 @@ namespace PunkyFruitBat
             return null;
         }
 
+        public List<Flag> FlagsAlongRoute(List<int> route)
+        {
+            List<Flag> flags = new();
+            foreach (int node in route)
+            {
+                Node nodeData = manager.NodeManager.GetNode(node);
+                if (nodeData == null) continue;
+                if (nodeData.HasFlag)
+                {
+                    Flag flag = manager.FlagManager.TryGetFlag(node);
+                    if (flag != null)
+                    {
+                        flags.Add(flag);
+                    }
+                }
+            }
+            return flags;
+        }
+
         public void Unsubscribe()
         {
             pathBuilder.OnPathCancelled -= () => IsInPathCreationMode = false;

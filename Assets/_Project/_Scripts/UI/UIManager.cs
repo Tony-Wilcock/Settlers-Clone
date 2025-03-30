@@ -32,7 +32,7 @@ namespace PunkyFruitBat
         {
             while (true)
             {
-                yield return WaitForSecondsFactory.Get(0.1f);
+                yield return WaitForSecondsFactory.WaitCoroutine(0.1f);
                 if (fpsText != null) fpsText.text = $"FPS: {Mathf.RoundToInt(1f / Time.deltaTime)}"; // Update FPS text
             }
         }

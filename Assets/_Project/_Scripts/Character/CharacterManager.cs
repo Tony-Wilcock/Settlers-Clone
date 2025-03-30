@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,8 +6,10 @@ namespace PunkyFruitBat
 {
     public enum CharacterType
     {
-        Carrier = 0,
-        Builder = 1,
+        Carrier,
+        Builder,
+        WoodCutter,
+        StorehousePorter,
     }
 
     // CharacterManager now acts as a coordinator
@@ -28,7 +31,6 @@ namespace PunkyFruitBat
 
         public virtual void Initialise(HexGridManager manager, CharacterPrefabs_SO characterPrefabs)
         {
-            Debug.Log("Initialising CharacterManager (Coordinator)...");
             this.manager = manager;
             this.characterPrefabs = characterPrefabs;
 
@@ -37,9 +39,6 @@ namespace PunkyFruitBat
 
             // Subscribe to events - these handlers will now delegate
             manager.OnGridComplete += HandleGridComplete;
-            manager.PathManager.OnPathCreationCompleted += HandlePathCreationOrConnectionChange;
-            manager.PathManager.OnPathRemoved += HandlePathRemoved; // Changed name for clarity
-            Debug.Log("CharacterManager initialisation complete.");
         }
 
         private void InitialiseSpecificManagers()
@@ -55,6 +54,16 @@ namespace PunkyFruitBat
             BuilderManager builderManager = new();
             Transform builderParent = CreateOrFindParentTransform(CharacterType.Builder.ToString());
             RegisterAndInitialiseManager(builderManager, builderParent);
+
+            // --- WoodCutterManager Setup ---
+            WoodCutterManager woodCutterManager = new();
+            Transform woodCutterParent = CreateOrFindParentTransform(CharacterType.WoodCutter.ToString());
+            RegisterAndInitialiseManager(woodCutterManager, woodCutterParent);
+
+            // --- StorehousePorterManager Setup ---
+            StorehousePorterManager storehousePorterManager = new();
+            Transform storehousePorterParent = CreateOrFindParentTransform(CharacterType.StorehousePorter.ToString());
+            RegisterAndInitialiseManager(storehousePorterManager, storehousePorterParent);
         }
 
         private Transform CreateOrFindParentTransform(string name)
@@ -102,7 +111,6 @@ namespace PunkyFruitBat
                 typeManagers.Add(type, specificManager);
                 // Pass dependencies down
                 specificManager.Initialise(this, manager, characterPrefabs, parentTransform);
-                Debug.Log($"Registered and Initialised manager for {type}.");
             }
             else
             {
@@ -110,49 +118,29 @@ namespace PunkyFruitBat
             }
         }
 
+        public ICharacterTypeManager GetSpecificManager(CharacterType type)
+        {
+            if (typeManagers.TryGetValue(type, out var specificManager))
+            {
+                return specificManager;
+            }
+            else
+            {
+                Debug.LogError($"No manager registered for CharacterType: {type}. Cannot get specific manager.");
+                return null;
+            }
+        }
+
         // --- Event Handlers (Delegation) ---
 
         private void HandleGridComplete()
         {
-            Debug.Log("CharacterManager: Grid Complete event received. Notifying specific managers.");
             // Notify all managers that the grid is complete
             foreach (var specificManager in typeManagers.Values)
             {
                 specificManager.HandleGridComplete();
             }
         }
-
-        private void HandlePathCreationOrConnectionChange(Path path)
-        {
-            // Decide which managers care about path creation/changes. Currently, only Carriers.
-            if (typeManagers.TryGetValue(CharacterType.Carrier, out var carrierManager))
-            {
-                // Optional: Add check if carrierManager is null, though dictionary should prevent that if registration worked.
-                Debug.Log($"CharacterManager: Path event for path {path.Id}. Delegating to CarrierManager.");
-                carrierManager.HandlePathCreationOrConnectionChange(path);
-            }
-            else
-            {
-                Debug.LogWarning("CharacterManager: Received path event, but no CarrierManager registered.");
-            }
-            // If other types needed path info, delegate to them here too.
-        }
-
-        private void HandlePathRemoved(Path path)
-        {
-            // Decide which managers care about path removal. Currently, only Carriers (to unassign).
-            if (typeManagers.TryGetValue(CharacterType.Carrier, out var carrierManager))
-            {
-                Debug.Log($"CharacterManager: Path removal event for path {path.Id}. Delegating to CarrierManager.");
-                carrierManager.HandlePathRemoval(path);
-            }
-            else
-            {
-                Debug.LogWarning("CharacterManager: Received path removal event, but no CarrierManager registered.");
-            }
-            // If other types needed path info, delegate to them here too.
-        }
-
 
         // --- Public Interface Methods (Delegation) ---
 
@@ -210,11 +198,6 @@ namespace PunkyFruitBat
             if (manager != null) // Check if manager exists before unsubscribing
             {
                 manager.OnGridComplete -= HandleGridComplete;
-                if (manager.PathManager != null) // Check if PathManager exists
-                {
-                    manager.PathManager.OnPathCreationCompleted -= HandlePathCreationOrConnectionChange;
-                    manager.PathManager.OnPathRemoved -= HandlePathRemoved;
-                }
             }
 
             // Unsubscribe specific managers

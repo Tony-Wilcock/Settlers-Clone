@@ -1,19 +1,27 @@
-using UnityEngine;
+using System.Collections.Generic;
 
 namespace PunkyFruitBat
 {
     public class Building_WoodcuttersHut : Building
     {
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        public override void SetBuildingCost()
         {
-        
+            buildingCost = new Dictionary<ResourceType, int>
+            {
+                { ResourceType.Wood, 2 },
+                { ResourceType.Stone, 0 }
+            };
         }
 
-        // Update is called once per frame
-        void Update()
+        protected override void AssignWorkerBasedOnBuildingType()
         {
-        
+            WoodCutter woodCutter = manager.CharacterManager.GetCharacter(CharacterType.WoodCutter) as WoodCutter;
+            if (woodCutter != null)
+            {
+                AssignedWorker = woodCutter;
+            }
+
+            StartCoroutine(woodCutter.MoveCharacter(CenterIndex));
         }
     }
 }

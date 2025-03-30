@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -40,12 +41,18 @@ namespace PunkyFruitBat
     [System.Serializable]
     public class BuildingManager
     {
-        private HexGridManager manager;
+        public event Action<Building> OnBuildingRequestSubmitted;
 
+        private HexGridManager manager;
         private BuildingPrefabs_SO buildingPrefabs;
 
         [SerializeField] private int hqIndex = 50;
         public Building_HQ HQ { get; private set; }
+
+        private Dictionary<int, Building> AllBuildings { get; } = new Dictionary<int, Building>();
+        public IReadOnlyDictionary<int, Building> GetAllBuildings => AllBuildings;
+
+        public Queue<Building> UnconnectedBuildings { get; set; } = new();
 
         public void Initialise(HexGridManager manager, BuildingPrefabs_SO buildingPrefabs_SO)
         {
@@ -58,12 +65,19 @@ namespace PunkyFruitBat
                 return; // Exit the constructor if BuildingPrefabs is null
             }
 
-            manager.OnGridComplete += BuildHq;
-            manager.OnCreateBuildingButtonPressed += TryBuildBuilding;
+            manager.OnGridComplete += HandleOnGridComplete;
+            //manager.OnCreateBuildingButtonPressed += TryBuildBuilding;
         }
 
-        private void BuildHq()
+        private void HandleOnGridComplete()
         {
+
+            // Subscribe to BuilderManager's OnBuildingConstructionComplete event
+            if (manager.CharacterManager.GetSpecificManager(CharacterType.Builder) is BuilderManager builderManager)
+            {
+                builderManager.OnBuildingConstructionComplete += HandleBuildingConstructionComplete;
+            }
+            manager.OnCreateBuildingButtonPressed += TryBuildBuilding;
             TryBuildBuilding(hqIndex, BuildingType.HQ);
         }
 
@@ -76,14 +90,23 @@ namespace PunkyFruitBat
             Building building = newBuilding.GetComponent<Building>();
             building.InitialiseBuild(manager, this, buildingType, vertexIndex);
 
-            if (buildingType == BuildingType.HQ) HQ = (Building_HQ)building;
+            if (buildingType == BuildingType.HQ)
+            {
+                HQ = (Building_HQ)building;
+                AddToAllBuildings(building);
+                HandleBuildingConstructionComplete(building);
+                return;
+            }
+
+            OnBuildingRequestSubmitted?.Invoke(building);
+            AddToAllBuildings(building);
         }
 
         public bool CanPlaceBuilding(int vertexIndex, BuildingType buildingType)
         {
             if (buildingType == BuildingType.None || (buildingType == BuildingType.HQ && HQ != null)) return false;
             Node vertexIndexNodeData = manager.NodeManager.GetNode(vertexIndex);
-            if (vertexIndexNodeData == null || vertexIndexNodeData.HasBuilding || vertexIndexNodeData.HasFlag || vertexIndexNodeData.HasObstacle || vertexIndexNodeData .IsEdgeNode) return false;
+            if (vertexIndexNodeData == null || vertexIndexNodeData.HasBuilding || vertexIndexNodeData.HasFlag || vertexIndexNodeData.HasObstacle || vertexIndexNodeData.IsEdgeNode) return false;
             int entranceIndex = manager.NodeManager.GetNeighbourInDirection(vertexIndex, Direction.Southeast);
             Node entranceNodeData = manager.NodeManager.GetNode(entranceIndex);
             if (!manager.FlagManager.CanPlaceFlag(entranceIndex) && !entranceNodeData.HasFlag) return false;
@@ -160,6 +183,25 @@ namespace PunkyFruitBat
             return nodeData != null && !nodeData.HasBuilding && !nodeData.HasFlag && !nodeData.HasObstacle && !nodeData.IsEdgeNode;
         }
 
+        private void HandleBuildingConstructionComplete(Building building)
+        {
+            Debug.Log("Building construction complete: " + building.BuildingType);
+            building.BuildingGFXTransform.gameObject.SetActive(true);
+            building.IsConstructed = true;
+            building.AssignedBuilder = null;
+        }
+
+        public void AddToAllBuildings(Building building)
+        {
+            AllBuildings.Add(building.CenterIndex, building);
+        }
+
+        public void RemoveFromAllBuildings(Building building)
+        {
+            // TODO: Handle OnRemeved in Building
+            AllBuildings.Remove(building.CenterIndex);
+        }
+
         public int GetStorehouseNode()
         {
             return HQ.CenterIndex;
@@ -189,7 +231,7 @@ namespace PunkyFruitBat
         public void Unsubscribe()
         {
             manager.OnCreateBuildingButtonPressed -= TryBuildBuilding;
-            manager.OnGridComplete -= BuildHq;
+            manager.OnGridComplete -= HandleOnGridComplete;
         }
     }
 }

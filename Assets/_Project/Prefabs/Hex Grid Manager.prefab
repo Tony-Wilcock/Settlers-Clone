@@ -162,14 +162,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e44b2648c5498164ca12653ce1731509, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <FlagPrefab>k__BackingField: {fileID: 1048092472111154723, guid: a36cbdf4c686c5a4e948bf89e615e184, type: 3}
+  <TempPathVisualPrefab>k__BackingField: {fileID: 5229257093658170596, guid: 2d5f321541484d74d87ddc600c1c6c20, type: 3}
+  <PathVisualPrefab>k__BackingField: {fileID: 5229257093658170596, guid: 2d5f321541484d74d87ddc600c1c6c20, type: 3}
+  <NodePrefab>k__BackingField: {fileID: 3368251634253158250, guid: 897651a7a0b745d458135f02266d28f4, type: 3}
   <IconPrefabs>k__BackingField: {fileID: 11400000, guid: b257b9a1e8efe8046a8fe0358b53669f, type: 2}
   <BuildingPrefabs>k__BackingField: {fileID: 11400000, guid: fe57a481f6b0fb248bdced4c67b3a4d5, type: 2}
   <CharacterPrefabs>k__BackingField: {fileID: 11400000, guid: 45670004781d6594c92c04c004b66985, type: 2}
-  flagPrefab: {fileID: 1048092472111154723, guid: a36cbdf4c686c5a4e948bf89e615e184, type: 3}
-  <PathVisualPrefab>k__BackingField: {fileID: 5229257093658170596, guid: 2d5f321541484d74d87ddc600c1c6c20, type: 3}
-  tempPathVisualPrefab: {fileID: 456280832284333750, guid: 4b6c4a9b162e0e847b67c566852b3dc3, type: 3}
+  <ResourcePrefabs>k__BackingField: {fileID: 11400000, guid: 8ff816320c88bb94b91e0d6d977c2dec, type: 2}
   <IsDebugModeActive>k__BackingField: 0
-  <NodePrefab>k__BackingField: {fileID: 3368251634253158250, guid: 897651a7a0b745d458135f02266d28f4, type: 3}
   <SelectedNode>k__BackingField: 0
   <ChunksTransform>k__BackingField: {fileID: 8414157247512803649}
   <NodesTransform>k__BackingField: {fileID: 6177394394289431594}
@@ -229,6 +230,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 149509480104892762}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2614526486362818721
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5910771721005708969}
+  m_Layer: 6
+  m_Name: StorehousePorters
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5910771721005708969
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2614526486362818721}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2253993831105291388}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4282916682225325504
 GameObject:
@@ -292,6 +324,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 149509480104892762}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5589036455489341331
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5540829108591264350}
+  m_Layer: 6
+  m_Name: WoodCutters
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5540829108591264350
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5589036455489341331}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2253993831105291388}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5793819593143272732
 GameObject:
   m_ObjectHideFlags: 0
@@ -323,6 +386,8 @@ Transform:
   m_Children:
   - {fileID: 3657313947663244934}
   - {fileID: 5625588269907760467}
+  - {fileID: 5540829108591264350}
+  - {fileID: 5910771721005708969}
   m_Father: {fileID: 149509480104892762}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5876096483683682418

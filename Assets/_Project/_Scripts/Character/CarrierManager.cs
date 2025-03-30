@@ -13,13 +13,15 @@ namespace PunkyFruitBat
         public override void Initialise(CharacterManager mainManager, HexGridManager gridManager, CharacterPrefabs_SO characterPrefabs, Transform parentTransform)
         {
             base.Initialise(mainManager, gridManager, characterPrefabs, parentTransform); // Call base initialisation
-            // Note: Pool initialisation is now tied to HandleGridComplete
+                                                                                          // Note: Pool initialisation is now tied to HandleGridComplete
+
+            gridManager.PathManager.OnPathCreationCompleted += HandlePathCreationOrConnectionChange;
+            gridManager.PathManager.OnPathRemoved += HandlePathRemoval;
         }
 
         // --- Pooling Logic (Moved from CharacterManager) ---
         private void InitialiseCarrierPool()
         {
-            Debug.Log("Initialising Carrier Pool...");
             carrierPool = new Queue<Carrier>();
             IncreaseCarrierPool(100); // Or read from config
         }
@@ -44,8 +46,7 @@ namespace PunkyFruitBat
                 if (typeSpecificParentTransform != null) characterGO.transform.SetParent(typeSpecificParentTransform);
                 else Debug.LogWarning($"Parent transform for {ManagedType} not set. Character '{characterGO.name}' will be at scene root.", characterGO);
 
-                Carrier carrier = characterGO.GetComponent<Carrier>();
-                if (carrier == null)
+                if (!characterGO.TryGetComponent<Carrier>(out Carrier carrier))
                 {
                     Debug.LogError($"Prefab for {ManagedType} is missing Carrier component!");
                     GameObject.Destroy(characterGO); // Clean up unusable instance
@@ -56,7 +57,6 @@ namespace PunkyFruitBat
                 characterGO.SetActive(false);
                 carrierPool.Enqueue(carrier);
             }
-            Debug.Log($"Increased carrier pool by {amount}. Total: {carrierPool.Count}");
         }
 
         public override Character GetCharacterInstance(int spawnNodeIndex = -1)
@@ -94,7 +94,9 @@ namespace PunkyFruitBat
             // Logic specific to returning a carrier (e.g., send back to storehouse)
             carrier.StopAllCoroutines(); // Stop current task
             // Start movement back to the storehouse (using the node index)
-            carrier.StartCoroutine(carrier.MoveCharacter(gridManager.BuildingManager.GetStorehouseNode(), () =>
+            int storehouseNode = gridManager.BuildingManager.GetStorehouseNode();
+            carrier.SetHomeNodeIndex(storehouseNode); // Reset home node
+            carrier.StartCoroutine(carrier.MoveCharacter(carrier.HomeNodeIndex, () =>
             {
                 // This callback executes *after* movement is complete
                 carrier.gameObject.SetActive(false); // Deactivate only after reaching storehouse
@@ -135,23 +137,22 @@ namespace PunkyFruitBat
             ProcessPathsAwaitingCarrierQueue(); // Check if this returned carrier can fulfil a waiting path request
         }
 
-
-        // --- Carrier-Specific Event Handling ---
-
         // Override the grid complete handler to initialise the pool
         public override void HandleGridComplete()
         {
             InitialiseCarrierPool();
         }
 
-        // Override path event handlers
-        public override void HandlePathCreationOrConnectionChange(Path path)
+
+        // --- Carrier-Specific Event Handling ---
+
+        private void HandlePathCreationOrConnectionChange(Path path)
         {
             TryAssignCarrierToPath(path);
             ProcessPathsAwaitingCarrierQueue(); // Check queue whenever a path changes
         }
 
-        public override void HandlePathRemoval(Path path)
+        private void HandlePathRemoval(Path path)
         {
             UnassignCarrierFromPath(path);
             // Also, remove the path from the waiting queue if it's there
@@ -188,44 +189,25 @@ namespace PunkyFruitBat
                 return;
             }
 
-            // Check walkability *before* getting a carrier from the pool
-            List<int> route = gridManager.PathManager.PathFinder.FindWalkableRouteThroughPaths(storehouseEntranceNode, path.CenterNode);
+            // Now try to get a carrier *only if* a route exists
+            Carrier carrier = GetCharacterInstance() as Carrier; // Get from pool (already handles increase if needed)
 
-            if (route != null && route.Count > 0)
+            if (carrier != null)
             {
-                Debug.Log($"[CarrierManager] Path {path.Id} connected and walkable. Attempting to assign carrier.");
-                // Now try to get a carrier *only if* a route exists
-                Carrier carrier = GetCharacterInstance() as Carrier; // Get from pool (already handles increase if needed)
+                // IMPORTANT: Set HasCarrier flag BEFORE starting movement
+                path.SetCarrier(carrier);
 
-                if (carrier != null)
-                {
-                    // IMPORTANT: Set HasCarrier flag BEFORE starting movement
-                    path.SetCarrier(carrier);
+                carrier.StartCoroutine(carrier.MoveCharacter(path.CenterNode));
 
-                    Debug.Log($"[CarrierManager] Assigning carrier {carrier.GetInstanceID()} to path {path.Id}. Starting movement.");
-                    // Start movement using the pre-calculated route
-                    // Ensure the MoveAlongRoute coroutine handles setting the carrier's state appropriately
-                    carrier.StartCoroutine(carrier.MoveAlongRoute(route));
-                    // Optional: Remove from waiting queue if it was there (handle potential queue rebuilding)
-                    // This check might be redundant if the queue processing handles it, but can be explicit
-                    if (gridManager.PathManager.UnconnectedPaths.Contains(path))
-                    {
-                        gridManager.PathManager.UnconnectedPaths.Dequeue();
-                    }
-                }
-                else
+                if (gridManager.PathManager.UnconnectedPaths.Contains(path))
                 {
-                    // Pool was empty *even after trying to increase it*
-                    Debug.LogWarning($"[CarrierManager] Path {path.Id} is walkable, but no carriers available in pool. Queuing.");
-                    if (!gridManager.PathManager.UnconnectedPaths.Contains(path))
-                    {
-                        gridManager.PathManager.UnconnectedPaths.Enqueue(path);
-                    }
+                    gridManager.PathManager.UnconnectedPaths.Dequeue();
                 }
             }
             else
             {
-                Debug.Log($"[CarrierManager] Path {path.Id} is connected but currently blocked or no route found. Queuing.");
+                // Pool was empty *even after trying to increase it*
+                Debug.LogWarning($"[CarrierManager] Path {path.Id} is walkable, but no carriers available in pool. Queuing.");
                 if (!gridManager.PathManager.UnconnectedPaths.Contains(path))
                 {
                     gridManager.PathManager.UnconnectedPaths.Enqueue(path);
@@ -241,7 +223,7 @@ namespace PunkyFruitBat
             Debug.Log($"[CarrierManager] Processing {currentQueueSize} paths awaiting carrier...");
 
             // Use a temporary list to avoid issues with modifying the queue while iterating
-            List<Path> pathsToProcess = new List<Path>(gridManager.PathManager.UnconnectedPaths);
+            List<Path> pathsToProcess = new(gridManager.PathManager.UnconnectedPaths);
             gridManager.PathManager.UnconnectedPaths.Clear(); // Clear original queue
 
             int processedCount = 0;
@@ -280,6 +262,12 @@ namespace PunkyFruitBat
                 ReturnCharacterInstance(carrier);
                 path.RemoveCarrier();
             }
+        }
+
+        public override void Unsubscribe()
+        {
+            gridManager.PathManager.OnPathCreationCompleted -= HandlePathCreationOrConnectionChange;
+            gridManager.PathManager.OnPathRemoved -= HandlePathRemoval;
         }
     }
 }

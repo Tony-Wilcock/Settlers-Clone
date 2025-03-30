@@ -27,8 +27,6 @@ namespace PunkyFruitBat
         public abstract void InstantlyReturnCharacterInstance(Character character);
 
         // Virtual methods for event handling - derived classes can override if they care
-        public virtual void HandlePathCreationOrConnectionChange(Path path) { } // Default: Do nothing
-        public virtual void HandlePathRemoval(Path path) { } // Default: Do nothing
         public virtual void HandleGridComplete() { } // Default: Do nothing
         public virtual void Unsubscribe() { } // Default: Do nothing, but derived might need it
     }

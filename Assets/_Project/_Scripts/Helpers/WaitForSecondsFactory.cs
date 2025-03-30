@@ -8,7 +8,7 @@ namespace PunkyFruitBat
     {
         private static readonly Dictionary<float, WaitForSeconds> _pool = new Dictionary<float, WaitForSeconds>();
 
-        public static WaitForSeconds Get(float seconds)
+        private static WaitForSeconds Get(float seconds)
         {
             if (!_pool.TryGetValue(seconds, out var waitForSeconds))
             {

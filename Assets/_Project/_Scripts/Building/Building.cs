@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PunkyFruitBat
@@ -10,6 +11,10 @@ namespace PunkyFruitBat
         [field: SerializeField] protected int centerIndex;
         [field: SerializeField] protected int entranceIndex;
         [field: SerializeField] protected int[] reservedNodes;
+        [field: SerializeField] protected Dictionary<ResourceType, int> buildingCost;
+        [field: SerializeField] protected bool isConstructed = false;
+        [field: SerializeField] public Builder AssignedBuilder { get; set; }
+        [field: SerializeField] public Character AssignedWorker { get; protected set; }
 
         public BuildingType BuildingType => buildingType;
         public BuildingSize BuildingSize => buildingSize;
@@ -17,6 +22,27 @@ namespace PunkyFruitBat
         public int CenterIndex => centerIndex;
         public int EntranceIndex => entranceIndex;
         public int[] ReservedNodes => reservedNodes;
+        public bool IsConstructed
+        {
+            get => isConstructed;
+            set => isConstructed = value;
+        }
+        public Dictionary<ResourceType, int> BuildingCost => buildingCost;
+        
+        // --- Construction Progress ---
+        public enum ConstructionStage
+        {
+            Planned,      // Initial state
+            AwaitingWood,
+            ConstructingWood,
+            AwaitingStone,
+            ConstructingStone,
+            Complete
+        }
+        [field: SerializeField] public ConstructionStage CurrentStage { get; protected set; } = ConstructionStage.Planned;
+
+        // Track resources delivered TO the site (simplification, assumes delivery happens instantly or builder fetches)
+        protected Dictionary<ResourceType, int> resourcesOnSite = new();
 
         protected HexGridManager manager;
         protected BuildingManager buildingManager;
@@ -32,15 +58,160 @@ namespace PunkyFruitBat
             this.entranceIndex = manager.NodeManager.GetNeighbourInDirection(centerIndex, Direction.Southeast);
             this.reservedNodes = buildingManager.GetReservedNodes(centerIndex, buildingSize);
 
-            Build(manager, buildingType, centerIndex);
+            SetBuildingCost();
+            Build();
+
+            //manager.OnGridComplete += DetermineInitialConstructionStage;
+            DetermineInitialConstructionStage();
         }
 
-        private void Build(HexGridManager manager, BuildingType buildingType, int centerIndex)
+        protected void DetermineInitialConstructionStage()
         {
-            gameObject.SetActive(true);
-            Debug.Log("Building " + buildingType + " at " + centerIndex);
+            // Ensure costs are set BEFORE this
+            if (buildingCost == null || buildingCost.Count == 0)
+            {
+                Debug.LogError($"BuildingCost not set for {buildingType}!", this);
+                CurrentStage = ConstructionStage.Complete; // Or some error state
+                return;
+            }
+
+            if (buildingCost.ContainsKey(ResourceType.Wood) && buildingCost[ResourceType.Wood] > 0)
+            {
+                CurrentStage = ConstructionStage.AwaitingWood;
+            }
+            else if (buildingCost.ContainsKey(ResourceType.Stone) && buildingCost[ResourceType.Stone] > 0)
+            {
+                CurrentStage = ConstructionStage.AwaitingStone;
+            }
+            else
+            {
+                CurrentStage = ConstructionStage.Complete; // No cost? Instantly built (like HQ?)
+                MarkConstructionComplete(true); // Mark as complete immediately
+            }
+            Debug.Log($"{buildingType} initial stage set to: {CurrentStage}");
+        }
+
+        public bool HasEnoughResourcesForStage(ConstructionStage stage)
+        {
+            if (buildingCost == null) return true; // No cost defined
+
+            switch (stage)
+            {
+                case ConstructionStage.AwaitingWood:
+                case ConstructionStage.ConstructingWood:
+                    if (buildingCost.TryGetValue(ResourceType.Wood, out int woodNeeded))
+                    {
+                        resourcesOnSite.TryGetValue(ResourceType.Wood, out int woodHave);
+                        return woodHave >= woodNeeded;
+                    }
+                    return true; // No wood cost defined for this building
+
+                case ConstructionStage.AwaitingStone:
+                case ConstructionStage.ConstructingStone:
+                    if (buildingCost.TryGetValue(ResourceType.Stone, out int stoneNeeded))
+                    {
+                        resourcesOnSite.TryGetValue(ResourceType.Stone, out int stoneHave);
+                        return stoneHave >= stoneNeeded;
+                    }
+                    return true; // No stone cost defined
+
+                default:
+                    return true; // Other stages don't check resources here
+            }
+        }
+
+        // Method for builder/carrier to add resources (placeholder)
+        public void AddResourceToSite(ResourceType type, int amount)
+        {
+            if (!resourcesOnSite.ContainsKey(type)) resourcesOnSite[type] = 0;
+            resourcesOnSite[type] += amount;
+            Debug.Log($"Added {amount} {type} to {buildingType}. Total: {resourcesOnSite[type]}");
+        }
+
+        // Methods for the Builder to call
+        public void StartWoodConstruction()
+        {
+            if (CurrentStage == ConstructionStage.AwaitingWood && HasEnoughResourcesForStage(CurrentStage))
+            {
+                CurrentStage = ConstructionStage.ConstructingWood;
+            }
+            else
+            {
+                Debug.LogWarning($"Cannot start wood construction for {buildingType}. Stage: {CurrentStage}, HasResources: {HasEnoughResourcesForStage(ConstructionStage.AwaitingWood)}");
+            }
+        }
+
+        public void CompleteWoodConstruction()
+        {
+            if (CurrentStage == ConstructionStage.ConstructingWood)
+            {
+                // Check if stone is needed next
+                if (buildingCost != null && buildingCost.ContainsKey(ResourceType.Stone) && buildingCost[ResourceType.Stone] > 0)
+                {
+                    CurrentStage = ConstructionStage.AwaitingStone;
+                }
+                else
+                {
+                    MarkConstructionComplete(true); // Wood was the last stage
+                }
+            }
+        }
+
+        public void StartStoneConstruction()
+        {
+            if (CurrentStage == ConstructionStage.AwaitingStone && HasEnoughResourcesForStage(CurrentStage))
+            {
+                CurrentStage = ConstructionStage.ConstructingStone;
+            }
+            else
+            {
+                Debug.LogWarning($"Cannot start stone construction for {buildingType}. Stage: {CurrentStage}, HasResources: {HasEnoughResourcesForStage(ConstructionStage.AwaitingStone)}");
+            }
+        }
+
+        public void CompleteStoneConstruction()
+        {
+            if (CurrentStage == ConstructionStage.ConstructingStone)
+            {
+                // Assume stone is last stage for now
+                MarkConstructionComplete(true);
+            }
+        }
+
+        // Call this when ALL stages are done
+        private void MarkConstructionComplete(bool success)
+        {
+            if (success)
+            {
+                CurrentStage = ConstructionStage.Complete;
+                IsConstructed = true; // Use the property setter
+                buildingGFXTransform.gameObject.SetActive(true); // Show final graphics
+                Debug.Log($"{buildingType} construction complete!");
+                // Maybe fire an event FROM the building itself?
+                // OnComplete?.Invoke(this);
+
+                // Assign specific worker based on building type
+                AssignWorkerBasedOnBuildingType();
+            }
+            else
+            {
+                // Handle failure? Reset stage?
+            }
+            AssignedBuilder = null; // Clear assignment
+        }
+
+        protected virtual void AssignWorkerBasedOnBuildingType()
+        {
+
+        }
+
+        private void Build()
+        {
+            buildingGFXTransform.gameObject.SetActive(false);
             manager.FlagManager.PlaceFlag(entranceIndex, true);
-            DrawPathVisual(entranceIndex, centerIndex);
+            Flag flag = manager.FlagManager.TryGetFlag(entranceIndex);
+            if (!flag.IsFlagAttachedToBuilding) flag.SetFlagAttachedToBuilding(true);
+            DrawPathVisual();
             manager.UIManager.HideAllPanels();
 
             foreach (int nodeIndex in reservedNodes)
@@ -50,17 +221,17 @@ namespace PunkyFruitBat
             }
         }
 
-        private void DrawPathVisual(int start, int end)
+        private void DrawPathVisual()
         {
-            Node startNode = HexGridManager.Instance.NodeManager.GetNode(start);
-            Node endNode = HexGridManager.Instance.NodeManager.GetNode(end);
-            // Get the Y angle between the startNode and the endNode with 0 being the forward direction
-            float angle = Vector3.SignedAngle(Vector3.forward, endNode.transform.position - startNode.transform.position, Vector3.up);
+            Node entranceNode = manager.NodeManager.GetNode(entranceIndex);
+            Node centerNode = manager.NodeManager.GetNode(centerIndex);
+            // Get the Y angle between the entranceNode and the centerNode with 0 being the forward direction
+            float angle = Vector3.SignedAngle(Vector3.forward, centerNode.transform.position - entranceNode.transform.position, Vector3.up);
 
-            Vector3 position = startNode.transform.position;
+            Vector3 position = entranceNode.transform.position;
 
             // Get a path visual from the pool and spawn at the start position with the angle between the start and end nodes
-            GameObject visual = HexGridManager.Instance.PathManager.GetPathVisualsFromPool();
+            GameObject visual = manager.PathManager.GetPathVisualsFromPool();
             visual.transform.SetPositionAndRotation(position, Quaternion.Euler(0, angle, 0));
             visual.transform.SetParent(transform);
         }
@@ -72,5 +243,16 @@ namespace PunkyFruitBat
             Building building = node.transform.GetChild(0).GetComponent<Building>();
             return building;
         }
+
+        public int GetBuildingCostByResourceType(ResourceType type)
+        {
+            if (buildingCost.TryGetValue(type, out int cost))
+            {
+                return cost;
+            }
+            return 0;
+        }
+
+        public abstract void SetBuildingCost();
     }
 }

@@ -22,7 +22,9 @@ namespace PunkyFruitBat
         public Path(Flag flag1, Flag flag2, List<int> nodes, int id)
         {
             Flag1 = flag1;
+            Flag1.AddPathToFlag(this);
             Flag2 = flag2;
+            Flag2.AddPathToFlag(this);
             Nodes.AddRange(nodes);
             Id = id;
 
@@ -78,7 +80,9 @@ namespace PunkyFruitBat
             Id = -1;
             CenterNode = -1;
             Nodes.Clear();
+            Flag1.PathsAttachedToFlag.Remove(this);
             Flag1 = null;
+            Flag2.PathsAttachedToFlag.Remove(this);
             Flag2 = null;
         }
 
@@ -86,6 +90,7 @@ namespace PunkyFruitBat
         {
             HasCarrier = true;
             Carrier = carrier;
+            Carrier.SetHomeNodeIndex(CenterNode);
         }
 
         public void RemoveCarrier()

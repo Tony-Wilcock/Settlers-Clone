@@ -78,6 +78,7 @@ namespace PunkyFruitBat
 
             Flag flag = GetFlagFromPool();
             flag.transform.position = manager.NodeManager.GetNodePosition(vertexIndex);
+            flag.name = $"Flag_{vertexIndex}";
             allFlags.Add(vertexIndex, flag);
             flag.SetFlagId(vertexIndex);
             if (isConnectedToBuilding) flag.SetFlagAttachedToBuilding(true);
@@ -103,11 +104,13 @@ namespace PunkyFruitBat
                 Flag flag = allFlags[vertexIndex];
                 if (IsFlagConnectedToBuilding(flag))
                 {
+                    // TODO: Ask user to confirm removal of flag connected to building as it will remove the building
                     Debug.LogWarning("Cannot remove flag connected to building.");
                 }
                 else
                 {
                     ReturnFlagToPool(flag);
+                    flag.name = "Flag";
                     allFlags.Remove(vertexIndex);
                     manager.NodeManager.GetNode(vertexIndex).RemoveFlagOnNode();
                     JoinOrRemovePaths(vertexIndex);
