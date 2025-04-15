@@ -128,11 +128,11 @@ namespace PunkyFruitBat
                                     neighbors.Add(path.Nodes[1]); // Add the next node after the flag.
                                 }
                             }
-                            else if (path.Nodes[path.Nodes.Count - 1] == current)
+                            else if (path.Nodes[^1] == current)
                             {
                                 if (path.Nodes.Count > 1)
                                 {
-                                    neighbors.Add(path.Nodes[path.Nodes.Count - 2]);
+                                    neighbors.Add(path.Nodes[^2]);
                                 }
                             }
                         }
@@ -208,6 +208,50 @@ namespace PunkyFruitBat
                 }
             }
             return null;
+        }/// <summary>
+         /// Finds the next flag along the optimal path from a starting flag towards a final destination node.
+         /// </summary>
+         /// <param name="startFlagNodeId">The node ID of the flag where the resource currently is.</param>
+         /// <param name="finalDestinationEntranceNodeId">The node ID of the entrance flag of the final target building.</param>
+         /// <returns>The next Flag object along the route, or null if no route or next flag exists.</returns>
+        public Flag FindNextFlagOnRoute(int startFlagNodeId, int finalDestinationEntranceNodeId)
+        {
+            // 1. Find the full node path first using the existing walkable path logic
+            List<int> nodeRoute = FindWalkableRouteThroughPaths(startFlagNodeId, finalDestinationEntranceNodeId);
+
+            if (nodeRoute == null || nodeRoute.Count <= 1)
+            {
+                Debug.LogWarning($"FindNextFlagOnRoute: No walkable route found from {startFlagNodeId} to {finalDestinationEntranceNodeId}.");
+                return null; // No path exists
+            }
+
+            // 2. Iterate through the path *starting from the node AFTER the start flag*
+            //    to find the *first* node that HasFlag.
+            for (int i = 1; i < nodeRoute.Count; i++) // Start from index 1
+            {
+                int currentNodeId = nodeRoute[i];
+                Node nodeData = manager.NodeManager.GetNode(currentNodeId);
+                if (nodeData != null && nodeData.HasFlag)
+                {
+                    // Found the next flag!
+                    Flag nextFlag = manager.FlagManager.TryGetFlag(currentNodeId);
+                    if (nextFlag != null)
+                    {
+                        //Debug.Log($"FindNextFlagOnRoute: From {startFlagNodeId}, next flag towards {finalDestinationEntranceNodeId} is {nextFlag.Id}. Route: {string.Join("->", nodeRoute)}");
+                        return nextFlag;
+                    }
+                    else
+                    {
+                        // Should not happen if HasFlag is true, but log just in case
+                        Debug.LogError($"FindNextFlagOnRoute: Node {currentNodeId} HasFlag but TryGetFlag returned null!");
+                    }
+                }
+            }
+
+            // If we finished the loop without finding another flag, it means the start flag
+            // was the last one on the route (or the destination itself).
+            Debug.LogWarning($"FindNextFlagOnRoute: No *further* flag found on route from {startFlagNodeId} to {finalDestinationEntranceNodeId}. Route: {string.Join("->", nodeRoute)}");
+            return null;
         }
 
         public bool IsPathConnectedToStorehouse(Path path)
@@ -219,8 +263,8 @@ namespace PunkyFruitBat
             int storehouseNodeIndex = manager.BuildingManager.GetStorehouseEntranceNode();
 
             // Use a HashSet for efficient "visited" tracking.
-            HashSet<int> visited = new HashSet<int>();
-            Stack<int> stack = new Stack<int>();
+            HashSet<int> visited = new();
+            Stack<int> stack = new();
 
             stack.Push(startNodeIndex);
             visited.Add(startNodeIndex);
@@ -252,7 +296,7 @@ namespace PunkyFruitBat
                             }
                             else
                             {
-                                nextNodeIndex = connectedPath.Nodes[connectedPath.Nodes.Count - 2];
+                                nextNodeIndex = connectedPath.Nodes[^2];
                             }
 
 

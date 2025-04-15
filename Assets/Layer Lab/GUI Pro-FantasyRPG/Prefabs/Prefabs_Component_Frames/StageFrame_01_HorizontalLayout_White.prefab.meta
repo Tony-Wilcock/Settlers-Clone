@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ee94f098d134b4d27ba6f42eca2c787c
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 170168
+  packageName: GUI Pro - Fantasy RPG
+  packageVersion: 4.0.2
+  assetPath: Assets/Layer Lab/GUI Pro-FantasyRPG/Prefabs/Prefabs_Component_Frames/StageFrame_01_HorizontalLayout_White.prefab
+  uploadId: 714941

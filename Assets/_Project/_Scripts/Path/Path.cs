@@ -90,7 +90,7 @@ namespace PunkyFruitBat
         {
             HasCarrier = true;
             Carrier = carrier;
-            Carrier.SetHomeNodeIndex(CenterNode);
+            Carrier.SetWorkNodeIndex(CenterNode);
         }
 
         public void RemoveCarrier()

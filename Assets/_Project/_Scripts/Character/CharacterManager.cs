@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,6 +9,7 @@ namespace PunkyFruitBat
         Builder,
         WoodCutter,
         StorehousePorter,
+        Forester,
     }
 
     // CharacterManager now acts as a coordinator
@@ -64,6 +64,11 @@ namespace PunkyFruitBat
             StorehousePorterManager storehousePorterManager = new();
             Transform storehousePorterParent = CreateOrFindParentTransform(CharacterType.StorehousePorter.ToString());
             RegisterAndInitialiseManager(storehousePorterManager, storehousePorterParent);
+
+            // --- ForesterManager Setup ---
+            ForesterManager foresterManager = new();
+            Transform foresterParent = CreateOrFindParentTransform(CharacterType.Forester.ToString());
+            RegisterAndInitialiseManager(foresterManager, foresterParent);
         }
 
         private Transform CreateOrFindParentTransform(string name)
@@ -194,7 +199,6 @@ namespace PunkyFruitBat
         // --- Cleanup ---
         public virtual void Unsubscribe()
         {
-            Debug.Log("Unsubscribing CharacterManager and specific managers...");
             if (manager != null) // Check if manager exists before unsubscribing
             {
                 manager.OnGridComplete -= HandleGridComplete;

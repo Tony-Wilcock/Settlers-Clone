@@ -125,6 +125,7 @@ namespace PunkyFruitBat
             {
                 IsInPathCreationMode = true;
                 pathBuilder.CreatePath(startNode);
+                manager.UIManager.HideAllPanels();
             }
         }
 
@@ -162,11 +163,20 @@ namespace PunkyFruitBat
 
             RemovePath(path);
 
-            carrier.StopAllCoroutines();
-
             Path firstPath = new(flags[0], newFlag, firstPart, PathId);
-            manager.StartCoroutine(carrier.MoveCharacter(firstPath.CenterNode));
-            firstPath.SetCarrier(carrier);
+            if (carrier)
+            {
+                if (carrier.IsBusy)
+                {
+                    carrier.newPath = firstPath;
+                }
+                else
+                {
+                    carrier.StopAllCoroutines();
+                    manager.StartCoroutine(carrier.MoveCharacter(firstPath.CenterNode));
+                }
+                firstPath.SetCarrier(carrier);
+            }
             AddToAllPaths(firstPath);
 
             Path secondPath = new(newFlag, flags[1], secondPart, PathId);
@@ -185,30 +195,100 @@ namespace PunkyFruitBat
 
             if (joinedNodes == null) return;
 
-            Carrier carrier = path1.Carrier;
-
-            carrier = path1.Carrier ? path1.Carrier : path2.Carrier;
-
-            RemovePath(path1);
-            RemovePath(path2);
-
-            carrier.StopAllCoroutines();
+            Carrier carrier1 = path1.Carrier;
+            Carrier carrier2 = path2.Carrier;
+            Carrier carrierToKeep = carrier1; // Get the carrierToKeep from carrier1
 
             Flag[] flags = manager.FlagManager.GetBothFlagsFromPath(joinedNodes);
 
             Path joinedPath = new(flags[0], flags[1], joinedNodes, PathId);
+            joinedPath.SetCarrier(carrierToKeep);
 
-            if (joinedPath.Flag1 == joinedPath.Flag2)
+            if (joinedPath.Flag1 == joinedPath.Flag2) // Check if the flags are the same. If they are, remove the path and return out of this method
             {
                 Debug.LogWarning($"Path starts and ends with the same flag: {joinedPath.Flag1 == joinedPath.Flag2}");
+                RemovePath(path1);
+                RemovePath(path2);
                 RemovePath(joinedPath);
+                return;
+            }
+
+            if (carrierToKeep.IsBusy)
+            {
+                if (carrierToKeep.CurrentResource == null)
+                {
+                    Debug.Log($"Carrier to keep {carrierToKeep.GetInstanceID()} is busy and has no resource: {carrierToKeep.CurrentResource == null}"); // Check if the resource is null
+                    Resource resource = carrierToKeep.ResourceToPickup;
+                    Flag pickupFlag = resource.CurrentFlag;
+                    Flag dropoffFlag = joinedPath.Flag1 == pickupFlag ? joinedPath.Flag2 : joinedPath.Flag1;
+                    carrier2.AssignTransportTask(resource, pickupFlag, dropoffFlag);
+                    carrier2.StopAllCoroutines();
+                    carrier2.ResetCarrierState();
+                }
+                else
+                {
+                    if (carrierToKeep.AssignedPath.Flag1.gameObject.activeSelf)
+                    {
+                        Debug.Log($"Carrier to keep {carrierToKeep.GetInstanceID()} is busy and assigned to flag 1: {carrierToKeep.AssignedPath.Flag1.gameObject.activeSelf}");
+                        carrierToKeep.StartCoroutine(carrierToKeep.DropoffResource(carrierToKeep.CurrentResource, carrierToKeep.AssignedPath.Flag1));
+                    }
+                    else if (carrierToKeep.AssignedPath.Flag2.gameObject.activeSelf)
+                    {
+                        Debug.Log($"Carrier to keep {carrierToKeep.GetInstanceID()} is busy and assigned to flag 2: {carrierToKeep.AssignedPath.Flag2.gameObject.activeSelf}");
+                        carrierToKeep.StartCoroutine(carrierToKeep.DropoffResource(carrierToKeep.CurrentResource, carrierToKeep.AssignedPath.Flag2));
+                    }
+                }
             }
             else
             {
-                manager.StartCoroutine(carrier.MoveCharacter(joinedPath.CenterNode));
-                joinedPath.SetCarrier(carrier);
-                AddToAllPaths(joinedPath);
+                Debug.Log($"Carrier to keep {carrierToKeep.GetInstanceID()} is not busy: {carrierToKeep.IsBusy}"); // Check if the carrierToKeep is busy
             }
+
+            if (carrier2.IsBusy)
+            {
+                if (carrier2.CurrentResource == null)
+                {
+                    Debug.Log($"Carrier 2 is busy and has no resource: {carrier2.CurrentResource == null}"); // Check if the resource is null
+                    Resource resource = carrier2.ResourceToPickup;
+                    Flag pickupFlag = resource.CurrentFlag;
+                    Flag dropoffFlag = joinedPath.Flag1 == pickupFlag ? joinedPath.Flag2 : joinedPath.Flag1;
+                    carrierToKeep.AssignTransportTask(resource, pickupFlag, dropoffFlag);
+                    carrier2.StopAllCoroutines();
+                    carrier2.ResetCarrierState();
+                }
+                else
+                {
+                    if (carrier2.AssignedPath.Flag1.gameObject.activeSelf)
+                    {
+                        Debug.Log($"Carrier 2 {carrier2.GetInstanceID()} is busy and assigned to flag 1: {carrier2.AssignedPath.Flag1.gameObject.activeSelf}");
+                        carrier2.StartCoroutine(carrier2.DropoffResource(carrier2.CurrentResource, carrier2.AssignedPath.Flag1));
+                    }
+                    else if (carrier2.AssignedPath.Flag2.gameObject.activeSelf)
+                    {
+                        Debug.Log($"Carrier 2 {carrier2.GetInstanceID()} is busy and assigned to flag 2: {carrier2.AssignedPath.Flag2.gameObject.activeSelf}");
+                        carrier2.StartCoroutine(carrier2.DropoffResource(carrier2.CurrentResource, carrier2.AssignedPath.Flag2));
+                    }
+                }
+            }
+            else
+            {
+                Debug.Log($"Carrier 2 {carrier2.GetInstanceID()} is not busy: {!carrier2.IsBusy}"); // Check if the carrierToKeep is busy
+            }
+
+            RemovePath(path1);
+            RemovePath(path2);
+
+            if (carrierToKeep.IsBusy)
+            {
+                carrierToKeep.newPath = joinedPath;
+            }
+            else
+            {
+                carrierToKeep.StopAllCoroutines();
+                manager.StartCoroutine(carrierToKeep.MoveCharacter(joinedPath.CenterNode));
+            }
+
+            AddToAllPaths(joinedPath);
         }
 
         private List<int> CombinePaths(Path path1, Path path2, int joinNode)

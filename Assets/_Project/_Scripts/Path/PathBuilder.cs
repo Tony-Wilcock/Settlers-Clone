@@ -169,6 +169,7 @@ namespace PunkyFruitBat
             ClearTempPathVisuals();
             currentPath.Clear();
             manager.UIManager.HideAllPanels();
+            manager.NodeSelector.ResetSelectedNodeIndex();
             OnPathCancelled?.Invoke();
         }
     }

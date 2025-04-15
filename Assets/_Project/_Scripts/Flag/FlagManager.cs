@@ -68,7 +68,7 @@ namespace PunkyFruitBat
             }
         }
 
-        public void PlaceFlag(int vertexIndex, bool isConnectedToBuilding = false)
+        public void PlaceFlag(int vertexIndex)
         {
             if (!CanPlaceFlag(vertexIndex))
             {
@@ -81,7 +81,18 @@ namespace PunkyFruitBat
             flag.name = $"Flag_{vertexIndex}";
             allFlags.Add(vertexIndex, flag);
             flag.SetFlagId(vertexIndex);
-            if (isConnectedToBuilding) flag.SetFlagAttachedToBuilding(true);
+
+            // Check if the flag is connected to a building
+            int northwestIndex = manager.NodeManager.GetNeighbourInDirection(vertexIndex, Direction.Northwest);
+            if (northwestIndex != -1)
+            {
+                Node northwestNode = manager.NodeManager.GetNode(northwestIndex);
+                if (northwestNode != null && northwestNode.HasBuilding)
+                {
+                    flag.SetFlagAttachedToBuilding(true);
+                }
+            }
+
             Node node = manager.NodeManager.GetNode(vertexIndex);
             node.SetFlagOnNode(flag);
 
@@ -97,8 +108,9 @@ namespace PunkyFruitBat
             OnFlagPlaced?.Invoke();
         }
 
-        private void RemoveFlag(int vertexIndex)
+        private void RemoveFlag()
         {
+            int vertexIndex = manager.SelectedNode;
             if (allFlags.ContainsKey(vertexIndex))
             {
                 Flag flag = allFlags[vertexIndex];
@@ -137,6 +149,12 @@ namespace PunkyFruitBat
             }
 
             if (HasNeighborGotFlag(vertexIndex))
+            {
+                return false;
+            }
+
+            Node node = manager.NodeManager.GetNode(vertexIndex);
+            if (node.HasBuilding)
             {
                 return false;
             }

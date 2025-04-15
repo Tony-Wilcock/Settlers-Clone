@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9f52ec044181749e09315c94b45b432f
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 170168
+  packageName: GUI Pro - Fantasy RPG
+  packageVersion: 4.0.2
+  assetPath: Assets/Layer Lab/GUI Pro-FantasyRPG/Prefabs/Prefabs_DemoScene_Panels/PopupSignup.prefab
+  uploadId: 714941

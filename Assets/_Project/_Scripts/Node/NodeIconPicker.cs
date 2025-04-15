@@ -46,7 +46,7 @@ namespace PunkyFruitBat
                 }
             }
 
-            manager.NodeManager.OnNearestVertexUpdated += HandleNearestVertexUpdated;
+            manager.NodeManager.OnLiveNodeUpdated += HandleNearestVertexUpdated;
             manager.PathManager.PathBuilder.OnPathCancelled += DeactivateAllIcons;
             manager.FlagManager.OnFlagPlaced += DeactivateAllIcons;
             manager.FlagManager.OnFlagRemoved += DeactivateAllIcons;
@@ -54,7 +54,7 @@ namespace PunkyFruitBat
 
         private void HandleNearestVertexUpdated(int index)
         {
-            if (manager.UIManager.AreAnyPanelsActive()) return;
+            //if (manager.UIManager.AreAnyPanelsActive()) return;
             if (index < 0 || index >= manager.globalVertices.Length)
             {
                 DeactivateAllIcons();
@@ -65,9 +65,28 @@ namespace PunkyFruitBat
             SetActiveIcon(manager.globalVertices[index]);
         }
 
-        private void DetermineIconToPlace(int index)
+        private void DetermineIconToPlace(int node)
         {
-            currentIconIndex = (int)NodeIconIndex.None;
+            if (manager.NodeManager.CanPlaceBuilding(node, BuildingSize.Large))
+            {
+                currentIconIndex = (int)NodeIconIndex.LargeBuilding;
+            }
+            else if (manager.NodeManager.CanPlaceBuilding(node, BuildingSize.Medium))
+            {
+                currentIconIndex = (int)NodeIconIndex.MediumBuilding;
+            }
+            else if (manager.NodeManager.CanPlaceBuilding(node, BuildingSize.Small))
+            {
+                currentIconIndex = (int)NodeIconIndex.SmallBuilding;
+            }
+            else if (manager.NodeManager.CanPlaceFlag(node))
+            {
+                currentIconIndex = (int)NodeIconIndex.Flag;
+            }
+            else
+            {
+                currentIconIndex = (int)NodeIconIndex.None;
+            }
         }
 
         private void SetActiveIcon(Vector3 position)
@@ -84,8 +103,6 @@ namespace PunkyFruitBat
             icons[currentIconIndex].transform.position = position;
         }
 
-        private bool IsValidIconIndex(int index) => index >= 0 && index < icons.Length;
-
         private void DeactivateAllIcons()
         {
             for (int i = 0; i < icons.Length; i++)
@@ -94,9 +111,14 @@ namespace PunkyFruitBat
             }
         }
 
+        public int GetCurrentIconIndex()
+        {
+            return currentIconIndex;
+        }
+
         public void Unsubscribe()
         {
-            manager.NodeManager.OnNearestVertexUpdated -= HandleNearestVertexUpdated;
+            manager.NodeManager.OnLiveNodeUpdated -= HandleNearestVertexUpdated;
             manager.PathManager.PathBuilder.OnPathCancelled -= DeactivateAllIcons;
             manager.FlagManager.OnFlagPlaced -= DeactivateAllIcons;
             manager.FlagManager.OnFlagRemoved -= DeactivateAllIcons;

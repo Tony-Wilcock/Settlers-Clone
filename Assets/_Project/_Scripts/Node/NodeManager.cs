@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace PunkyFruitBat
 {
@@ -14,10 +15,15 @@ namespace PunkyFruitBat
         Northwest,
     }
 
+    [Serializable]
     public class NodeManager
     {
-        public event Action<int> OnNearestVertexUpdated;
-        public int NearestNodeIndex { get; private set; }
+        public event Action<int> OnLiveNodeUpdated;
+
+        [SerializeField] public GameObject selectedNodePrefab;
+        public GameObject SelectedNodeObject { get; private set; }
+
+        public int LiveNodeIndex { get; private set; }
 
         private readonly List<int> nodeNeighbours = new();
         private HexGridManager manager;
@@ -27,10 +33,19 @@ namespace PunkyFruitBat
         public void Initialise(HexGridManager manager)
         {
             this.manager = manager;
+
+            SelectedNodeObject = UnityEngine.Object.Instantiate(selectedNodePrefab);
+            SelectedNodeObject.SetActive(false); // Deactivate the prefab initially
         }
 
-        public void UpdateCurrentNodeIndex(Vector3 mousePosition)
+        public void UpdateLiveNodeIndex(Vector3 mousePosition)
         {
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                // If it is over a UI element, do nothing further.
+                return;
+            }
+
             if (Input.mousePosition != LastMousePosition)
             {
                 Ray ray = manager.MainCamera.ScreenPointToRay(mousePosition);
@@ -38,7 +53,7 @@ namespace PunkyFruitBat
                 if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, manager.Settings.hexGridLayerMask))
                 {
                     float closestDistance = float.MaxValue;
-                    NearestNodeIndex = -1;
+                    LiveNodeIndex = -1;
 
                     for (int c = 0; c < manager.chunks.Count; c++)
                     {
@@ -53,14 +68,14 @@ namespace PunkyFruitBat
                                 {
                                     LastMousePosition = Input.mousePosition;
                                     closestDistance = distance;
-                                    NearestNodeIndex = chunk.localToGlobalVertexMap[i];
+                                    LiveNodeIndex = chunk.localToGlobalVertexMap[i];
 
-                                    if (NearestNodeIndex != lastNearestVertex)
+                                    if (LiveNodeIndex != lastNearestVertex)
                                     {
-                                        OnNearestVertexUpdated?.Invoke(NearestNodeIndex);
+                                        OnLiveNodeUpdated?.Invoke(LiveNodeIndex);
                                     }
 
-                                    lastNearestVertex = NearestNodeIndex;
+                                    lastNearestVertex = LiveNodeIndex;
                                 }
                             }
                             break; // Chunk found, no need to check other chunks
@@ -69,10 +84,10 @@ namespace PunkyFruitBat
                 }
                 else
                 {
-                    if (NearestNodeIndex != -1)
+                    if (LiveNodeIndex != -1)
                     {
-                        NearestNodeIndex = -1;
-                        OnNearestVertexUpdated?.Invoke(-1);
+                        LiveNodeIndex = -1;
+                        OnLiveNodeUpdated?.Invoke(-1);
                     }
                 }
             }
@@ -144,7 +159,22 @@ namespace PunkyFruitBat
 
         public Node GetNode(int vertexIndex)
         {
+            if (manager.EditableVerticesIndices == null || vertexIndex < 0 || vertexIndex >= manager.EditableVerticesIndices.Length)
+            {
+                Debug.LogError($"NodeList is null or vertexIndex {vertexIndex} is out of bounds.");
+                return null;
+            }
             return manager.EditableVerticesIndices[vertexIndex];
+        }
+
+        public bool CanPlaceFlag(int node)
+        {
+            return manager.FlagManager.CanPlaceFlag(node);
+        }
+
+        public bool CanPlaceBuilding(int vertexIndex, BuildingSize buildingSize)
+        {
+            return manager.BuildingManager.CanPlaceBuilding(vertexIndex, buildingSize);
         }
     }
 }

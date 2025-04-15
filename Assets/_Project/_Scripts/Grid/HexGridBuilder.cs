@@ -66,11 +66,38 @@ namespace PunkyFruitBat
             {
                 for (int chunkY = 0; chunkY < chunkHeight; chunkY++)
                 {
+                    string chunkName = $"Chunk_{chunkX}_{chunkY}";
+                    GameObject chunkObj = new(chunkName);
+                    chunkObj.transform.SetParent(manager.ChunksTransform, false);
+
+                    MeshFilter meshFilter = chunkObj.AddComponent<MeshFilter>();
+                    MeshRenderer meshRenderer = chunkObj.AddComponent<MeshRenderer>();
+                    MeshCollider meshCollider = chunkObj.AddComponent<MeshCollider>();
+
+                    if (meshFilter == null || meshRenderer == null || meshCollider == null)
+                    {
+                        Debug.LogError($"Failed to add required components to Chunk_{chunkX}_{chunkY}. Skipping chunk creation.");
+                        GameObject.DestroyImmediate(chunkObj);
+                        continue;
+                    }
+
+                    Material defaultMaterial = manager.GetComponent<MeshRenderer>()?.material;
+                    if (defaultMaterial == null)
+                    {
+                        Debug.LogWarning($"No material found on HexGridManager for Chunk_{chunkX}_{chunkY}. Using default Unity material.");
+                        defaultMaterial = new Material(Shader.Find("Standard"));
+                    }
+                    meshRenderer.material = defaultMaterial;
+                    chunkObj.layer = manager.gameObject.layer;
+
+                    Chunk chunk = manager.CreateChunkObject(chunkObj);
+
                     int estimatedVertexCount = ChunkSize * ChunkSize * 7;
                     int estimatedTriangleCount = ChunkSize * ChunkSize * 18;
 
                     var chunkVertices = new List<Vector3>(estimatedVertexCount);
                     var chunkTriangles = new List<int>(estimatedTriangleCount);
+                    var chunkColors = new List<Color>(estimatedVertexCount);
                     var localToGlobal = new Dictionary<int, int>();
                     var globalToLocal = new Dictionary<int, int>();
 
@@ -89,6 +116,8 @@ namespace PunkyFruitBat
                             for (int i = 0; i < 7; i++)
                             {
                                 VertexKey key = new(hexVertices[i].x, hexVertices[i].z);
+                                Color defaultColor = Color.white;
+
                                 if (vertexMap.TryGetValue(key, out int globalIndex))
                                 {
                                     if (!globalToLocal.ContainsKey(globalIndex))
@@ -96,17 +125,24 @@ namespace PunkyFruitBat
                                         localToGlobal[chunkVertices.Count] = globalIndex;
                                         globalToLocal[globalIndex] = chunkVertices.Count;
                                         chunkVertices.Add(globalVertices[globalIndex]);
+                                        chunkColors.Add(defaultColor);
                                     }
+                                    vertexIndices[i] = globalToLocal[globalIndex];
                                     currentCellVertices.Add(globalIndex);
                                 }
                                 else
                                 {
-                                    vertexMap[key] = globalVertexCounter;
-                                    globalVertices[globalVertexCounter] = hexVertices[i];
-                                    localToGlobal[chunkVertices.Count] = globalVertexCounter;
-                                    globalToLocal[globalVertexCounter] = chunkVertices.Count;
+                                    globalIndex = globalVertexCounter;
+                                    vertexMap[key] = globalIndex;
+                                    globalVertices[globalIndex] = hexVertices[i];
+
+                                    localToGlobal[chunkVertices.Count] = globalIndex;
+                                    globalToLocal[globalIndex] = chunkVertices.Count;
                                     chunkVertices.Add(hexVertices[i]);
-                                    currentCellVertices.Add(globalVertexCounter);
+                                    chunkColors.Add(defaultColor);
+
+                                    vertexIndices[i] = globalToLocal[globalIndex];
+                                    currentCellVertices.Add(globalIndex);
                                     globalVertexCounter++;
                                 }
                                 vertexIndices[i] = globalToLocal[vertexMap[key]];
@@ -129,55 +165,19 @@ namespace PunkyFruitBat
                         }
                     }
 
-                    GameObject chunkObj = new($"Chunk_{chunkX}_{chunkY}");
-                    chunkObj.transform.SetParent(manager.ChunksTransform, false);
+                    // --- Assign Data and Finalise Mesh for Chunk ---
 
-                    MeshFilter meshFilter = chunkObj.AddComponent<MeshFilter>();
-                    MeshRenderer meshRenderer = chunkObj.AddComponent<MeshRenderer>();
-                    MeshCollider meshCollider = chunkObj.AddComponent<MeshCollider>();
-
-                    if (meshFilter == null || meshRenderer == null || meshCollider == null)
-                    {
-                        Debug.LogError($"Failed to add required components to Chunk_{chunkX}_{chunkY}. Skipping chunk creation.");
-                        GameObject.DestroyImmediate(chunkObj);
-                        continue;
-                    }
-
-                    Material defaultMaterial = manager.GetComponent<MeshRenderer>().material;
-                    if (defaultMaterial == null)
-                    {
-                        Debug.LogWarning($"No material found on HexGridManager for Chunk_{chunkX}_{chunkY}. Using default Unity material.");
-                        defaultMaterial = new Material(Shader.Find("Standard"));
-                    }
-                    meshRenderer.material = defaultMaterial;
-
-                    chunkObj.layer = manager.gameObject.layer;
-
-                    Chunk chunk = manager.CreateChunkObject(chunkObj);
-
-                    chunk.meshFilter = meshFilter;
-                    chunk.meshRenderer = meshRenderer;
-                    chunk.meshCollider = meshCollider;
-
-                    Vector3[] verticesArray = chunkVertices.ToArray();
-                    int[] trianglesArray = chunkTriangles.ToArray();
-
-                    Mesh combinedMesh = new()
-                    {
-                        vertices = verticesArray,
-                        triangles = trianglesArray
-                    };
-                    combinedMesh.RecalculateNormals();
-
-                    chunk.vertices = verticesArray;
-                    chunk.mesh = combinedMesh;
-
-                    chunk.meshFilter.mesh = combinedMesh;
-                    chunk.meshCollider.sharedMesh = combinedMesh;
-
+                    chunk.vertices = chunkVertices.ToArray();
+                    chunk.triangles = chunkTriangles.ToArray(); // Assign triangles
+                    Color[] colorsArray = chunkColors.ToArray();
+                    chunk.colors = colorsArray;
                     chunk.localToGlobalVertexMap = localToGlobal;
+                    chunk.globalToLocalVertexMap = globalToLocal; // Ensure this is assigned
 
-                    chunks.Add(chunk);
+                    // Finalise mesh (calculates normals, assigns to filter/collider with checks)
+                    chunk.FinaliseInitialMesh();
+
+                    chunks.Add(chunk); // Add chunk to the main list
 
                     chunkCounter++;
                     if (chunkCounter % batchSize == 0)

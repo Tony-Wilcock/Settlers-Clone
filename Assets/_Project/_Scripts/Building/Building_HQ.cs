@@ -20,13 +20,21 @@ namespace PunkyFruitBat
             StartCoroutine(AssignCarrierWorker());
         }
 
+        private void AssignBuildingFlag()
+        {
+            entranceFlag = manager.FlagManager.TryGetFlag(EntranceIndex);
+        }
+
         private IEnumerator AssignCarrierWorker()
         {
             yield return WaitForSecondsFactory.WaitCoroutine(1f);
 
+            AssignBuildingFlag();
+
             StorehousePorter porter = manager.CharacterManager.GetCharacter(CharacterType.StorehousePorter) as StorehousePorter;
             if (porter != null)
             {
+                porter.SetWorkingLocation(CenterIndex, EntranceIndex, EntranceFlag);
                 AssignedWorker = porter;
             }
         }

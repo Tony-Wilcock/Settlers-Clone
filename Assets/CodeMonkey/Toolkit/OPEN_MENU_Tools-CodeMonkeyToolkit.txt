@@ -1,3 +1,0 @@
-
-
-Open the main window through the Menu bar: Tools - Code Monkey Toolkit

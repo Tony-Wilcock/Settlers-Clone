@@ -38,7 +38,7 @@ namespace PunkyFruitBat
         Large
     }
 
-    [System.Serializable]
+    [Serializable]
     public class BuildingManager
     {
         public event Action<Building> OnBuildingRequestSubmitted;
@@ -51,8 +51,6 @@ namespace PunkyFruitBat
 
         private Dictionary<int, Building> AllBuildings { get; } = new Dictionary<int, Building>();
         public IReadOnlyDictionary<int, Building> GetAllBuildings => AllBuildings;
-
-        public Queue<Building> UnconnectedBuildings { get; set; } = new();
 
         public void Initialise(HexGridManager manager, BuildingPrefabs_SO buildingPrefabs_SO)
         {
@@ -83,7 +81,9 @@ namespace PunkyFruitBat
 
         private void TryBuildBuilding(int vertexIndex, BuildingType buildingType)
         {
-            if (!CanPlaceBuilding(vertexIndex, buildingType)) return;
+            if (buildingType == BuildingType.None || (buildingType == BuildingType.HQ && HQ != null)) return;
+            BuildingSize BuildingSize = GetBuildingSize(buildingType);
+            if (!CanPlaceBuilding(vertexIndex, BuildingSize)) return;
 
             GameObject newBuilding = GameObject.Instantiate(buildingPrefabs.buildingPrefabs[(int)buildingType], manager.NodeManager.GetNodePosition(vertexIndex), Quaternion.identity);
             newBuilding.transform.SetParent(manager.BuildingTransform);
@@ -102,15 +102,13 @@ namespace PunkyFruitBat
             AddToAllBuildings(building);
         }
 
-        public bool CanPlaceBuilding(int vertexIndex, BuildingType buildingType)
+        public bool CanPlaceBuilding(int vertexIndex, BuildingSize BuildingSize)
         {
-            if (buildingType == BuildingType.None || (buildingType == BuildingType.HQ && HQ != null)) return false;
             Node vertexIndexNodeData = manager.NodeManager.GetNode(vertexIndex);
-            if (vertexIndexNodeData == null || vertexIndexNodeData.HasBuilding || vertexIndexNodeData.HasFlag || vertexIndexNodeData.HasObstacle || vertexIndexNodeData.IsEdgeNode) return false;
+            if (vertexIndexNodeData == null || vertexIndexNodeData.HasBuilding || vertexIndexNodeData.HasFlag || vertexIndexNodeData.HasObstacle || vertexIndexNodeData.IsEdgeNode || vertexIndexNodeData.HasPath) return false;
             int entranceIndex = manager.NodeManager.GetNeighbourInDirection(vertexIndex, Direction.Southeast);
             Node entranceNodeData = manager.NodeManager.GetNode(entranceIndex);
             if (!manager.FlagManager.CanPlaceFlag(entranceIndex) && !entranceNodeData.HasFlag) return false;
-            BuildingSize BuildingSize = GetBuildingSize(buildingType);
             int[] reservedNodes = GetReservedNodes(vertexIndex, BuildingSize);
             if (BuildingSize == BuildingSize.Large && reservedNodes.Length < 4) return false;
 
@@ -185,7 +183,6 @@ namespace PunkyFruitBat
 
         private void HandleBuildingConstructionComplete(Building building)
         {
-            Debug.Log("Building construction complete: " + building.BuildingType);
             building.BuildingGFXTransform.gameObject.SetActive(true);
             building.IsConstructed = true;
             building.AssignedBuilder = null;

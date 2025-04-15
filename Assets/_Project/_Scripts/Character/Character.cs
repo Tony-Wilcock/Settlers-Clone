@@ -15,8 +15,8 @@ namespace PunkyFruitBat
         protected CharacterManager characterManager;
 
         protected float moveSpeed = 5f;
-        [field: SerializeField] public int HomeNodeIndex { get; protected set; }
-        [field: SerializeField] public int CurrentNodeIndex { get; private set; }
+        [field: SerializeField] public int WorkNodeIndex { get; protected set; }
+        [field: SerializeField] public int CurrentNodeIndex { get; set; }
 
         protected virtual void Awake()
         {
@@ -28,12 +28,12 @@ namespace PunkyFruitBat
         {
             this.characterType = characterType;
             CurrentNodeIndex = startNode;
-            HomeNodeIndex = startNode;
+            WorkNodeIndex = startNode;
         }
 
-        public void SetHomeNodeIndex(int index)
+        public void SetWorkNodeIndex(int index)
         {
-            HomeNodeIndex = index;
+            WorkNodeIndex = index;
         }
 
         /// <summary>
@@ -167,18 +167,19 @@ namespace PunkyFruitBat
 
             if (path == null || path.Count < 1)
             {
+                Debug.LogWarning($"Character {GetInstanceID()}: No WalkableRouteThroughPaths found. Trying FindDirectRoute."); // Log Y
                 path = manager.PathManager.PathFinder.FindDirectRoute(startPosition, endPosition);
                 if (path == null || path.Count < 1)
                 {
-                    Debug.LogError("No direct path found!");
-                    yield break;
+                    Debug.LogError($"Character {GetInstanceID()}: No path found from {startPosition} to {endPosition}! Movement cancelled."); // Log Z
+                    yield break; // Exit if no path found
                 }
             }
 
             yield return StartCoroutine(MoveAlongRoute(path));
         }
 
-        private IEnumerator MoveAlongRoute(List<int> route)
+        protected virtual IEnumerator MoveAlongRoute(List<int> route)
         {
             for (int i = 0; i < route.Count; i++)
             {

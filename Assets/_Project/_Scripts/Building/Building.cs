@@ -10,6 +10,7 @@ namespace PunkyFruitBat
         [field: SerializeField] protected Transform buildingGFXTransform;
         [field: SerializeField] protected int centerIndex;
         [field: SerializeField] protected int entranceIndex;
+        [field: SerializeField] protected Flag entranceFlag;
         [field: SerializeField] protected int[] reservedNodes;
         [field: SerializeField] protected Dictionary<ResourceType, int> buildingCost;
         [field: SerializeField] protected bool isConstructed = false;
@@ -21,6 +22,7 @@ namespace PunkyFruitBat
         public Transform BuildingGFXTransform => buildingGFXTransform;
         public int CenterIndex => centerIndex;
         public int EntranceIndex => entranceIndex;
+        public Flag EntranceFlag => entranceFlag;
         public int[] ReservedNodes => reservedNodes;
         public bool IsConstructed
         {
@@ -88,7 +90,6 @@ namespace PunkyFruitBat
                 CurrentStage = ConstructionStage.Complete; // No cost? Instantly built (like HQ?)
                 MarkConstructionComplete(true); // Mark as complete immediately
             }
-            Debug.Log($"{buildingType} initial stage set to: {CurrentStage}");
         }
 
         public bool HasEnoughResourcesForStage(ConstructionStage stage)
@@ -125,7 +126,6 @@ namespace PunkyFruitBat
         {
             if (!resourcesOnSite.ContainsKey(type)) resourcesOnSite[type] = 0;
             resourcesOnSite[type] += amount;
-            Debug.Log($"Added {amount} {type} to {buildingType}. Total: {resourcesOnSite[type]}");
         }
 
         // Methods for the Builder to call
@@ -186,9 +186,6 @@ namespace PunkyFruitBat
                 CurrentStage = ConstructionStage.Complete;
                 IsConstructed = true; // Use the property setter
                 buildingGFXTransform.gameObject.SetActive(true); // Show final graphics
-                Debug.Log($"{buildingType} construction complete!");
-                // Maybe fire an event FROM the building itself?
-                // OnComplete?.Invoke(this);
 
                 // Assign specific worker based on building type
                 AssignWorkerBasedOnBuildingType();
@@ -208,9 +205,15 @@ namespace PunkyFruitBat
         private void Build()
         {
             buildingGFXTransform.gameObject.SetActive(false);
-            manager.FlagManager.PlaceFlag(entranceIndex, true);
+            manager.FlagManager.PlaceFlag(entranceIndex);
             Flag flag = manager.FlagManager.TryGetFlag(entranceIndex);
-            if (!flag.IsFlagAttachedToBuilding) flag.SetFlagAttachedToBuilding(true);
+            if (!flag.IsFlagAttachedToBuilding)
+            {
+                flag.SetFlagAttachedToBuilding(true);
+            }
+            entranceFlag = flag;
+            gameObject.name = $"{buildingType}_{centerIndex}";
+
             DrawPathVisual();
             manager.UIManager.HideAllPanels();
 

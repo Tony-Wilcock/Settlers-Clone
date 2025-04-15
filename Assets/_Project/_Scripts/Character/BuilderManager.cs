@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PunkyFruitBat
 {
-    public partial class BuilderManager : BaseSpecificCharacterManager
+    public partial class BuilderManager : BaseSpecificCharacterManager<Builder>
     {
         public event Action<Building> OnBuildingConstructionComplete;
 
@@ -12,13 +12,14 @@ namespace PunkyFruitBat
 
         private Queue<Builder> builderPool = new();
 
-        // Override Initialise to add specific setup if needed, like pool creation
-        public override void Initialise(CharacterManager mainManager, HexGridManager gridManager, CharacterPrefabs_SO characterPrefabs, Transform parentTransform)
-        {
-            base.Initialise(mainManager, gridManager, characterPrefabs, parentTransform);
+        private Queue<Building> BuildingJobs { get; set; } = new();
 
+        public override void HandleGridComplete()
+        {
             gridManager.BuildingManager.OnBuildingRequestSubmitted += HandleBuildingRequest;
             gridManager.PathManager.OnPathCreationCompleted += ProcessBuildingsAwaitingBuilderQueue;
+
+            InitialiseBuilderPool();
         }
 
         // --- Pooling Logic (Moved from CharacterManager) ---
@@ -95,7 +96,7 @@ namespace PunkyFruitBat
 
             builder.StopAllCoroutines(); // Stop any running coroutines
 
-            builder.StartCoroutine(builder.MoveCharacter(builder.HomeNodeIndex, () =>
+            builder.StartCoroutine(builder.MoveCharacter(builder.WorkNodeIndex, () =>
             {
                 builder.gameObject.SetActive(false);
                 builderPool.Enqueue(builder);
@@ -117,7 +118,7 @@ namespace PunkyFruitBat
 
             builder.gameObject.SetActive(false);
             // Reset position?
-            builder.transform.position = gridManager.NodeManager.GetNodePosition(builder.HomeNodeIndex); // Assuming HomeNodeIndex is storehouse
+            builder.transform.position = gridManager.NodeManager.GetNodePosition(builder.WorkNodeIndex); // Assuming WorkNodeIndex is storehouse
 
             // Avoid double-adding
             if (!builderPool.Contains(builder))
@@ -131,11 +132,6 @@ namespace PunkyFruitBat
 
             // Process queue as a builder is now free
             ProcessBuildingsAwaitingBuilderQueue();
-        }
-
-        public override void HandleGridComplete()
-        {
-            InitialiseBuilderPool();
         }
 
         // --- Builder-Specific Event Handling ---
@@ -158,8 +154,7 @@ namespace PunkyFruitBat
 
             if (builderPool.Count == 0)
             {
-                Debug.Log($"No builders available for building {building.CenterIndex}. Re-queuing.");
-                gridManager.BuildingManager.UnconnectedBuildings.Enqueue(building);
+                BuildingJobs.Enqueue(building);
                 return;
             }
 
@@ -167,20 +162,31 @@ namespace PunkyFruitBat
 
             if (path == null || !gridManager.PathManager.PathFinder.IsPathConnectedToStorehouse(path))
             {
-                Debug.Log("Building not connected to storehouse");
-                gridManager.BuildingManager.UnconnectedBuildings.Enqueue(building);
+                BuildingJobs.Enqueue(building);
                 return;
             }
 
             // Request resources for the building
-            gridManager.StartCoroutine(gridManager.ResourceManager.RequestResources(building));
+            // Get the wood amount and stone amount required for the building
+            int woodCost = building.GetBuildingCostByResourceType(ResourceType.Wood);
+            int stoneCost = building.GetBuildingCostByResourceType(ResourceType.Stone);
+            if (woodCost > 0)
+            {
+                for (int i = 0; i < woodCost; i++)
+                    gridManager.ResourceManager.RequestResources(ResourceType.Wood, building);
+            }
+            if (stoneCost > 0)
+            {
+                for (int i = 0; i < stoneCost; i++)
+                    gridManager.ResourceManager.RequestResources(ResourceType.Stone, building);
+            }
 
             // Send out a builder to build the building
             Builder builder = GetCharacterInstance() as Builder;
             if (builder == null)
             {
                 Debug.LogError("Builder pool error: Count > 0 but GetCharacterInstance returned null!");
-                gridManager.BuildingManager.UnconnectedBuildings.Enqueue(building); // Re-queue
+                BuildingJobs.Enqueue(building); // Re-queue
                 return;
             }
 
@@ -191,16 +197,14 @@ namespace PunkyFruitBat
 
         /// <summary>
         /// Processes the queue of buildings waiting for a builder assignment.
-        /// It iterates through buildings currently in the UnconnectedBuildings queue,
+        /// It iterates through buildings currently in the BuildingJobs queue,
         /// attempts to assign an available builder if connectivity requirements are met,
         /// and re-queues buildings that cannot be assigned yet.
         /// </summary>
         private void ProcessBuildingsAwaitingBuilderQueue(Path path = null)
         {
-            Queue<Building> waitingQueue = gridManager.BuildingManager.UnconnectedBuildings;
-
-            int currentQueueSize = waitingQueue.Count;
-            if (currentQueueSize == 0) return;
+            if (BuildingJobs.Count <= 0) return;
+            Queue<Building> waitingQueue = BuildingJobs;
 
             // Use a temporary list to avoid issues with modifying the queue while iterating
             List<Building> buildingsToProcess = new(waitingQueue);
@@ -226,11 +230,6 @@ namespace PunkyFruitBat
                 // Retry assignment logic. This will re-queue if still unconnected or blocked.
                 TryAssignBuilderToBuilding(buildingToCheck);
             }
-
-            if (waitingQueue.Count > 0)
-                Debug.Log($"[BuilderManager] {waitingQueue.Count} buildings remain in awaiting queue after processing.");
-            else
-                Debug.Log("[BuilderManager] Awaiting builder queue is now empty.");
         }
 
         public override void Unsubscribe()

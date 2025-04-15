@@ -4,11 +4,21 @@ using UnityEngine;
 
 namespace PunkyFruitBat
 {
-    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
+    [Serializable] // Makes this visible and editable in the Inspector
+    public struct InitialHexColor
+    {
+        [Tooltip("The global index of the CENTER node of the hex to colour.")]
+        public int centerNodeIndex;
+
+        [Tooltip("The colour to apply to this hex.")]
+        public Color color;
+    }
+
+[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
     public class HexGridManager : Singleton<HexGridManager>
     {
-        public event Action<int, bool> OnCreateFlagButtonPressed;
-        public event Action<int> OnRemoveFlagButtonPressed;
+        public event Action<int> OnCreateFlagButtonPressed;
+        public event Action OnRemoveFlagButtonPressed;
 
         public event Action<int, BuildingType> OnCreateBuildingButtonPressed;
 
@@ -23,10 +33,10 @@ namespace PunkyFruitBat
         [field: SerializeField] public CharacterPrefabs_SO CharacterPrefabs { get; private set; }
         [field: SerializeField] public ResourcePrefabs_SO ResourcePrefabs { get; private set; }
 
-        public int NearestNode => nodeManager.NearestNodeIndex;
+        public int LiveNode => nodeManager.LiveNodeIndex;
+        public int SelectedNode => nodeSelector.selectedNode;
 
         [field: SerializeField] public bool IsDebugModeActive { get; set; } = false;
-        [field: SerializeField] public int SelectedNode { get; private set; }
         [field: SerializeField] public Transform ChunksTransform { get; private set; }
         [field: SerializeField] public Transform NodesTransform { get; private set; }
         [field: SerializeField] public Transform NodeIconsTransform { get; private set; }
@@ -41,6 +51,7 @@ namespace PunkyFruitBat
         [SerializeField] private Input_SO input;
         [SerializeField] private UIManager uiManager;
         [SerializeField] private CameraManager cameraManager;
+        [SerializeField] private EventHandlingManager eventHandler = new();
 
         [SerializeField] private HexGridSettings settings = new();
         [SerializeField] private PathManager pathManager = new();
@@ -55,6 +66,9 @@ namespace PunkyFruitBat
         [SerializeField] private CharacterManager characterManager = new();
         [SerializeField] private ResourceManager resourceManager = new();
 
+        [SerializeField] private VertexManipulator vertexManipulator = new();
+
+        public EventHandlingManager EventHandler => eventHandler;
         public HexGridSettings Settings => settings;
         public Input_SO Input_SO => input;
         public UIManager UIManager => uiManager;
@@ -68,9 +82,12 @@ namespace PunkyFruitBat
         public BuildingManager BuildingManager => buildingManager;
         public CharacterManager CharacterManager => characterManager;
         public ResourceManager ResourceManager => resourceManager;
+        public VertexManipulator VertexManipulator => vertexManipulator;
 
         #endregion Components
 
+        [Tooltip("Define initial colours for specific hexes using their grid coordinates.")]
+        public List<InitialHexColor> initialHexColors = new();
         public List<Chunk> chunks = new();
         public Node[] EditableVerticesIndices { get; private set; }
 
@@ -105,20 +122,7 @@ namespace PunkyFruitBat
             edgeIdentifier.Initialise(this);
             gridBuilder.Initialise(this);
 
-            //nodeSelector.Initialise(this);
-            //flagManager.Initialise(this, flagPrefab);
-            //pathManager.Initialise(this, PathVisualPrefab, tempPathVisualPrefab);
-            //nodeManager.Initialise(this);
-            //buildingManager.Initialise(this, BuildingPrefabs);
-            //iconPicker.Initialise(this, IconPrefabs);
-            //characterManager.Initialise(this, CharacterPrefabs);
-
-            //cameraManager = cameraManager != null ? cameraManager : FindFirstObjectByType<CameraManager>();
-            //uiManager = uiManager != null ? uiManager : FindFirstObjectByType<UIManager>();
-
             InitializeGame();
-
-            nodeSelector.OnNodeSelected += (nodeIndex) => SelectedNode = nodeIndex;
         }
 
         private void OnDisable()
@@ -129,8 +133,6 @@ namespace PunkyFruitBat
             pathManager?.Unsubscribe();
             buildingManager?.Unsubscribe();
             characterManager?.Unsubscribe();
-
-            nodeSelector.OnNodeSelected -= (nodeIndex) => SelectedNode = nodeIndex;
         }
 
         private void InitializeGame()
@@ -146,14 +148,39 @@ namespace PunkyFruitBat
             {
                 return;
             }
-            nodeManager.UpdateCurrentNodeIndex(Input.mousePosition);
-            uiManager.debugText.text = $"Nearest Node: {NearestNode}";
+            nodeManager.UpdateLiveNodeIndex(Input.mousePosition);
         }
 
         [ContextMenu("Generate Grid")]
         public void GenerateGrid()
         {
             StartCoroutine(gridBuilder.CreateHexGridAsync(chunks, globalVertices, OnGridGenerationComplete));
+        }
+
+        /// <summary>
+        /// Iterates through the initialHexColors list (set in Inspector)
+        /// and applies the colours to the grid using VertexManipulator.
+        /// Must be called AFTER the grid and VertexManipulator are initialised.
+        /// </summary>
+        void ApplyInitialHexColors()
+        {
+            // Ensure dependencies are ready
+            if (vertexManipulator == null) { Debug.LogError("ApplyInitialHexColors: VertexManipulator is null!"); return; }
+            if (initialHexColors == null) { Debug.LogWarning("ApplyInitialHexColors: initialHexColors list is null or empty."); return; }
+            if (cellVertexMap == null) { Debug.LogError("ApplyInitialHexColors: cellVertexMap is null! Cannot map coordinates."); return; }
+            if (EditableVerticesIndices == null) { Debug.LogError("ApplyInitialHexColors: EditableVerticesIndices is null! Cannot verify center nodes."); return; }
+
+
+            int appliedCount = 0;
+            foreach (InitialHexColor initialColor in initialHexColors)
+            {
+                if (initialColor.centerNodeIndex >= 0) // Example validation
+                {
+                    vertexManipulator.SetHexColor(initialColor.centerNodeIndex, initialColor.color);
+                    appliedCount++;
+                }
+                else { Debug.LogWarning($"ApplyInitialHexColors: Invalid centerNodeIndex ({initialColor.centerNodeIndex}) in list."); }
+            }
         }
 
         private void OnGridGenerationComplete(int vertexCount, Dictionary<(int, int), List<int>> cellVertexMap, Node[] editableVerticesIndices)
@@ -163,6 +190,11 @@ namespace PunkyFruitBat
 
             AdjacencyList = adjacencyBuilder.BuildAdjacencyList();
             EdgeVertices = edgeIdentifier.IdentifyEdgeVertices();
+
+            // Check if calculation methods returned null
+            if (AdjacencyList == null) { Debug.LogError("[HexGridManager.OnGridGenerationComplete] AdjacencyList is NULL after BuildAdjacencyList!"); }
+            if (EdgeVertices == null) { Debug.LogError("[HexGridManager.OnGridGenerationComplete] EdgeVertices is NULL after IdentifyEdgeVertices!"); }
+
             edgeIdentifier.ForceEdgeVerticesToZero();
 
             for (int i = 0; i < vertexCount; i++)
@@ -193,9 +225,12 @@ namespace PunkyFruitBat
             iconPicker.Initialise(this, IconPrefabs);
             characterManager.Initialise(this, CharacterPrefabs);
             resourceManager.Initialise(this, ResourcePrefabs);
+            vertexManipulator.Initialise(this);
 
             cameraManager = cameraManager != null ? cameraManager : FindFirstObjectByType<CameraManager>();
             uiManager = uiManager != null ? uiManager : FindFirstObjectByType<UIManager>();
+
+            ApplyInitialHexColors();
 
             OnGridComplete?.Invoke();
 
@@ -204,8 +239,10 @@ namespace PunkyFruitBat
             #endif
         }
 
-        public void CreateFlagButtonPressed() => OnCreateFlagButtonPressed?.Invoke(SelectedNode, false);
-        public void RemoveFlagButtonPressed() => OnRemoveFlagButtonPressed?.Invoke(SelectedNode);
+        #region UI_Button_Interactions
+
+        public void CreateFlagButtonPressed() => OnCreateFlagButtonPressed?.Invoke(SelectedNode);
+        public void RemoveFlagButtonPressed() => OnRemoveFlagButtonPressed?.Invoke();
         public void CreatePathButtonPressed() => pathManager.StartPathPlacement();
         public void RemovePathButtonPressed()
         {
@@ -213,16 +250,24 @@ namespace PunkyFruitBat
             if (pathToRemove != null)
             {
                 pathManager.RemovePath(pathToRemove);
+                nodeSelector.ResetSelectedNodeIndex();
                 uiManager.HideAllPanels();
             }
         }
-        public void CancelButtonPressed() => pathManager.PathBuilder.CancelPath();
+        public void CancelButtonPressed()
+        {
+            nodeSelector.ResetSelectedNodeIndex();
+            pathManager.PathBuilder.CancelPath();
+            uiManager.HideAllPanels();
+        }
 
         public void CreateBuildingButtonPressed(int buildingTypeIndex)
         {
             BuildingType buildingType = (BuildingType)buildingTypeIndex;
             OnCreateBuildingButtonPressed?.Invoke(SelectedNode, buildingType);
         }
+
+        #endregion
 
         void OnDrawGizmosSelected()
         {

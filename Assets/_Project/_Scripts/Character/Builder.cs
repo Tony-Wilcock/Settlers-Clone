@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace PunkyFruitBat
@@ -24,7 +23,6 @@ namespace PunkyFruitBat
             if (building != null && !isConstructing)
             {
                 currentBuildingTask = building;
-                Debug.Log($"Builder {GetInstanceID()} assigned to build {building.BuildingType} at {building.CenterIndex}");
             }
             else
             {
@@ -39,7 +37,6 @@ namespace PunkyFruitBat
         {
             currentBuildingTask = null;
             isConstructing = false;
-            Debug.Log($"Builder {GetInstanceID()} task cleared.");
         }
 
         /// <summary>
@@ -60,7 +57,6 @@ namespace PunkyFruitBat
 
             // 1. Move to the building entrance
             int buildingEntrance = building.EntranceIndex;
-            Debug.Log($"Builder {GetInstanceID()} moving to entrance {buildingEntrance} for building {building.BuildingType}");
             yield return StartCoroutine(MoveCharacter(buildingEntrance)); // Use base class movement
 
             // Check if we actually reached the entrance
@@ -75,8 +71,6 @@ namespace PunkyFruitBat
                 yield break;
             }
 
-            Debug.Log($"Builder {GetInstanceID()} arrived at entrance {CurrentNodeIndex}. Starting construction checks.");
-
             // 2. Construction Loop (Simplified - assumes resources are magically present)
             while (building.CurrentStage != Building.ConstructionStage.Complete && currentBuildingTask == building)
             {
@@ -90,7 +84,6 @@ namespace PunkyFruitBat
                         }
                         else
                         {
-                            Debug.Log($"Builder {GetInstanceID()} waiting for wood for {building.BuildingType}.");
                             // TODO: Implement resource request/fetching logic if needed
                             // For now, just wait a bit and re-check
                             yield return StartCoroutine(WaitForSecondsFactory.WaitCoroutine(1.0f));
@@ -98,12 +91,10 @@ namespace PunkyFruitBat
                         break;
 
                     case Building.ConstructionStage.ConstructingWood:
-                        Debug.Log($"Builder {GetInstanceID()} constructing wood for {building.BuildingType}...");
                         // TODO: Play animation?
                         int amountOfWoodNeeded = building.GetBuildingCostByResourceType(ResourceType.Wood);
                         yield return StartCoroutine(WaitForSecondsFactory.WaitCoroutine(constructionTime * amountOfWoodNeeded)); // Use a getter for time
                         building.CompleteWoodConstruction();
-                        Debug.Log($"Builder {GetInstanceID()} finished wood stage for {building.BuildingType}.");
                         break;
 
                     case Building.ConstructionStage.AwaitingStone:
@@ -150,7 +141,7 @@ namespace PunkyFruitBat
             if (wasTaskCompleted)
             {
                 // The BuildingManager already subscribes to this event from BuilderManager
-                var mainManager = characterManager.GetSpecificManager(CharacterType.Builder) as BuilderManager;
+                BuilderManager mainManager = characterManager.GetSpecificManager(CharacterType.Builder) as BuilderManager;
                 mainManager.InvokeConstructionCompleteEvent(building);
                 // OR: Fire an event from the Building itself when MarkConstructionComplete is called.
             }
@@ -171,7 +162,7 @@ namespace PunkyFruitBat
     // Helper in BuilderManager to invoke the event
     public partial class BuilderManager // Assuming partial class or add directly
     {
-        private Dictionary<CharacterType, ICharacterTypeManager> typeManagers; // Add this field
+        //private Dictionary<CharacterType, ICharacterTypeManager> typeManagers; // Add this field
 
         public void InvokeConstructionCompleteEvent(Building building)
         {
@@ -179,14 +170,14 @@ namespace PunkyFruitBat
         }
 
         // Helper to get typed manager
-        public T GetSpecificManager<T>(CharacterType type) where T : class, ICharacterTypeManager
-        {
-            if (typeManagers.TryGetValue(type, out var manager) && manager is T typedManager)
-            {
-                return typedManager;
-            }
-            Debug.LogError($"Could not find or cast manager of type {typeof(T)} for CharacterType {type}.");
-            return null;
-        }
+        //public T GetSpecificManager<T>(CharacterType type) where T : class, ICharacterTypeManager
+        //{
+        //    if (typeManagers.TryGetValue(type, out var manager) && manager is T typedManager)
+        //    {
+        //        return typedManager;
+        //    }
+        //    Debug.LogError($"Could not find or cast manager of type {typeof(T)} for CharacterType {type}.");
+        //    return null;
+        //}
     }
 }

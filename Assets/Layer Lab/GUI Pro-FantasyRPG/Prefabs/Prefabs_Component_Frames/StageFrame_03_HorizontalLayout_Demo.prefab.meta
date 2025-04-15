@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: c136154dafc1e41b993bc4880da0c88d
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 170168
+  packageName: GUI Pro - Fantasy RPG
+  packageVersion: 4.0.2
+  assetPath: Assets/Layer Lab/GUI Pro-FantasyRPG/Prefabs/Prefabs_Component_Frames/StageFrame_03_HorizontalLayout_Demo.prefab
+  uploadId: 714941

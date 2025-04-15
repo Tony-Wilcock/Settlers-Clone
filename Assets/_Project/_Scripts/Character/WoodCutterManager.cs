@@ -3,17 +3,11 @@ using UnityEngine;
 
 namespace PunkyFruitBat
 {
-    public class WoodCutterManager : BaseSpecificCharacterManager
+    public class WoodCutterManager : BaseSpecificCharacterManager<WoodCutter>
     {
         public override CharacterType ManagedType => CharacterType.WoodCutter;
 
         private Queue<WoodCutter> woodCutterPool = new();
-
-        // Override Initialise to add specific setup if needed, like pool creation
-        public override void Initialise(CharacterManager mainManager, HexGridManager gridManager, CharacterPrefabs_SO characterPrefabs, Transform parentTransform)
-        {
-            base.Initialise(mainManager, gridManager, characterPrefabs, parentTransform);
-        }
 
         public override void HandleGridComplete()
         {
@@ -94,7 +88,7 @@ namespace PunkyFruitBat
 
             woodCutter.StopAllCoroutines(); // Stop any running coroutines
 
-            woodCutter.StartCoroutine(woodCutter.MoveCharacter(woodCutter.HomeNodeIndex, () =>
+            woodCutter.StartCoroutine(woodCutter.MoveCharacter(woodCutter.WorkNodeIndex, () =>
             {
                 woodCutter.gameObject.SetActive(false);
                 woodCutterPool.Enqueue(woodCutter);
@@ -115,7 +109,7 @@ namespace PunkyFruitBat
 
             woodCutter.gameObject.SetActive(false);
             // Reset position?
-            woodCutter.transform.position = gridManager.NodeManager.GetNodePosition(woodCutter.HomeNodeIndex); // Assuming HomeNodeIndex is storehouse
+            woodCutter.transform.position = gridManager.NodeManager.GetNodePosition(woodCutter.WorkNodeIndex); // Assuming WorkNodeIndex is storehouse
 
             // Avoid double-adding
             if (!woodCutterPool.Contains(woodCutter))
