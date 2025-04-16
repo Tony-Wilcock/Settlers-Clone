@@ -707,7 +707,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
   m_PrefabInstance: {fileID: 480974292198021862}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1927625305}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e44b2648c5498164ca12653ce1731509, type: 3}
@@ -754,35 +754,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ef26566c454a19741a9a57017e758e0c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!1 &1927625305 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1220909071172097437, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-  m_PrefabInstance: {fileID: 480974292198021862}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1927625310
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1927625305}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b436c1724e1abc9439b1b8a65d8a37dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1927625311
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1927625305}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 879d33600cf41404eb834dfe50ab30bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &480974292198021862
@@ -833,10 +804,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 558476171065867509, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: a035afcb7aa473641a6aeb9e8b1432b3, type: 2}
     - target: {fileID: 1220909071172097437, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
       propertyPath: m_Name
       value: Hex Grid Manager
@@ -849,88 +816,10 @@ PrefabInstance:
       propertyPath: cameraManager
       value: 
       objectReference: {fileID: 1468888526}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: chunkColors.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: chunkColors.Array.data[0].a
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: chunkColors.Array.data[0].b
-      value: 0.62893444
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: chunkColors.Array.data[0].g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: chunkColors.Array.data[0].r
-      value: 0.81960785
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: initialHexColors.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: nodeManager.selectedNodePrefab
-      value: 
-      objectReference: {fileID: 942506769870455470, guid: 315c89c2b6f77a3478b2cef61ee69dee, type: 3}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: initialHexColors.Array.data[0].color.a
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: initialHexColors.Array.data[0].color.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: initialHexColors.Array.data[0].color.g
-      value: 0.55344284
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: initialHexColors.Array.data[0].color.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: initialHexColors.Array.data[1].color.a
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: initialHexColors.Array.data[1].color.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: initialHexColors.Array.data[1].color.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: initialHexColors.Array.data[1].color.r
-      value: 0.96469927
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: initialHexColors.Array.data[0].centerNodeIndex
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: initialHexColors.Array.data[1].centerNodeIndex
-      value: 27
-      objectReference: {fileID: 0}
-    - target: {fileID: 4214806107188034940, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      propertyPath: nodeManager.<SelectedNodePrefab>k__BackingField
-      value: 
-      objectReference: {fileID: 1639338148365194, guid: bd1a3986e9c3a674a9631b3be4b5ef8d, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1220909071172097437, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1927625310}
-    - targetCorrespondingSourceObject: {fileID: 1220909071172097437, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1927625311}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e38106d4e9925be48b01cefc46b1f302, type: 3}
 --- !u!1001 &7114287188026950531
 PrefabInstance:
@@ -940,38 +829,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 263668513807323490, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 263668513807323490, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 263668513807323490, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1053643861}
-    - target: {fileID: 263668513807323490, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 263668513807323490, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CreateBuildingButtonPressed
-      objectReference: {fileID: 0}
-    - target: {fileID: 263668513807323490, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PunkyFruitBat.HexGridManager, ProjectAssembly
-      objectReference: {fileID: 0}
-    - target: {fileID: 263668513807323490, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 17
-      objectReference: {fileID: 0}
-    - target: {fileID: 263668513807323490, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 267930518995916254, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1037,73 +894,13 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 697790070175679956, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 697790070175679956, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 697790070175679956, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1053643861}
-    - target: {fileID: 697790070175679956, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 697790070175679956, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CreateBuildingButtonPressed
-      objectReference: {fileID: 0}
-    - target: {fileID: 697790070175679956, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PunkyFruitBat.HexGridManager, ProjectAssembly
-      objectReference: {fileID: 0}
-    - target: {fileID: 697790070175679956, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 697790070175679956, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 783062187870175483, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 859648233242823637, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 859648233242823637, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 859648233242823637, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1053643861}
     - target: {fileID: 859648233242823637, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 859648233242823637, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CreateBuildingButtonPressed
-      objectReference: {fileID: 0}
-    - target: {fileID: 859648233242823637, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PunkyFruitBat.HexGridManager, ProjectAssembly
-      objectReference: {fileID: 0}
-    - target: {fileID: 859648233242823637, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 859648233242823637, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1053643861}
     - target: {fileID: 1454437348052913408, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1193,69 +990,13 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1053643861}
     - target: {fileID: 3542535819229065986, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3542535819229065986, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3542535819229065986, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1053643861}
-    - target: {fileID: 3542535819229065986, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3542535819229065986, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CreateBuildingButtonPressed
-      objectReference: {fileID: 0}
-    - target: {fileID: 3542535819229065986, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PunkyFruitBat.HexGridManager, ProjectAssembly
-      objectReference: {fileID: 0}
-    - target: {fileID: 3542535819229065986, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 3542535819229065986, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 3824651069694050127, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3824651069694050127, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3824651069694050127, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1053643861}
     - target: {fileID: 3824651069694050127, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3824651069694050127, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CreateBuildingButtonPressed
-      objectReference: {fileID: 0}
-    - target: {fileID: 3824651069694050127, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PunkyFruitBat.HexGridManager, ProjectAssembly
-      objectReference: {fileID: 0}
-    - target: {fileID: 3824651069694050127, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 11
-      objectReference: {fileID: 0}
-    - target: {fileID: 3824651069694050127, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1053643861}
     - target: {fileID: 3840019209775417858, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -1284,162 +1025,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4245444165390396811, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4360951453428572536, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4360951453428572536, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 4360951453428572536, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1053643861}
-    - target: {fileID: 4360951453428572536, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4360951453428572536, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CreateBuildingButtonPressed
-      objectReference: {fileID: 0}
-    - target: {fileID: 4360951453428572536, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PunkyFruitBat.HexGridManager, ProjectAssembly
-      objectReference: {fileID: 0}
-    - target: {fileID: 4360951453428572536, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 4360951453428572536, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 4649165466632960351, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4649165466632960351, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 4649165466632960351, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1053643861}
-    - target: {fileID: 4649165466632960351, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4649165466632960351, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CreateBuildingButtonPressed
-      objectReference: {fileID: 0}
-    - target: {fileID: 4649165466632960351, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PunkyFruitBat.HexGridManager, ProjectAssembly
-      objectReference: {fileID: 0}
-    - target: {fileID: 4649165466632960351, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 4649165466632960351, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 4892351726230324671, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4892351726230324671, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4892351726230324671, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 4892351726230324671, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 4892351726230324671, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 254.6669
-      objectReference: {fileID: 0}
-    - target: {fileID: 4892351726230324671, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -100.51935
-      objectReference: {fileID: 0}
-    - target: {fileID: 5239204578483624861, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5239204578483624861, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 5239204578483624861, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1053643861}
-    - target: {fileID: 5239204578483624861, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5239204578483624861, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CreateBuildingButtonPressed
-      objectReference: {fileID: 0}
-    - target: {fileID: 5239204578483624861, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PunkyFruitBat.HexGridManager, ProjectAssembly
-      objectReference: {fileID: 0}
-    - target: {fileID: 5239204578483624861, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 13
-      objectReference: {fileID: 0}
-    - target: {fileID: 5239204578483624861, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 5733171802350635085, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5733171802350635085, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 5733171802350635085, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1053643861}
-    - target: {fileID: 5733171802350635085, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5733171802350635085, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CreateBuildingButtonPressed
-      objectReference: {fileID: 0}
-    - target: {fileID: 5733171802350635085, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PunkyFruitBat.HexGridManager, ProjectAssembly
-      objectReference: {fileID: 0}
-    - target: {fileID: 5733171802350635085, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 5733171802350635085, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 6411741583744436897, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: fpsText
       value: 
@@ -1465,37 +1066,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 970394336}
     - target: {fileID: 6797800945533130922, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6797800945533130922, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 6797800945533130922, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1053643861}
-    - target: {fileID: 6797800945533130922, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6797800945533130922, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CreateBuildingButtonPressed
-      objectReference: {fileID: 0}
-    - target: {fileID: 6797800945533130922, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PunkyFruitBat.HexGridManager, ProjectAssembly
-      objectReference: {fileID: 0}
-    - target: {fileID: 6797800945533130922, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 14
-      objectReference: {fileID: 0}
-    - target: {fileID: 6797800945533130922, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     - target: {fileID: 6997862667133324323, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1521,129 +1094,21 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7569513521851593854, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7569513521851593854, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 7569513521851593854, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 1053643861}
-    - target: {fileID: 7569513521851593854, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7569513521851593854, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CreateBuildingButtonPressed
-      objectReference: {fileID: 0}
-    - target: {fileID: 7569513521851593854, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PunkyFruitBat.HexGridManager, ProjectAssembly
-      objectReference: {fileID: 0}
-    - target: {fileID: 7569513521851593854, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 7569513521851593854, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 7601981820149538218, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7601981820149538218, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 7601981820149538218, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1053643861}
     - target: {fileID: 7601981820149538218, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7601981820149538218, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CreateBuildingButtonPressed
-      objectReference: {fileID: 0}
-    - target: {fileID: 7601981820149538218, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PunkyFruitBat.HexGridManager, ProjectAssembly
-      objectReference: {fileID: 0}
-    - target: {fileID: 7601981820149538218, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 7601981820149538218, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1053643861}
     - target: {fileID: 7981077974805276833, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1053643861}
     - target: {fileID: 8067189271798845507, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8067189271798845507, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 8067189271798845507, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1053643861}
-    - target: {fileID: 8067189271798845507, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8067189271798845507, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CreateBuildingButtonPressed
-      objectReference: {fileID: 0}
-    - target: {fileID: 8067189271798845507, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PunkyFruitBat.HexGridManager, ProjectAssembly
-      objectReference: {fileID: 0}
-    - target: {fileID: 8067189271798845507, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8067189271798845507, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
-    - target: {fileID: 8082792853627644821, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8082792853627644821, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8082792853627644821, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 8082792853627644821, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 8082792853627644821, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 154.6669
-      objectReference: {fileID: 0}
-    - target: {fileID: 8082792853627644821, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -100.51935
-      objectReference: {fileID: 0}
     - target: {fileID: 8333916656668676341, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1669,37 +1134,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9180111625633158227, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9180111625633158227, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 9180111625633158227, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1053643861}
-    - target: {fileID: 9180111625633158227, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9180111625633158227, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: CreateBuildingButtonPressed
-      objectReference: {fileID: 0}
-    - target: {fileID: 9180111625633158227, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: PunkyFruitBat.HexGridManager, ProjectAssembly
-      objectReference: {fileID: 0}
-    - target: {fileID: 9180111625633158227, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9180111625633158227, guid: a5ffd93c8cda87148b5f63b3988aa240, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.Object, UnityEngine
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

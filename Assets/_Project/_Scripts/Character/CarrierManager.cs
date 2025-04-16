@@ -17,8 +17,6 @@ namespace PunkyFruitBat
     {
         public override CharacterType ManagedType => CharacterType.Carrier;
 
-        //private Queue<Carrier> carrierPool = new();
-
         // Queue for resources waiting for transport between flags
         private Queue<TransportRequest> transportRequestQueue = new();
 
@@ -26,127 +24,10 @@ namespace PunkyFruitBat
         public override void HandleGridComplete()
         {
             base.InitialisePool(100);
+
             gridManager.PathManager.OnPathCreationCompleted += HandlePathCreationOrChange;
             gridManager.PathManager.OnPathRemoved += HandlePathRemovalUnassignCarrier;
-            //InitialiseCarrierPool();
         }
-
-        // --- Pooling Logic (Moved from CharacterManager) ---
-        //private void InitialiseCarrierPool()
-        //{
-        //    carrierPool = new Queue<Carrier>();
-        //    IncreaseCarrierPool(100); // Or read from config
-        //}
-
-        //private void IncreaseCarrierPool(int amount)
-        //{
-        //    GameObject prefab = characterPrefabs.characterPrefabs[(int)ManagedType];
-        //    if (prefab == null)
-        //    {
-        //        Debug.LogError($"Prefab for {ManagedType} not found!");
-        //        return;
-        //    }
-
-        //    int storehouseNode = gridManager.BuildingManager.GetStorehouseNode(); // Get once
-        //    Vector3 initialPosition = gridManager.NodeManager.GetNodePosition(storehouseNode);
-
-        //    for (int i = 0; i < amount; i++)
-        //    {
-        //        GameObject characterGO = GameObject.Instantiate(prefab);
-        //        characterGO.transform.position = initialPosition;
-
-        //        if (typeSpecificParentTransform != null) characterGO.transform.SetParent(typeSpecificParentTransform);
-        //        else Debug.LogWarning($"Parent transform for {ManagedType} not set. Character '{characterGO.name}' will be at scene root.", characterGO);
-
-        //        if (!characterGO.TryGetComponent<Carrier>(out Carrier carrier))
-        //        {
-        //            Debug.LogError($"Prefab for {ManagedType} is missing Carrier component!");
-        //            GameObject.Destroy(characterGO); // Clean up unusable instance
-        //            continue;
-        //        }
-
-        //        carrier.InitialiseCharacter(ManagedType, storehouseNode);
-        //        characterGO.SetActive(false);
-        //        carrierPool.Enqueue(carrier);
-        //    }
-        //}
-
-        //public override Character GetCharacterInstance(int spawnNodeIndex = -1)
-        //{
-        //    if (carrierPool.Count == 0)
-        //    {
-        //        Debug.Log("Carrier pool empty, increasing size.");
-        //        IncreaseCarrierPool(50); // Or read from config
-        //    }
-
-        //    if (carrierPool.Count == 0) // Check again after trying to increase
-        //    {
-        //        Debug.LogError("Failed to increase carrier pool or pool still empty. Cannot get carrier.");
-        //        return null;
-        //    }
-
-        //    Carrier carrier = carrierPool.Dequeue();
-
-        //    if (spawnNodeIndex != -1) carrier.transform.position = gridManager.NodeManager.GetNodePosition(spawnNodeIndex);
-
-        //    carrier.gameObject.SetActive(true);
-        //    return carrier;
-        //}
-
-        //public override void ReturnCharacterInstance(Character character)
-        //{
-        //    if (character is not Carrier carrier)
-        //    {
-        //        Debug.LogError($"Tried to return a non-carrier character ({character.GetType().Name}) to CarrierManager.");
-        //        return;
-        //    }
-
-        //    if (carrier == null || !carrier.gameObject.activeInHierarchy) return; // Already returned or destroyed
-
-        //    // Logic specific to returning a carrier (e.g., send back to storehouse)
-        //    carrier.StopAllCoroutines(); // Stop current task
-        //    // Start movement back to the storehouse (using the node index)
-        //    int storehouseNode = gridManager.BuildingManager.GetStorehouseNode();
-        //    carrier.SetWorkNodeIndex(storehouseNode); // Reset home node
-        //    carrier.StartCoroutine(carrier.MoveCharacter(carrier.WorkNodeIndex, () =>
-        //    {
-        //        // This callback executes *after* movement is complete
-        //        carrier.SetAssignedPath(null);
-        //        carrier.gameObject.SetActive(false); // Deactivate only after reaching storehouse
-        //        carrierPool.Enqueue(carrier);
-        //    }));
-        //}
-
-        //public override void InstantlyReturnCharacterInstance(Character character)
-        //{
-        //    if (character is not Carrier carrier)
-        //    {
-        //        Debug.LogError($"Tried to instantly return a non-carrier character ({character.GetType().Name}) to CarrierManager.");
-        //        return;
-        //    }
-
-        //    if (carrier == null) return;
-
-        //    Debug.Log($"Instantly returning carrier {carrier.GetInstanceID()} to pool");
-        //    carrier.StopAllCoroutines(); // Ensure no movement coroutines continue
-        //    carrier.gameObject.SetActive(false);
-        //    // Optionally reset position to storehouse instantly
-        //    int storehouseNode = gridManager.BuildingManager.GetStorehouseNode();
-        //    carrier.transform.position = gridManager.NodeManager.GetNodePosition(storehouseNode);
-
-        //    // Avoid duplicate enqueuing if already in pool (though SetActive(false) should prevent issues)
-        //    if (!carrierPool.Contains(carrier))
-        //    {
-        //        carrierPool.Enqueue(carrier);
-        //    }
-        //    else
-        //    {
-        //        Debug.LogWarning($"Carrier {carrier.GetInstanceID()} was already in the pool?");
-        //    }
-
-        //    Debug.Log($"Carrier pool size: {carrierPool.Count}");
-        //}
-
 
         // --- Carrier-Specific Event Handling ---
 
@@ -200,7 +81,8 @@ namespace PunkyFruitBat
             // Path IS connected! Check if we have an idle carrier in the POOL.
             if (characterPool.Count > 0)
             {
-                Carrier carrier = characterPool.Dequeue() as Carrier;
+                //Carrier carrier = characterPool.Dequeue() as Carrier;
+                Carrier carrier = base.GetCharacterInstance() as Carrier;
                 if (carrier != null)
                 {
                     //carrier.AssignTaskStart();
@@ -276,7 +158,7 @@ namespace PunkyFruitBat
                     return; // Don't unassign busy carriers
                 }
 
-                ReturnCharacterInstance(carrier);
+                base.ReturnCharacterInstance(carrier);
                 path.RemoveCarrier(); // Clear path's reference
             }
         }
@@ -290,16 +172,17 @@ namespace PunkyFruitBat
         {
             if (resource == null || currentFlag == null) return;
 
+            Flag destinationFlag = resource.GetBuildingAtDestination().EntranceFlag;
+
             // 1. Check if this flag is the final destination (connected to the building)
-            Building destinationBuilding = currentFlag.GetBuildingAtFlag();
-            if (destinationBuilding != null && destinationBuilding.CenterIndex == resource.DestinationNodeIndex)
+            if (currentFlag == destinationFlag)
             {
                 // Deliver to building
-                destinationBuilding.AddResourceToSite(resource.ResourceType, 1); // Assumes amount is 1
+                resource.GetBuildingAtDestination().AddResourceToSite(resource.ResourceType);
                 // TODO: Pool or destroy the resource GameObject
                 DestroyResource(resource);
                 return; // Transport complete
-            }
+            }            
 
             // 2. Dynamically find the NEXT flag on the route from currentFlag towards the resource's destination
             Flag nextFlag = FindNextFlagOnRouteTowards(currentFlag, resource.DestinationNodeIndex);
@@ -458,7 +341,7 @@ namespace PunkyFruitBat
         /// <summary>
         /// Called by Carriers when they become idle (e.g., after dropping off resource and returning to center).
         /// </summary>
-        public void NotifyCarrierIdle(Carrier carrier, Path path)
+        public void NotifyCarrierIdle(Carrier carrier)
         {
             if (carrier == null) return;
             // An idle carrier might be able to take a job, process the queue.
@@ -515,6 +398,7 @@ namespace PunkyFruitBat
             }
             // Clear queue? Reset state?
             transportRequestQueue.Clear();
+            base.Unsubscribe();
         }
     }
 }

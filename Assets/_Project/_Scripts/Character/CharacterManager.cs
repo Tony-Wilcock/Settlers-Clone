@@ -3,13 +3,23 @@ using UnityEngine;
 
 namespace PunkyFruitBat
 {
-    public enum CharacterType
+    public enum CharacterType // Ensure this matches the order in the inspector
     {
         Carrier,
+        StorehousePorter,
         Builder,
         WoodCutter,
-        StorehousePorter,
         Forester,
+        Carpenter,
+        GrainFarmer,
+        PigFarmer,
+        Miller,
+        Baker,
+        Butcher,
+        Fisher,
+        Hunter,
+        Stonecutter,
+        WellDigger,
     }
 
     // CharacterManager now acts as a coordinator
@@ -50,6 +60,11 @@ namespace PunkyFruitBat
             Transform carrierParent = CreateOrFindParentTransform(CharacterType.Carrier.ToString());
             RegisterAndInitialiseManager(carrierManager, carrierParent);
 
+            // --- StorehousePorterManager Setup ---
+            StorehousePorterManager storehousePorterManager = new();
+            Transform storehousePorterParent = CreateOrFindParentTransform(CharacterType.StorehousePorter.ToString());
+            RegisterAndInitialiseManager(storehousePorterManager, storehousePorterParent);
+
             // --- BuilderManager Setup ---
             BuilderManager builderManager = new();
             Transform builderParent = CreateOrFindParentTransform(CharacterType.Builder.ToString());
@@ -60,15 +75,60 @@ namespace PunkyFruitBat
             Transform woodCutterParent = CreateOrFindParentTransform(CharacterType.WoodCutter.ToString());
             RegisterAndInitialiseManager(woodCutterManager, woodCutterParent);
 
-            // --- StorehousePorterManager Setup ---
-            StorehousePorterManager storehousePorterManager = new();
-            Transform storehousePorterParent = CreateOrFindParentTransform(CharacterType.StorehousePorter.ToString());
-            RegisterAndInitialiseManager(storehousePorterManager, storehousePorterParent);
-
             // --- ForesterManager Setup ---
             ForesterManager foresterManager = new();
             Transform foresterParent = CreateOrFindParentTransform(CharacterType.Forester.ToString());
             RegisterAndInitialiseManager(foresterManager, foresterParent);
+
+            // --- CarpenterManager Setup ---
+            CarpenterManager carpenterManager = new();
+            Transform carpenterParent = CreateOrFindParentTransform(CharacterType.Carpenter.ToString());
+            RegisterAndInitialiseManager(carpenterManager, carpenterParent);
+
+            // --- GrainFarmerManager Setup ---
+            GrainFarmerManager farmerGrainManager = new();
+            Transform farmerGrainParent = CreateOrFindParentTransform(CharacterType.GrainFarmer.ToString());
+            RegisterAndInitialiseManager(farmerGrainManager, farmerGrainParent);
+
+            // --- PigFarmerManager Setup ---
+            PigFarmerManager farmerPigManager = new();
+            Transform farmerPigParent = CreateOrFindParentTransform(CharacterType.PigFarmer.ToString());
+            RegisterAndInitialiseManager(farmerPigManager, farmerPigParent);
+
+            // --- MillerManager Setup ---
+            MillerManager millerManager = new();
+            Transform millerParent = CreateOrFindParentTransform(CharacterType.Miller.ToString());
+            RegisterAndInitialiseManager(millerManager, millerParent);
+
+            // --- BakerManager Setup ---
+            BakerManager bakerManager = new();
+            Transform bakerParent = CreateOrFindParentTransform(CharacterType.Baker.ToString());
+            RegisterAndInitialiseManager(bakerManager, bakerParent);
+
+            // --- ButcherManager Setup ---
+            ButcherManager butcherManager = new();
+            Transform butcherParent = CreateOrFindParentTransform(CharacterType.Butcher.ToString());
+            RegisterAndInitialiseManager(butcherManager, butcherParent);
+
+            // --- FisherManager Setup ---
+            FisherManager fisherManager = new();
+            Transform fisherParent = CreateOrFindParentTransform(CharacterType.Fisher.ToString());
+            RegisterAndInitialiseManager(fisherManager, fisherParent);
+
+            // --- HunterManager Setup ---
+            HunterManager hunterManager = new();
+            Transform hunterParent = CreateOrFindParentTransform(CharacterType.Hunter.ToString());
+            RegisterAndInitialiseManager(hunterManager, hunterParent);
+
+            // --- StonecutterManager Setup ---
+            StonecutterManager stonecutterManager = new();
+            Transform stonecutterParent = CreateOrFindParentTransform(CharacterType.Stonecutter.ToString());
+            RegisterAndInitialiseManager(stonecutterManager, stonecutterParent);
+
+            // --- WellDiggerManager Setup ---
+            WellDiggerManager wellDiggerManager = new();
+            Transform wellDiggerParent = CreateOrFindParentTransform(CharacterType.WellDigger.ToString());
+            RegisterAndInitialiseManager(wellDiggerManager, wellDiggerParent);
         }
 
         private Transform CreateOrFindParentTransform(string name)

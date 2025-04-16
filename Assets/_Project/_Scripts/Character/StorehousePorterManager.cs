@@ -13,48 +13,10 @@ namespace PunkyFruitBat
 
         public override void HandleGridComplete()
         {
+            base.InitialisePool(5);
+
             gridManager.ResourceManager.OnResourceRequestSubmitted += HandleResourceRequestSubmitted;
             gridManager.PathManager.OnPathCreationCompleted += ProcessResourceQueue;
-        }
-
-        public override Character GetCharacterInstance(int spawnNodeIndex = -1)
-        {
-            GameObject prefab = characterPrefabs.characterPrefabs[(int)ManagedType];
-            if (prefab == null)
-            {
-                Debug.LogError($"Prefab for {ManagedType} not found!");
-                return null;
-            }
-
-            int storehouseNode = gridManager.BuildingManager.GetStorehouseNode(); // Get once
-            Vector3 initialPosition = gridManager.NodeManager.GetNodePosition(storehouseNode);
-            
-            GameObject characterGO = GameObject.Instantiate(prefab);
-            characterGO.transform.position = initialPosition;
-
-            if (typeSpecificParentTransform != null) characterGO.transform.SetParent(typeSpecificParentTransform);
-            else Debug.LogWarning($"Parent transform for {ManagedType} not set. Character '{characterGO.name}' will be at scene root.", characterGO);
-            if (!characterGO.TryGetComponent<StorehousePorter>(out StorehousePorter porter))
-            {
-                Debug.LogError($"Prefab for {ManagedType} is missing StorehousePorter component!");
-                GameObject.Destroy(characterGO); // Clean up unusable instance
-                return null;
-            }
-
-            porter.InitialiseCharacter(ManagedType, storehouseNode);
-            porter.SetWorkNodeIndex(storehouseNode);
-
-            return porter;
-        }
-
-        public override void ReturnCharacterInstance(Character character)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void InstantlyReturnCharacterInstance(Character character)
-        {
-            throw new System.NotImplementedException();
         }
 
         private void HandleResourceRequestSubmitted(Resource request)
@@ -106,17 +68,17 @@ namespace PunkyFruitBat
                 // Retry assignment logic. This will re-queue if still unconnected or blocked.
                 TryAssignPorter(resourceToCheck);
             }
-
-            //if (waitingQueue.Count > 0)
-            //    Debug.Log($"[ResourceManager] {waitingQueue.Count} resources remain in awaiting queue after processing.");
-            //else
-            //    Debug.Log("[ResourceManager] Awaiting resource queue is now empty.");
         }
 
         public override void Unsubscribe()
         {
-            gridManager.ResourceManager.OnResourceRequestSubmitted -= HandleResourceRequestSubmitted;
-            gridManager.PathManager.OnPathCreationCompleted -= ProcessResourceQueue;
+            if (gridManager?.ResourceManager != null)
+                gridManager.ResourceManager.OnResourceRequestSubmitted -= HandleResourceRequestSubmitted;
+            if (gridManager?.PathManager != null)
+                gridManager.PathManager.OnPathCreationCompleted -= ProcessResourceQueue;
+
+            resourceQueue.Clear();
+            base.Unsubscribe();
         }
     }
 }

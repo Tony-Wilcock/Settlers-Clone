@@ -7,28 +7,27 @@ namespace PunkyFruitBat
     /// <summary>
     /// Represents the type of building that can be placed on a cell.
     /// </summary>
-    public enum BuildingType
+    public enum BuildingType // Ensure this matches the order in the inspector
     {
-        None = 0,
-        HQ = 1,
-        Storehouse = 2,
-        WoodCuttersHut = 3,
-        GrainFarm = 4,
-        ForestersHut = 5,
-        Sawmill = 6,
-        Quarry = 7,
-        Well = 8,
-        FishingHut = 9,
-        HuntersHut = 10,
-        Windmill = 11,
-        Bakery = 12,
-        PigFarm = 13,
-        Slaughterhouse = 14,
-        Mine = 15,  // Generic mine, could be specialized later
-        Military = 16,
-        Blacksmith = 17,
-        ChargingStation = 18, // For robots
-        RobotFactory = 19,
+        // Large buildings
+        GrainFarm,
+        HQ,
+        PigFarm,
+
+        // Medium buildings
+        Bakery, // 3
+        Sawmill,
+        Slaughterhouse, // 5
+        Storehouse,
+        Windmill, // 7
+
+        // Small buildings
+        FishingHut, // 8
+        ForestersHut, // 9
+        HuntersHut,
+        Quarry,
+        Well,
+        WoodcuttersHut, // 13
     }
 
     public enum BuildingSize
@@ -81,7 +80,7 @@ namespace PunkyFruitBat
 
         private void TryBuildBuilding(int vertexIndex, BuildingType buildingType)
         {
-            if (buildingType == BuildingType.None || (buildingType == BuildingType.HQ && HQ != null)) return;
+            if (buildingType == BuildingType.HQ && HQ != null) return;
             BuildingSize BuildingSize = GetBuildingSize(buildingType);
             if (!CanPlaceBuilding(vertexIndex, BuildingSize)) return;
 
@@ -121,7 +120,7 @@ namespace PunkyFruitBat
             {
                 BuildingType.HQ => BuildingSize.Large,
                 BuildingType.Storehouse => BuildingSize.Medium,
-                BuildingType.WoodCuttersHut => BuildingSize.Small,
+                BuildingType.WoodcuttersHut => BuildingSize.Small,
                 BuildingType.ForestersHut => BuildingSize.Small,
                 BuildingType.Sawmill => BuildingSize.Medium,
                 BuildingType.Quarry => BuildingSize.Small,
@@ -133,9 +132,6 @@ namespace PunkyFruitBat
                 BuildingType.Bakery => BuildingSize.Medium,
                 BuildingType.PigFarm => BuildingSize.Large,
                 BuildingType.Slaughterhouse => BuildingSize.Medium,
-                BuildingType.Mine => BuildingSize.Small,
-                BuildingType.Military => BuildingSize.Small,
-                BuildingType.Blacksmith => BuildingSize.Medium,
                 _ => BuildingSize.Small,
             };
         }

@@ -45,6 +45,7 @@ namespace PunkyFruitBat
 
         // Track resources delivered TO the site (simplification, assumes delivery happens instantly or builder fetches)
         protected Dictionary<ResourceType, int> resourcesOnSite = new();
+        public Dictionary<ResourceType, int> ResourcesOnSite => resourcesOnSite;
 
         protected HexGridManager manager;
         protected BuildingManager buildingManager;
@@ -60,7 +61,7 @@ namespace PunkyFruitBat
             this.entranceIndex = manager.NodeManager.GetNeighbourInDirection(centerIndex, Direction.Southeast);
             this.reservedNodes = buildingManager.GetReservedNodes(centerIndex, buildingSize);
 
-            SetBuildingCost();
+            AssignBuildingCost();
             Build();
 
             //manager.OnGridComplete += DetermineInitialConstructionStage;
@@ -122,7 +123,7 @@ namespace PunkyFruitBat
         }
 
         // Method for builder/carrier to add resources (placeholder)
-        public void AddResourceToSite(ResourceType type, int amount)
+        public void AddResourceToSite(ResourceType type, int amount = 1)
         {
             if (!resourcesOnSite.ContainsKey(type)) resourcesOnSite[type] = 0;
             resourcesOnSite[type] += amount;
@@ -199,7 +200,20 @@ namespace PunkyFruitBat
 
         protected virtual void AssignWorkerBasedOnBuildingType()
         {
+            CharacterType workerType = RequiredWorkerType;
 
+            Character worker = manager.CharacterManager.GetCharacter(workerType);
+
+            if (worker != null)
+            {
+                AssignedWorker = worker;
+                AssignedWorker.SetWorkNodeIndex(centerIndex);
+                StartCoroutine(worker.MoveCharacter(centerIndex));
+            }
+            else
+            {
+                Debug.LogWarning($"No available worker of type {workerType} for building {buildingType} at index {centerIndex}.");
+            }
         }
 
         private void Build()
@@ -256,6 +270,34 @@ namespace PunkyFruitBat
             return 0;
         }
 
-        public abstract void SetBuildingCost();
+        /// <summary>
+        /// Derived classes must specify the type of worker this building requires.
+        /// Return a default or 'None' value if no worker is needed.
+        /// </summary>
+        protected abstract CharacterType RequiredWorkerType { get; }
+
+        /// <summary>
+        /// Derived classes must specify the wood cost of the building.
+        /// </summary>
+        protected abstract int WoodCost { get; }
+
+        /// <summary>
+        /// Derived classes must specify the stone cost of the building.
+        /// </summary>
+        protected abstract int StoneCost { get; }
+
+        /// <summary>
+        /// Derived classes must implement this method to assign the building cost.
+        /// </summary>
+        public abstract void AssignBuildingCost();
+
+        protected void SetBuildingCost(int woodCost, int stoneCost)
+        {
+            buildingCost = new Dictionary<ResourceType, int>
+            {
+                { ResourceType.Wood, woodCost },
+                { ResourceType.Stone, stoneCost }
+            };
+        }
     }
 }

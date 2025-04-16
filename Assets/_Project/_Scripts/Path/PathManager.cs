@@ -166,6 +166,8 @@ namespace PunkyFruitBat
             Path firstPath = new(flags[0], newFlag, firstPart, PathId);
             if (carrier)
             {
+                firstPath.SetCarrier(carrier);
+
                 if (carrier.IsBusy)
                 {
                     carrier.newPath = firstPath;
@@ -175,7 +177,6 @@ namespace PunkyFruitBat
                     carrier.StopAllCoroutines();
                     manager.StartCoroutine(carrier.MoveCharacter(firstPath.CenterNode));
                 }
-                firstPath.SetCarrier(carrier);
             }
             AddToAllPaths(firstPath);
 
@@ -202,16 +203,18 @@ namespace PunkyFruitBat
             Flag[] flags = manager.FlagManager.GetBothFlagsFromPath(joinedNodes);
 
             Path joinedPath = new(flags[0], flags[1], joinedNodes, PathId);
-            joinedPath.SetCarrier(carrierToKeep);
+
+            RemovePath(path1);
+            RemovePath(path2);
 
             if (joinedPath.Flag1 == joinedPath.Flag2) // Check if the flags are the same. If they are, remove the path and return out of this method
             {
                 Debug.LogWarning($"Path starts and ends with the same flag: {joinedPath.Flag1 == joinedPath.Flag2}");
-                RemovePath(path1);
-                RemovePath(path2);
                 RemovePath(joinedPath);
                 return;
             }
+
+            joinedPath.SetCarrier(carrierToKeep);
 
             if (carrierToKeep.IsBusy)
             {
@@ -274,9 +277,6 @@ namespace PunkyFruitBat
             {
                 Debug.Log($"Carrier 2 {carrier2.GetInstanceID()} is not busy: {!carrier2.IsBusy}"); // Check if the carrierToKeep is busy
             }
-
-            RemovePath(path1);
-            RemovePath(path2);
 
             if (carrierToKeep.IsBusy)
             {

@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee4b4de36cbf7224eb22541fd7aae862, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterType: 3
+  characterType: 5
   <WorkNodeIndex>k__BackingField: 0
   <CurrentNodeIndex>k__BackingField: 0
 --- !u!1 &7037745781429970408

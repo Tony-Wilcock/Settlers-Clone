@@ -28,5 +28,16 @@ namespace PunkyFruitBat
             // Don't clear DestinationNodeIndex if pooling
             if (transform.parent != null) transform.SetParent(null);
         }
+
+        public Building GetBuildingAtDestination()
+        {
+            // Get the building at the destination node index
+            Building building = HexGridManager.Instance.BuildingManager.GetBuildingAtNode(DestinationNodeIndex);
+            if (building == null)
+            {
+                Debug.LogError($"No building found at destination node {DestinationNodeIndex} for resource {gameObject.name}!", this);
+            }
+            return building;
+        }
     }
 }

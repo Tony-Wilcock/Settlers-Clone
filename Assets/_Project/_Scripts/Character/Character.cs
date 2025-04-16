@@ -146,7 +146,7 @@ namespace PunkyFruitBat
             else if (movingToBuildingInterior && CurrentNodeIndex != pathfindingEndIndex)
             {
                 Debug.LogError($"Intended to move into building {endNodeIndex}, but failed to reach entrance {pathfindingEndIndex}. Current node: {CurrentNodeIndex}", this);
-                // Don't invoke callback on failure? Or invoke anyway? For now, invoke.
+                // Don't invoke callback on failure? Or invoke anyway?
             }
 
             // --- Step 5: Execute Callback ---

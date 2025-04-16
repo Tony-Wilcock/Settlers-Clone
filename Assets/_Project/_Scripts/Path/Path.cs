@@ -14,11 +14,6 @@ namespace PunkyFruitBat
         [field: SerializeField] public Carrier Carrier { get; private set; }
         [field: SerializeField] public List<GameObject> PathVisuals { get; private set; } = new List<GameObject>();
 
-        //private void Awake()
-        //{
-        //    gameObject.SetActive(false);
-        //}
-
         public Path(Flag flag1, Flag flag2, List<int> nodes, int id)
         {
             Flag1 = flag1;
@@ -64,18 +59,17 @@ namespace PunkyFruitBat
             PathVisuals.Add(visual);
         }
 
-        private void ClearPathVisuals()
+        public void SetCarrier(Carrier carrier)
         {
-            foreach (GameObject pathVisual in PathVisuals)
-            {
-                HexGridManager.Instance.PathManager.ReturnPathVisualsToPool(pathVisual);
-            }
-            PathVisuals.Clear();
+            HasCarrier = true;
+            Carrier = carrier;
+            Carrier.SetAssignedPath(this);
         }
 
         public void OnPathRemoved()
         {
             ClearPathVisuals();
+            RemoveCarrier();
 
             Id = -1;
             CenterNode = -1;
@@ -86,11 +80,13 @@ namespace PunkyFruitBat
             Flag2 = null;
         }
 
-        public void SetCarrier(Carrier carrier)
+        private void ClearPathVisuals()
         {
-            HasCarrier = true;
-            Carrier = carrier;
-            Carrier.SetWorkNodeIndex(CenterNode);
+            foreach (GameObject pathVisual in PathVisuals)
+            {
+                HexGridManager.Instance.PathManager.ReturnPathVisualsToPool(pathVisual);
+            }
+            PathVisuals.Clear();
         }
 
         public void RemoveCarrier()

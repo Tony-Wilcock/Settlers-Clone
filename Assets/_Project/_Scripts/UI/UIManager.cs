@@ -61,9 +61,9 @@ namespace PunkyFruitBat
 
         private void Awake()
         {
-            HideAllPanels();
-            ValidateTextReferences(); // Ensure all text fields are assigned
             manager = HexGridManager.Instance; // Cache HexGridManager instance
+            ValidateTextReferences(); // Ensure all text fields are assigned
+            HideAllPanels();
         }
 
         private void Start()
@@ -184,6 +184,9 @@ namespace PunkyFruitBat
         public void HideAllPanels()
         {
             HidePanel(UIPanel.BuildingPanel);
+
+            if (manager.NodeManager.SelectedNodeObject != null)
+                manager.NodeManager.SelectedNodeObject.SetActive(false); // Hide selected node object
         }
 
         private void DetermineTabsToShow(int nodeIndex)

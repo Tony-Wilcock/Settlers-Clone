@@ -40,7 +40,8 @@ namespace PunkyFruitBat
         public void SetAssignedPath(Path path)
         {
             AssignedPath = path;
-            if (path != null) gameObject.name = $"Carrier_Path_{path.Id}";
+            WorkNodeIndex = AssignedPath.CenterNode;
+            if (AssignedPath != null) gameObject.name = $"Carrier_Path_{AssignedPath.Id}";
             else gameObject.name = "Carrier_Unassigned";
 
             DestinationFlag = null;
@@ -63,14 +64,14 @@ namespace PunkyFruitBat
         }
 
         /// <summary>
-        /// Coroutine performing the transport: move->pickup->move->dropoff->return_to_center->notify_idle.
+        /// Coroutine performing the transport: move->pickup->move->dropoff->notify_idle.
         /// </summary>
         private IEnumerator PerformTransportTask(Resource resource, Flag pickupFlag, Flag dropoffFlag)
         {
             // 1. Move to Pickup Flag
             yield return StartCoroutine(PickupResource(resource, pickupFlag));
 
-            // 3. Move to Dropoff Flag
+            // 2. Move to Dropoff Flag
             yield return StartCoroutine(DropoffResource(resource, dropoffFlag));
         }
 
@@ -87,7 +88,6 @@ namespace PunkyFruitBat
                 yield break;
             }
 
-            // 2. Pick up Resource
             pickupFlag.RemoveResourceFromFlag(resource);
             resource.transform.SetParent(transform);
             resource.transform.localPosition = Vector3.up * 1.0f;
@@ -114,13 +114,11 @@ namespace PunkyFruitBat
                 yield break;
             }
 
-            // 4. Drop off Resource
             dropoffFlag.AddResourceToFlag(resource); // This notifies CarrierManager
             CurrentResource = null;
             IsBusy = false;
             DestinationFlag = null;
 
-            // 5. Move back to Path Center using the onComplete callback
             if (newPath != null)
             {
                 AssignedPath = newPath;
@@ -136,7 +134,6 @@ namespace PunkyFruitBat
                 yield break;
             }
 
-            //ResetCarrierState(); // Reset state
             if (manager.PathManager.GetPathAtNode(WorkNodeIndex) != AssignedPath)
             {
                 Debug.LogWarning($"Carrier {GetInstanceID()} is not on the assigned path {AssignedPath.Id} at node {WorkNodeIndex}. Returning home.", this);
@@ -171,7 +168,7 @@ namespace PunkyFruitBat
             if (IsBusy) IsBusy = false;
             if (DestinationFlag != null) DestinationFlag = null;
 
-            CarrierManager.NotifyCarrierIdle(this, AssignedPath); // Notify manager if idle
+            CarrierManager.NotifyCarrierIdle(this); // Notify manager if idle
         }
     }
 }

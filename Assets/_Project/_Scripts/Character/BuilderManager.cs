@@ -10,128 +10,14 @@ namespace PunkyFruitBat
 
         public override CharacterType ManagedType => CharacterType.Builder;
 
-        private Queue<Builder> builderPool = new();
-
         private Queue<Building> BuildingJobs { get; set; } = new();
 
         public override void HandleGridComplete()
         {
+            base.InitialisePool(5);
+
             gridManager.BuildingManager.OnBuildingRequestSubmitted += HandleBuildingRequest;
             gridManager.PathManager.OnPathCreationCompleted += ProcessBuildingsAwaitingBuilderQueue;
-
-            InitialiseBuilderPool();
-        }
-
-        // --- Pooling Logic (Moved from CharacterManager) ---
-        private void InitialiseBuilderPool()
-        {
-            builderPool = new Queue<Builder>();
-            IncreaseBuilderPool(5); // Or read from config
-        }
-
-        private void IncreaseBuilderPool(int amount)
-        {
-            GameObject prefab = characterPrefabs.characterPrefabs[(int)ManagedType];
-            if (prefab == null)
-            {
-                Debug.LogError($"Prefab for {ManagedType} not found!");
-                return;
-            }
-
-            int storehouseNode = gridManager.BuildingManager.GetStorehouseNode(); // Get once
-            Vector3 initialPosition = gridManager.NodeManager.GetNodePosition(storehouseNode);
-
-            for (int i = 0; i < amount; i++)
-            {
-                GameObject characterGO = GameObject.Instantiate(prefab);
-                characterGO.transform.position = initialPosition;
-
-                if (typeSpecificParentTransform != null) characterGO.transform.SetParent(typeSpecificParentTransform);
-                else Debug.LogWarning($"Parent transform for {ManagedType} not set. Character '{characterGO.name}' will be at scene root.", characterGO);
-
-                if (!characterGO.TryGetComponent<Builder>(out Builder builder))
-                {
-                    Debug.LogError($"Prefab for {ManagedType} is missing Builder component!");
-                    GameObject.Destroy(characterGO); // Clean up unusable instance
-                    continue;
-                }
-
-                builder.InitialiseCharacter(ManagedType, storehouseNode);
-                characterGO.SetActive(false);
-                builderPool.Enqueue(builder);
-            }
-        }
-
-        public override Character GetCharacterInstance(int spawnNodeIndex = -1)
-        {
-            if (builderPool.Count == 0)
-            {
-                Debug.LogWarning("Builder pool empty, increasing size.");
-                IncreaseBuilderPool(5); // Or read from config
-            }
-
-            if (builderPool.Count == 0) // Check again after trying to increase
-            {
-                Debug.LogError("Failed to increase builder pool or pool still empty. Cannot get builder.");
-                return null;
-            }
-
-            Builder builder = builderPool.Dequeue();
-
-            if (spawnNodeIndex != -1) builder.transform.position = gridManager.NodeManager.GetNodePosition(spawnNodeIndex);
-
-            builder.gameObject.SetActive(true);
-            return builder;
-        }
-
-        public override void ReturnCharacterInstance(Character character)
-        {
-            if (character is not Builder builder)
-            {
-                Debug.LogError($"Tried to return non-Builder character to Builder pool: {character.name}");
-                return;
-            }
-
-            if (builder == null || !builder.gameObject.activeInHierarchy) return; // Already returned
-
-            builder.StopAllCoroutines(); // Stop any running coroutines
-
-            builder.StartCoroutine(builder.MoveCharacter(builder.WorkNodeIndex, () =>
-            {
-                builder.gameObject.SetActive(false);
-                builderPool.Enqueue(builder);
-            }));
-        }
-
-        public override void InstantlyReturnCharacterInstance(Character character)
-        {
-            if (character is not Builder builder)
-            {
-                Debug.LogError($"Tried to instantly return non-Builder: {character?.name}");
-                return;
-            }
-            if (builder == null) return;
-
-            Debug.Log($"Instantly returning builder {builder.GetInstanceID()} to pool");
-            builder.StopAllCoroutines();
-            builder.ClearTask(); // Ensure task is cleared
-
-            builder.gameObject.SetActive(false);
-            // Reset position?
-            builder.transform.position = gridManager.NodeManager.GetNodePosition(builder.WorkNodeIndex); // Assuming WorkNodeIndex is storehouse
-
-            // Avoid double-adding
-            if (!builderPool.Contains(builder))
-            {
-                builderPool.Enqueue(builder);
-            }
-            else
-            {
-                Debug.LogWarning($"Builder {builder.GetInstanceID()} already in pool during instant return?");
-            }
-
-            // Process queue as a builder is now free
-            ProcessBuildingsAwaitingBuilderQueue();
         }
 
         // --- Builder-Specific Event Handling ---
@@ -152,47 +38,87 @@ namespace PunkyFruitBat
                 return;
             }
 
-            if (builderPool.Count == 0)
-            {
-                BuildingJobs.Enqueue(building);
-                return;
-            }
-
             Path path = gridManager.PathManager.GetPathAtNode(building.EntranceIndex);
 
             if (path == null || !gridManager.PathManager.PathFinder.IsPathConnectedToStorehouse(path))
             {
-                BuildingJobs.Enqueue(building);
+                if (!BuildingJobs.Contains(building)) // Avoid adding duplicates
+                {
+                    BuildingJobs.Enqueue(building);
+                }
+                return; // Not reachable yet
+            }
+
+            // Request resources BEFORE assigning builder
+            bool requested = RequestBuildingResources(building);
+            if (!requested)
+            {
+                Debug.LogWarning($"Could not request resources for {building.name}. Builder not assigned yet.");
+                if (!BuildingJobs.Contains(building)) BuildingJobs.Enqueue(building); // Requeue if resources failed
                 return;
             }
 
-            // Request resources for the building
-            // Get the wood amount and stone amount required for the building
-            int woodCost = building.GetBuildingCostByResourceType(ResourceType.Wood);
-            int stoneCost = building.GetBuildingCostByResourceType(ResourceType.Stone);
-            if (woodCost > 0)
+            if (characterPool.Count == 0)
             {
-                for (int i = 0; i < woodCost; i++)
-                    gridManager.ResourceManager.RequestResources(ResourceType.Wood, building);
-            }
-            if (stoneCost > 0)
-            {
-                for (int i = 0; i < stoneCost; i++)
-                    gridManager.ResourceManager.RequestResources(ResourceType.Stone, building);
+                if (!BuildingJobs.Contains(building)) BuildingJobs.Enqueue(building);
+                return;
             }
 
             // Send out a builder to build the building
-            Builder builder = GetCharacterInstance() as Builder;
-            if (builder == null)
+            Character baseChar = base.GetCharacterInstance(); // Get from generic pool
+            if (baseChar is Builder builder) // Safely cast
             {
-                Debug.LogError("Builder pool error: Count > 0 but GetCharacterInstance returned null!");
-                BuildingJobs.Enqueue(building); // Re-queue
-                return;
+                building.AssignedBuilder = builder;
+                builder.AssignConstructionTask(building);
+                builder.StartCoroutine(builder.PerformConstruction(building));
+                Debug.Log($"Assigned Builder {builder.GetInstanceID()} to {building.name}");
             }
+            else
+            {
+                Debug.LogError("Dequeued character was not a Builder or was null!");
+                if (baseChar != null) base.InstantlyReturnCharacterInstance(baseChar); // Return wrong type instantly
+                if (!BuildingJobs.Contains(building)) BuildingJobs.Enqueue(building); // Re-queue the job
+            }
+        }
 
-            building.AssignedBuilder = builder;
-            builder.AssignConstructionTask(building);
-            builder.StartCoroutine(builder.PerformConstruction(building));
+        private bool RequestBuildingResources(Building building)
+        {
+            if (building == null || building.BuildingCost == null) return false;
+
+            bool allRequestsSuccessful = true; // Assume success initially
+
+            foreach (var costPair in building.BuildingCost)
+            {
+                ResourceType type = costPair.Key;
+                int amountNeeded = costPair.Value;
+
+                if (amountNeeded <= 0) continue; // Skip if no cost for this type
+
+                // Check if enough resources ALREADY requested/delivered (optional optimization)
+                building.ResourcesOnSite.TryGetValue(type, out int amountHave);
+                int stillNeeded = amountNeeded - amountHave;
+
+                if (stillNeeded <= 0) continue; // Already have enough
+
+                for (int i = 0; i < stillNeeded; i++)
+                {
+                    // Check availability *before* requesting (crucial!)
+                    if (gridManager.ResourceManager.GetResourceAmount(type) > 0)
+                    {
+                        gridManager.ResourceManager.RequestResources(type, building);
+                        // NOTE: RequestResources likely *removes* from central storage immediately.
+                        // If it only queues, the logic here needs adjustment.
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Not enough {type} in central storage to request for {building.name}. Needed {stillNeeded}, have 0.");
+                        allRequestsSuccessful = false;
+                        // Decide if you want to stop requesting other types if one fails
+                        // break; // Uncomment to stop requesting other resources if one type is unavailable
+                    }
+                }
+            }
+            return allRequestsSuccessful; // Return true only if ALL required requests could be initiated
         }
 
         /// <summary>
@@ -204,27 +130,28 @@ namespace PunkyFruitBat
         private void ProcessBuildingsAwaitingBuilderQueue(Path path = null)
         {
             if (BuildingJobs.Count <= 0) return;
-            Queue<Building> waitingQueue = BuildingJobs;
 
             // Use a temporary list to avoid issues with modifying the queue while iterating
-            List<Building> buildingsToProcess = new(waitingQueue);
-            waitingQueue.Clear(); // Clear original queue
+            List<Building> buildingsToProcess = new(BuildingJobs);
+            BuildingJobs.Clear(); // Clear original queue
 
-            int processedCount = 0;
             foreach (Building buildingToCheck in buildingsToProcess)
             {
-                processedCount++;
-
                 // Re-validate building before processing
                 if (buildingToCheck == null || buildingToCheck.CenterIndex == -1)
                 {
                     Debug.LogWarning($"[BuilderManager] Building {buildingToCheck?.CenterIndex ?? -1} in queue is invalid/destroyed. Skipping.");
                     continue; // Skip invalid/destroyed buildings
                 }
-                if (buildingToCheck.IsConstructed)
+                if (buildingToCheck.IsConstructed || buildingToCheck.CurrentStage == Building.ConstructionStage.Complete)
                 {
                     Debug.Log($"[BuilderManager] Building {buildingToCheck.CenterIndex} in queue already constructed. Skipping.");
                     continue; // Skip already constructed buildings
+                }
+                if (buildingToCheck.AssignedBuilder != null)
+                {
+                    // Debug.Log($"[BuilderManager] Building {buildingToCheck.CenterIndex} in queue already has a builder. Skipping.");
+                    continue;
                 }
 
                 // Retry assignment logic. This will re-queue if still unconnected or blocked.
@@ -234,7 +161,14 @@ namespace PunkyFruitBat
 
         public override void Unsubscribe()
         {
-            gridManager.BuildingManager.OnBuildingRequestSubmitted -= HandleBuildingRequest;
+            // Unsubscribe from Builder-specific events
+            if (gridManager?.BuildingManager != null)
+                gridManager.BuildingManager.OnBuildingRequestSubmitted -= HandleBuildingRequest;
+            if (gridManager?.PathManager != null)
+                gridManager.PathManager.OnPathCreationCompleted -= ProcessBuildingsAwaitingBuilderQueue;
+
+            BuildingJobs.Clear(); // Clear specific queue
+            base.Unsubscribe(); // Call base if it ever does anything
         }
     }
 }

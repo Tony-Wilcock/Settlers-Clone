@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90085ca1fae32ba4aba84e69b2b00f84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterType: 2
-  <HomeNodeIndex>k__BackingField: 0
+  characterType: 3
+  <WorkNodeIndex>k__BackingField: 0
   <CurrentNodeIndex>k__BackingField: 0
 --- !u!1 &7037745781429970408
 GameObject:
