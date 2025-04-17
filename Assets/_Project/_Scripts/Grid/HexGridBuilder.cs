@@ -46,7 +46,7 @@ namespace PunkyFruitBat
             settings = manager.Settings;
         }
 
-        public IEnumerator CreateHexGridAsync(List<Chunk> chunks, Vector3[] globalVertices, Action<int, Dictionary<(int, int), List<int>>, Node[]> onComplete)
+        public IEnumerator CreateHexGridAsync(List<Chunk> chunks, Vector3[] globalVertices, Action<int, Dictionary<(int, int), List<int>>, Node[]> onComplete, Action<float> onProgress)
         {
             float outerRadius = CellSize;
             float innerRadius = outerRadius * Mathf.Sqrt(3) / 2;
@@ -56,11 +56,14 @@ namespace PunkyFruitBat
 
             int chunkWidth = Mathf.CeilToInt((float)Width / ChunkSize);
             int chunkHeight = Mathf.CeilToInt((float)Height / ChunkSize);
+            int totalChunks = chunkWidth * chunkHeight; // Calculate total chunks for progress
 
             int batchSize = 5;
             int chunkCounter = 0;
 
             List<int> centreVertices = new();
+
+            onProgress?.Invoke(0f); // Initial progress report
 
             for (int chunkX = 0; chunkX < chunkWidth; chunkX++)
             {
@@ -78,16 +81,24 @@ namespace PunkyFruitBat
                     {
                         Debug.LogError($"Failed to add required components to Chunk_{chunkX}_{chunkY}. Skipping chunk creation.");
                         GameObject.DestroyImmediate(chunkObj);
+                        totalChunks--; // Adjust total chunk count if skipped
                         continue;
                     }
 
                     Material defaultMaterial = manager.GetComponent<MeshRenderer>()?.material;
-                    if (defaultMaterial == null)
+                    if (defaultMaterial == null && manager.TryGetComponent<Renderer>(out var ren))
                     {
                         Debug.LogWarning($"No material found on HexGridManager for Chunk_{chunkX}_{chunkY}. Using default Unity material.");
-                        defaultMaterial = new Material(Shader.Find("Standard"));
+                        defaultMaterial = ren.sharedMaterial;
                     }
-                    meshRenderer.material = defaultMaterial;
+
+                    if (defaultMaterial == null)
+                    {
+                        Debug.LogWarning($"No default material found on HexGridManager or Renderer for Chunk_{chunkX}_{chunkY}. Using default Unity material.", manager.gameObject);
+                        // Create a new instance only if absolutely necessary, usually better to have one assigned
+                        defaultMaterial = new Material(Shader.Find("Standard")); // Or a URP/HDRP equivalent shader
+                    }
+                    meshRenderer.sharedMaterial = defaultMaterial; // Use sharedMaterial unless you need unique properties per chunk
                     chunkObj.layer = manager.gameObject.layer;
 
                     Chunk chunk = manager.CreateChunkObject(chunkObj);
@@ -133,6 +144,7 @@ namespace PunkyFruitBat
                                 else
                                 {
                                     globalIndex = globalVertexCounter;
+                                    if (globalIndex >= globalVertices.Length) continue; // Prevent overflow
                                     vertexMap[key] = globalIndex;
                                     globalVertices[globalIndex] = hexVertices[i];
 
@@ -145,7 +157,7 @@ namespace PunkyFruitBat
                                     currentCellVertices.Add(globalIndex);
                                     globalVertexCounter++;
                                 }
-                                vertexIndices[i] = globalToLocal[vertexMap[key]];
+                                //vertexIndices[i] = globalToLocal[vertexMap[key]];
                             }
                             cellVertexMap[(row, col)] = currentCellVertices;
 
@@ -169,8 +181,7 @@ namespace PunkyFruitBat
 
                     chunk.vertices = chunkVertices.ToArray();
                     chunk.triangles = chunkTriangles.ToArray(); // Assign triangles
-                    Color[] colorsArray = chunkColors.ToArray();
-                    chunk.colors = colorsArray;
+                    chunk.colors = chunkColors.ToArray();
                     chunk.localToGlobalVertexMap = localToGlobal;
                     chunk.globalToLocalVertexMap = globalToLocal; // Ensure this is assigned
 
@@ -182,21 +193,40 @@ namespace PunkyFruitBat
                     chunkCounter++;
                     if (chunkCounter % batchSize == 0)
                     {
-                        yield return null;
+                        // Report progress after processing a batch
+                        float progress = totalChunks > 0 ? (float)chunkCounter / totalChunks : 0f;
+                        onProgress?.Invoke(progress * 0.8f); // Allocate 80% of progress to chunk mesh creation
+                        yield return null; // Yield control
                     }
                 }
             }
 
+            onProgress?.Invoke(0.8f); // Progress after chunk meshes
             Node[] editableVerticesIndices = new Node[globalVertexCounter];
 
             for (int i = 0; i < globalVertexCounter; i++)
             {
+                if (i >= globalVertices.Length)
+                {
+                    Debug.LogError($"Attempting to create Node for index {i}, but globalVertices array size is {globalVertices.Length}");
+                    continue; // Skip if index is out of bounds
+                }
+
+                // Ensure NodePrefab is assigned in HexGridManager Inspector
+                if (manager.NodePrefab == null)
+                {
+                    Debug.LogError("NodePrefab is not assigned in HexGridManager!");
+                    break; // Stop node creation if prefab is missing
+                }
+
+                // Instantiate node at the correct global position
                 GameObject nodeObject = GameObject.Instantiate(manager.NodePrefab, globalVertices[i], Quaternion.identity, manager.NodesTransform);
                 nodeObject.name = $"Node_{i}";
 
                 if (!nodeObject.TryGetComponent<Node>(out var node))
                 {
                     Debug.LogError("Node prefab does not have a Node component.");
+                    GameObject.Destroy(nodeObject); // Clean up invalid instance
                     continue;
                 }
 
@@ -208,8 +238,18 @@ namespace PunkyFruitBat
                 {
                     node.SetCenterNode(true);
                 }
+
+                // Progress reporting during Node creation (can be slow)
+                if (i % (globalVertexCounter / 10) == 0 || i == globalVertexCounter - 1) // Report ~10 times + end
+                {
+                    float nodeProgress = (float)i / globalVertexCounter;
+                    onProgress?.Invoke(0.8f + nodeProgress * 0.2f); // Allocate 20% of progress to node creation
+                    // Consider adding a small yield here if Node instantiation is very slow
+                     yield return null;
+                }
             }
 
+            onProgress?.Invoke(1.0f); // Ensure 100% reported before final callback
             onComplete?.Invoke(globalVertexCounter, cellVertexMap, editableVerticesIndices);
         }
 

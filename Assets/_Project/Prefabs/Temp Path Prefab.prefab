@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1383379916115763522}
   - component: {fileID: 7744743968638797067}
   m_Layer: 0
-  m_Name: TEST Path Prefab
+  m_Name: Temp Path Prefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -68,6 +68,7 @@ namespace PunkyFruitBat
 
         private void Update()
         {
+            if (!HexGridManager.Instance.IsGridGenerated) return;
             HandleIsDragging();
             HandleCameraPosition();
             HandleCameraRotation();

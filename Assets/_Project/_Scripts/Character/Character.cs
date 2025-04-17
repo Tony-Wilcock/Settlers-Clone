@@ -17,6 +17,8 @@ namespace PunkyFruitBat
         protected float moveSpeed = 5f;
         [field: SerializeField] public int WorkNodeIndex { get; protected set; }
         [field: SerializeField] public int CurrentNodeIndex { get; set; }
+        [field: SerializeField] public int NextNodeIndex { get; set; }
+        [field: SerializeField] public bool IsMoving { get; set; } = false;
 
         protected virtual void Awake()
         {

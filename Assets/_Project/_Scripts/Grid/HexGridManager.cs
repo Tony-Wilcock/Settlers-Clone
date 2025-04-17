@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Codice.Client.BaseCommands;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Windows;
 
 namespace PunkyFruitBat
 {
@@ -14,15 +16,15 @@ namespace PunkyFruitBat
         public Color color;
     }
 
-[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
+    [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
     public class HexGridManager : Singleton<HexGridManager>
     {
         public event Action<int> OnCreateFlagButtonPressed;
         public event Action OnRemoveFlagButtonPressed;
-
         public event Action<int, BuildingType> OnCreateBuildingButtonPressed;
-
         public event Action OnGridComplete;
+        public event Action<float> OnGenerationProgress; // Event to report progress (0.0 to 1.0)
+        public float GenerationProgress { get; private set; } // Public property to check progress
 
         [field: SerializeField] public Flag FlagPrefab { get; private set; }
         [field: SerializeField] public GameObject TempPathVisualPrefab { get; private set; }
@@ -99,30 +101,18 @@ namespace PunkyFruitBat
         public HashSet<int> EdgeVertices { get => edgeIdentifier.edgeVertices; set => edgeIdentifier.edgeVertices = value; }
         public Dictionary<int, List<int>> AdjacencyList { get => adjacencyBuilder.adjacencyList; set => adjacencyBuilder.adjacencyList = value; }
 
-        private bool isGridGenerated = false;
-
-        public Chunk CreateChunkObject(GameObject chunkObject)
-        {
-            int decalSplinesLayer = LayerMask.NameToLayer("Decal Splines");
-            Renderer renderer = chunkObject.GetComponent<Renderer>();
-            renderer.renderingLayerMask = (uint)decalSplinesLayer; // Set to Decal Splines layer
-
-            return new Chunk(chunkObject);
-        }
+        public bool IsGridGenerated { get; private set; } = false;
+        private bool isGenerating = false;
 
         protected override void Awake()
         {
+            base.Awake();
             if (transform.position != Vector3.zero) transform.position = Vector3.zero; // Ensure grid is at origin
-        }
-
-        private void Start()
-        {
+            input.playerInput.Player.Disable(); // Disable input actions
             MainCamera = Camera.main;
             adjacencyBuilder.Initialise(this);
             edgeIdentifier.Initialise(this);
             gridBuilder.Initialise(this);
-
-            InitializeGame();
         }
 
         private void OnDisable()
@@ -135,26 +125,45 @@ namespace PunkyFruitBat
             characterManager?.Unsubscribe();
         }
 
-        private void InitializeGame()
-        {
-            globalVertices = new Vector3[Settings.width * Settings.height * 7]; // 7 vertices per hexagon
-
-            GenerateGrid();
-        }
-
         private void Update()
         {
-            if (!isGridGenerated)
+            if (!IsGridGenerated)
             {
                 return;
             }
-            nodeManager.UpdateLiveNodeIndex(Input.mousePosition);
+            nodeManager.UpdateLiveNodeIndex(UnityEngine.Input.mousePosition);
         }
 
-        [ContextMenu("Generate Grid")]
-        public void GenerateGrid()
+        /// <summary>
+        /// Public method to be called by the UI button to start grid generation.
+        /// </summary>
+        public void StartGridGeneration()
         {
-            StartCoroutine(gridBuilder.CreateHexGridAsync(chunks, globalVertices, OnGridGenerationComplete));
+            if (isGenerating || IsGridGenerated)
+            {
+                Debug.LogWarning("Grid generation already started or completed.");
+                return;
+            }
+
+            isGenerating = true; // Set flag
+            GenerationProgress = 0f; // Reset progress
+            OnGenerationProgress?.Invoke(GenerationProgress); // Notify initial progress
+
+            // Allocate the globalVertices array just before starting generation
+            globalVertices = new Vector3[Settings.width * Settings.height * 7]; // 7 vertices per hexagon
+
+            StartCoroutine(gridBuilder.CreateHexGridAsync(chunks, globalVertices, OnGridGenerationComplete, UpdateProgress));
+        }
+
+        /// <summary>
+        /// Callback method passed to the builder to update generation progress.
+        /// </summary>
+        /// <param name="progress">Current progress value (0.0 to 1.0).</param>
+        private void UpdateProgress(float progress)
+        {
+            GenerationProgress = Mathf.Clamp01(progress);
+            OnGenerationProgress?.Invoke(GenerationProgress);
+            // Debug.Log($"Grid Generation Progress: {GenerationProgress:P0}"); // Optional debug log
         }
 
         /// <summary>
@@ -197,9 +206,17 @@ namespace PunkyFruitBat
 
             edgeIdentifier.ForceEdgeVerticesToZero();
 
+            // Ensure globalVertices reflects final positions (potentially adjusted by edge flattening)
             for (int i = 0; i < vertexCount; i++)
             {
-                globalVertices[i] = EditableVerticesIndices[i].Position;
+                if (i < globalVertices.Length && EditableVerticesIndices[i] != null)
+                {
+                    globalVertices[i] = EditableVerticesIndices[i].Position;
+                }
+                else
+                {
+                    Debug.LogWarning($"Skipping global vertex update for index {i}. Out of bounds or Node is null.");
+                }
             }
 
             // Set isEdgeNode property
@@ -214,8 +231,6 @@ namespace PunkyFruitBat
                     Debug.LogError($"Invalid edge vertex index or null Node at index {edgeVertexIndex}");
                 }
             }
-
-            isGridGenerated = true;
 
             nodeSelector.Initialise(this);
             flagManager.Initialise(this, FlagPrefab);
@@ -232,11 +247,27 @@ namespace PunkyFruitBat
 
             ApplyInitialHexColors();
 
-            OnGridComplete?.Invoke();
+            isGenerating = false; // Generation finished
+            IsGridGenerated = true; // Mark as fully generated
+
+            GenerationProgress = 1.0f; // Ensure progress reports 100%
+            OnGenerationProgress?.Invoke(GenerationProgress);
+            OnGridComplete?.Invoke(); // Notify that the grid is fully ready
+
+            input.playerInput.Player.Enable(); // Enable input actions
 
             #if UNITY_EDITOR
                 UnityEditor.SceneView.RepaintAll();
             #endif
+        }
+
+        public Chunk CreateChunkObject(GameObject chunkObject)
+        {
+            int decalSplinesLayer = LayerMask.NameToLayer("Decal Splines");
+            Renderer renderer = chunkObject.GetComponent<Renderer>();
+            renderer.renderingLayerMask = (uint)decalSplinesLayer; // Set to Decal Splines layer
+
+            return new Chunk(chunkObject);
         }
 
         #region UI_Button_Interactions

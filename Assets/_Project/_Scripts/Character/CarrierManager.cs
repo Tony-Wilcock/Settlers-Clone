@@ -232,7 +232,7 @@ namespace PunkyFruitBat
         /// <summary>
         /// Processes the queue of pending transport requests, assigning tasks to available carriers.
         /// </summary>
-        public void ProcessTransportQueue()
+        private void ProcessTransportQueue()
         {
             if (transportRequestQueue.Count == 0)
             {
@@ -306,7 +306,7 @@ namespace PunkyFruitBat
 
                 // --- Carrier is available! Assign the task ---
                 TransportRequest actualRequest = transportRequestQueue.Dequeue(); // Now actually dequeue
-                carrier.StopAllCoroutines(); // Stop any previous tasks
+                //carrier.StopAllCoroutines(); // Stop any previous tasks
                 bool assigned = carrier.AssignTransportTask(actualRequest.Resource, actualRequest.CurrentFlag, actualRequest.NextFlag);
                 if (!assigned)
                 {

@@ -57,10 +57,37 @@ namespace PunkyFruitBat
                 Debug.LogWarning($"Carrier {GetInstanceID()} cannot accept task. Busy: {IsBusy}, Resource: {resource?.name}, Pickup: {pickupFlag?.Id}, Dropoff: {dropoffFlag?.Id}");
                 return false; // Cannot take task if busy or invalid args
             }
+
             ResourceToPickup = resource;
+
+            if (IsMoving)
+            {
+                StartCoroutine(MoveToNextNodeThenPerformTransportTask(resource, pickupFlag, dropoffFlag));
+                return true;
+            }
 
             StartCoroutine(PerformTransportTask(resource, pickupFlag, dropoffFlag));
             return true;
+        }
+
+        private IEnumerator MoveToNextNodeThenPerformTransportTask(Resource resource, Flag pickupFlag, Flag dropoffFlag)
+        {
+            if (!IsMoving)
+            {
+                StartCoroutine(PerformTransportTask(resource, pickupFlag, dropoffFlag));
+                yield break;
+            }
+
+            int targetNodeWeAreWaitingFor = NextNodeIndex;
+
+            while (CurrentNodeIndex != targetNodeWeAreWaitingFor)
+            {
+                yield return null;
+            }
+
+            StopAllCoroutines();
+
+            StartCoroutine(PerformTransportTask(resource, pickupFlag, dropoffFlag));
         }
 
         /// <summary>
@@ -143,22 +170,30 @@ namespace PunkyFruitBat
             yield return StartCoroutine(MoveCharacter(WorkNodeIndex));
         }
 
-        protected override IEnumerator MoveAlongRoute(List<int> route)
+        protected override IEnumerator MoveAlongRoute(List<int> nodesOnPath)
         {
-            for (int i = 0; i < route.Count; i++)
+            IsMoving = true; // Set moving flag
+
+            for (int i = 0; i < nodesOnPath.Count; i++)
             {
-                Vector3 targetPosition = manager.NodeManager.GetNodePosition(route[i]);
-                while (transform.position != targetPosition)
+                NextNodeIndex = nodesOnPath[i]; // Set next node index
+                Vector3 targetPosition = manager.NodeManager.GetNodePosition(NextNodeIndex);
+                float arrivalThresholdSquared = 0.01f * 0.01f;
+                while ((transform.position - targetPosition).sqrMagnitude > arrivalThresholdSquared)
                 {
                     transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
                     yield return null;
                 }
-                CurrentNodeIndex = route[i];
+                transform.position = targetPosition;
+                CurrentNodeIndex = NextNodeIndex; // Update current node index
+                NextNodeIndex = -1; // Reset next node index
 
                 if (CurrentResource != null || IsBusy) continue; // Skip flag checks if busy
 
                 ResetCarrierState(); // Reset state if not busy
             }
+
+            IsMoving = false; // Reset moving flag
         }
 
         // Helper to reset state
